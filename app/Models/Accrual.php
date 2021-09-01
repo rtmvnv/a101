@@ -17,6 +17,7 @@ class Accrual extends Model
         'link_pay',
         'full_name_case',
         'status',
+        'complex',
     ];
 
     /**
@@ -99,5 +100,33 @@ class Accrual extends Model
         }
 
         return 'completed';
+    }
+
+    /**
+     * Жилой комплекс
+     * Определяется по первым двум буквам лицевого счета.
+     * spanish = Испанские кварталы: ИКХХХХХХХХ, БВХХХХХХХХ
+     * scandinavia = Скандинавия: СКХХХХХХХХ, ЛПХХХХХХХХ, ЭГХХХХХХХХ
+     * nights = Белые ночи: ПРХХХХХХХХ
+     * spanish2 = Испанские Кварталы 2: ПМХХХХХХХХ
+     */
+    public function getComplexAttribute()
+    {
+        $complex = mb_strtoupper(mb_substr($this->account_name, 0, 2));
+
+        if ($complex === 'ИК' OR $complex === 'БВ') {
+            return 'spanish';
+        }
+        if ($complex === 'СК' OR $complex === 'ЛП' OR $complex === 'ЭГ') {
+            return 'scandinavia';
+        }
+        if ($complex === 'ПР') {
+            return 'nights';
+        }
+        if ($complex === 'ПМ') {
+            return 'spanish2';
+        }
+
+        throw new Exception("Complex '$complex' is unknown");
     }
 }

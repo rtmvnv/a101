@@ -22,6 +22,7 @@ Route::get('/{accrual:uuid}', function (Accrual $accrual) {
     switch ($accrual->status) {
         case 'sent': // Клиент первый раз перешел по ссылке из письма
         case 'opened': // Клиент перезагрузил страницу
+        case 'confirmed': // Клиент еще раз перешел из письма
             $accrual->opened_at = now();
             $accrual->save();
             return view('confirm', $accrual->toArray());

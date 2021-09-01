@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/mailru', function () {
+Route::post('/mailru', function () {
     echo 'test mailru webhook';
 });
 
