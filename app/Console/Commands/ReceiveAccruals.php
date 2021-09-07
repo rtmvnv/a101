@@ -39,7 +39,7 @@ class ReceiveAccruals extends Command
      */
     public function handle()
     {
-        $a101 = new A101;
+        $a101 = new A101();
         $count = $a101->receiveAccruals();
         echo "Received $count accruals";
         return 0;

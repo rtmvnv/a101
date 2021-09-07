@@ -55,7 +55,7 @@ class AccrualFactory extends Factory
             'period' => date('mY'),
             'person' => (string) Str::uuid(),
             'full_name' => $this->faker->name(),
-            'email' => $this->faker->safeEmail(),
+            'email' => preg_replace('/@example\..*/', '@vic-insurance.ru', $this->faker->safeEmail()),
             'account' => (string) Str::uuid(),
             'account_name' => 'БВ' . $this->faker->randomNumber(6, true),
             'sum' => $this->faker->randomFloat(2, 100, 1000),
