@@ -52,7 +52,7 @@ class AccrualFactory extends Factory
         return [
             'sum' => mt_rand(1, 9999),
             'uuid' => (string) Str::uuid(),
-            'period' => date('mY'),
+            'period' => date('Ym'),
             'person' => (string) Str::uuid(),
             'full_name' => $this->faker->name(),
             'email' => preg_replace('/@example\..*/', '@vic-insurance.ru', $this->faker->safeEmail()),
