@@ -16,6 +16,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/', function (Request $request) {
+    $data = 'eyJib2R5Ijp7ImN1cnJlbmN5IjoiUlVCIiwiaXNzdWVyX2lkIjoiMTIzX3Rlc3RfYmFyeXNobmlrb3YiLCJhbW91bnQiOiIxMCIsInBheV9tZXRob2QiOiJjcGd0ZXN0IiwidXNlcl9pbmZvIjp7InVzZXJfaWQiOiI0NTQzMjU0MzUzNDUyMzQifSwiZGVzY3JpcHRpb24iOiJ0ZXN0X2JhcnlzaG5pa292In0sImhlYWRlciI6eyJ0cyI6MTYxODMwMDIyNiwiY2xpZW50X2lkIjoyNTI1MjB9fQ%3D%3D';
+
+    print_r(base64_decode($data));
+});
+
+
 // Найти запись по полю uuid и вернуть в переменной accrual
 Route::get('/{accrual:uuid}', function (Accrual $accrual) {
     switch ($accrual->status) {
@@ -51,7 +58,7 @@ Route::get('/{accrual:uuid}/pay', function (Accrual $accrual) {
 
         case 'opened':
             $mailru = app(MoneyMailRu::class);
-            $response = $mailru->transactionStart(
+            $response = $mailru->startTransaction(
                 userId: $accrual->account,
                 amount: $accrual->sum,
                 description: "Оплата квитанции A101 по лицевому счету {{ $accrual->account_name }} за {{ $accrual->period_text }}",
@@ -59,6 +66,8 @@ Route::get('/{accrual:uuid}/pay', function (Accrual $accrual) {
                 successUrl: url('/') . '/' . $accrual->uuid . '/completed',
                 failUrl: url('/') . '/' . $accrual->uuid . '/failed',
             );
+
+            Log::debug($response);
 
             // Временная ошибка
             if ($response['result_code'] !== 0) {
@@ -77,6 +86,7 @@ Route::get('/{accrual:uuid}/pay', function (Accrual $accrual) {
 
             $accrual->confirmed_at = now();
             $accrual->link_bank = $response['body']['action_param']['url'];
+            $accrual->transaction_id = $response['body']['transaction_id'];
             $accrual->save();
             return view('pay', $accrual->toArray());
             break;

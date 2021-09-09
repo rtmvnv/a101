@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use \App\Models\Accrual;
+use App\Models\Accrual;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder

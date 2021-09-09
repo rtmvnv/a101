@@ -10,6 +10,10 @@ class Accrual extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'uuid';
+    protected $keyType = 'string';
+    public $incrementing = false;
+
     protected $appends = [
         'period_text',
         'valid_till',

@@ -2,12 +2,10 @@
 
 namespace App;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Utils;
 use App\MoneyMailRuException;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 
 /**
  * Модуль реализует взаимодействие с Mail.ru через API.
@@ -165,7 +163,8 @@ class MoneyMailRu
     }
 
     /**
-     * Обработчик колбека от Mailru.
+     * Обрабатывает запрос Mail.ru.
+     * Возвращает массив данных запроса.
      *
      * Колбек содержит 3 POST поля:
      * {
@@ -173,42 +172,42 @@ class MoneyMailRu
      * 	"signature" : "s7AMY...GH5roQ==",
      * 	"version" : "2-03"
      * }
-     * 
+     *
      * Пример данных запроса
      * data = {
-     * 	“body”: {
-     * 		“notify_type":"TRANSACTION_STATUS",
-     * 		“issuer_id":"864535d-5c88-4f65-81b1-fcf409f3c2ca",
-     * 		“status":"PAID",
-     * 		“added":"2018-07-04T17:27:37.000+03:00",
-     * 		“user_info”: {
-     * 			“user_id":"1046664",
-     * 			“buyer_ip":"4.3.2.1",
-     * 			“user_verified":"1"
-     * 		},
-     * 		“currency":"RUB",
-     * 		“keep_uniq":"0",
-     * 		“pay_system_name":"123456",
-     * 		“payee_fee_amount":"5.40",
-     * 		“payee_amount":"294.60",
-     * 		“pay_method":"cpgtest",
-     * 		“merchant_id":"123456",
-     * 		“description":"test",
-     * 		“merchant_name":"test",
-     * 		“paid":"2018-07-04T17:27:48.000+03:00",
-     * 		“amount":"300.00",
-     * 		“transaction_id”:"66964534-7F96-11E8-B88E-2DB2D3562AF0"
-     * 	},
-     * 	“header”: {
-     * 		“status":"OK",
-     * 		“ts":"1530714471",
-     * 		“client_id":"123456",
-     * 		“error": {
-     * 			“details":{}
-     * 		}
-     * 	}
+     * "body": {
+     *     "notify_type": "TRANSACTION_STATUS",
+     *     "issuer_id": "29cc7c18-242d-4b11-93c4-506c8deaf986",
+     *     "status": "PAID",
+     *     "added": "2021-09-07T14:09:23.000+03:00",
+     *     "txn_id": "10752588639032211961",
+     *     "user_info": {
+     *         "user_id": "6c565f5b-9e9e-48c6-9e3f-98003e5f1090"
+     *     },
+     *     "currency": "RUB",
+     *     "keep_uniq": "0",
+     *     "pay_system_name": "Бановские карты (ТЕСТ)",
+     *     "payee_fee_amount": "25.60",
+     *     "payee_amount": "486.23",
+     *     "pay_method": "cpgtest",
+     *     "merchant_id": "252520",
+     *     "description": "Оплата квитанции A101 по лицевому счету {{ БВ668872 }} за {{ сентябрь 2021 }}",
+     *     "merchant_name": "А101 Комфорт",
+     *     "merchant_param": {},
+     *     "paid": "2021-09-07T14:10:49.000+03:00",
+     *     "amount": "511.83",
+     *     "transaction_id": "0EEF9138-0FCC-11EC-89AC-9934AE8EF485"
+     * },
+     * "header": {
+     *     "status": "OK",
+     *     "ts": "1631013051",
+     *     "client_id": "252520",
+     *     "error": {
+     *         "details": {}
+     *     }
      * }
-     * 
+     * }
+     *
      * Ответ на уведомление:
      * data = {
      * 	“body": {
@@ -221,133 +220,41 @@ class MoneyMailRu
      * 		“client_id":"123456"
      * 	}
      * }
-     * 
-     * @param \Symfony\Component\HttpFoundation\Request $httpRequest
-     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return array
      * @throws MoneyMailRuException
      */
-    public function callback($httpRequest)
+    public static function parseCallback($request)
     {
-        try {
+        Log::debug('POST request from Mailru');
 
-            // Надо в любой момент иметь готовое значение $request чтобы даже при возникновении
-            // исключения записать в лог полученный запрос
-            $request = $httpRequest->getContent();
-            $talkCode = \qubz\generateTalkCode();
+        // Проверить подпись
+        $public_key = file_get_contents(storage_path('app/' . config('services.money_mail_ru.public_key')));
+        $verificationResult = openssl_verify($request['data'], base64_decode($request['signature']), $public_key);
 
-            /*
-                 * Проверить тип переданного аргумента
-                 */
-            if (get_class($httpRequest) != 'Symfony\Component\HttpFoundation\Request') {
-                throw new MoneyMailRuException('$httpRequest should be of class Symfony\Component\HttpFoundation\Request. Class received ' . get_class($httpRequest), 84905683);
-            }
+        switch ($verificationResult) {
+            case 1:
+                // Signature is correct
+                break;
 
-            $request = $httpRequest->request->all();
+            case 0:
+                throw new MoneyMailRuException('Mailru sent an incorrect signature', 58222341);
+                break;
 
-            /*
-             * Проверить подпись
-             */
-            $signature = base64_decode($request['signature']);
-            $verificationResult = openssl_verify($request['data'], $signature, $this->public_key);
-            switch ($verificationResult) {
-                case 1:
-                    // Signature is correct
-                    break;
-
-                case 0:
-                    throw new MoneyMailRuException("Mailru callback has an incorrect signature", 42180260);
-                    break;
-
-                case -1:
-                    throw new MoneyMailRuException("Error on callback signature verification", 81659319);
-                    break;
-
-                default:
-                    throw new MoneyMailRuException("Unknown error on callback signature verification", 41249167);
-                    break;
-            }
-
-            /*
-                 * Расшифровать данные запроса
-                 */
-            $dataString = base64_decode($request['data']);
-            if (!$dataString) {
-                throw new MoneyMailRuException("base64_decode(data) failed '{$request['data']}'", 23374190);
-            }
-
-            $data = json_decode($dataString, true);
-            if (!$data) {
-                throw new MoneyMailRuException("json_decode(data) failed '{$dataString}'", 53969493);
-            }
-
-            if (!empty($data['header']['ts'])) {
-                $data['header']['ts_string'] = date('c', $data['header']['ts']);
-            }
-
-            $request = array_merge($request, $data);
-        } catch (\Throwable $th) {
-            $this->logReceiveRequest($request, $talkCode, 72871046);
-            $this->logException($th);
-
-            $response = [
-                'header' => [
-                    'status' => 'ERROR',
-                    'ts' => time(),
-                    'error' => [
-                        'code' => $th->getCode(),
-                        'message' => $th->getMessage(),
-                        'error_id' => 'talk_code_' . $talkCode
-                    ]
-                ]
-            ];
-
-            /*
-                 * Ответить на запрос
-                 */
-            $this->logSendResponse($response, $talkCode, 56443165);
-            $httpResponse = new \Symfony\Component\HttpFoundation\Response(\qubz\json_encode($response));
-            $httpResponse->prepare($httpRequest);
-            return $httpResponse;
+            default:
+                throw new MoneyMailRuException('Error on signature verification', 65144333);
+                break;
         }
 
-        $this->logReceiveRequest($request, $talkCode, 31079858);
-
-        try {
-
-            /*
-                 * Вызвать обрабочик колбека прикладного модуля
-                 * platon_menu->mailru_callback($data)
-                 */
-            $callback = $this->configGet('callback');
-            $module = qubz()->factory($callback['module']);
-            $response = call_user_func(array($module, $callback['function']), $data);
-            if (!isset($response['header']['status'])) {
-                $this->logDebug($response);
-                throw new MoneyMailRuException('Error processing callback', 86904115);
-            }
-        } catch (\Throwable $th) {
-            $this->logException($th);
-
-            $response = [
-                'header' => [
-                    'status' => 'ERROR',
-                    'ts' => time(),
-                    'error' => [
-                        'code' => $th->getCode(),
-                        'message' => $th->getMessage(),
-                        'error_id' => 'talk_code_' . $talkCode
-                    ]
-                ]
-            ];
+        $json = base64_decode($request['data'], true);
+        Log::debug($json);
+        $data = json_decode($json, true);
+        if (!$data) {
+            throw new MoneyMailRuException("json_decode() failed '{$json}'", 71237043);
         }
 
-        /*
-             * Ответить на запрос
-             */
-        $this->logSendResponse($response, $talkCode, 39378338);
-        $httpResponse = new \Symfony\Component\HttpFoundation\Response(\qubz\json_encode($response));
-        $httpResponse->prepare($httpRequest);
-        return $httpResponse;
+        return $data;
     }
 
     public function responseError($code, $message, $error_id = '')
@@ -385,21 +292,20 @@ class MoneyMailRu
         ];
     }
 
-    public function transactionStart(
+    public function startTransaction(
         $userId,
         $amount,
-        $description='',
-        $issuerId='',
-        $notifyEmail='',
-        $backUrl='',
-        $successUrl='',
-        $failUrl='',
-    )
-    {
+        $description = '',
+        $issuerId = '',
+        $notifyEmail = '',
+        $backUrl = '',
+        $successUrl = '',
+        $failUrl = '',
+    ) {
         // Пример ответа при временной ошибки
         // [result_code] => 11881481
         // [result_message] => CURL failed. URL:https://api.money.mail.ru/money/2-03/transaction/start/; errno:28; error:Resolving timed out after 5001 milliseconds
-        // [curl] => 
+        // [curl] =>
         //
         // Пример ответа при окончательной ошибке
         // [result_code] => 0
@@ -409,7 +315,7 @@ class MoneyMailRu
         //     [ts] => 1623506206
         //     [error] => [
         //             [code] => ERR_ARGUMENTS
-        //             [message] => 
+        //             [message] =>
         //             [error_id] => 068F3974-CB86-11EB-9BF9-8A1DB1A7499C
         //     ]
         // ]
@@ -467,6 +373,25 @@ class MoneyMailRu
         }
 
         $response =  $this->request('transaction/start', $request);
+
+        // [
+        //   'result_code' => 0,
+        //   'result_message' => 'success',
+        //   'signature' => 'PSTX71qP...We92UFNtPQ==',
+        //   'version' => '2-03-38',
+        //   'data' => 'eyJib2R5Ijp7ImFj...TE2MTYxIn19',
+        //   'body' => [
+        //     'action_param' => [
+        //       'url' => 'https://cpg.money.mail.ru/api/init/freepay?backurl=https%3A%2F%2Fpw.money.mail.ru%2Fpw%2Ftrampoline%2F555FBE68-10BC-11EC-AFC7-7E585155D469&currency=643&extra=%7B%22light_id%22%3A252520,%22merchant_flag%22%3A0%7D&order_amount=483.70&order_id=555FBE68-10BC-11EC-AFC7-7E585155D469&order_message=%CE%EF%EB%E0%F2%E0+%EA%E2%E8%F2%E0%ED%F6%E8%E8+A101+%EF%EE+%EB%E8%F6%E5%E2%EE%EC%F3+%F1%F7%E5%F2%F3+%7B%7B+%C1%C2513014+%7D%7D+%E7%E0+%7B%7B+%F1%E5%ED%F2%FF%E1%F0%FC+2021+%7D%7D&signature=74df599c9c32f73d7d5f5cd9960cce2c7f7ecaf3&skin=STANDARD&user_ip=195.162.69.245&user_login=87d162ef-9d57-4b99-b1c3-53d0e5efcaec&vterm_id=TestShops2',
+        //     ],
+        //     'transaction_id' => '555FBE68-10BC-11EC-AFC7-7E585155D469',
+        //     'action' => 'redirect',
+        //   ],
+        //   'header' => [
+        //     'status' => 'OK',
+        //     'ts' => '1631116161',
+        //   ],
+        // ]
 
         // Записать лог об ошибке
         if ($response['result_code'] !== 0) {
