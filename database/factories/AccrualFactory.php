@@ -39,7 +39,7 @@ class AccrualFactory extends Factory
         // $table->string('org_name')->comment('"ОрганизацияНаименование"');
         // $table->string('org_account')->comment('"НаименованиеБанковскогоСчетаУК"');
         // $table->date('date_a101')->nullable()->comment('"ДатаВыгрузки"');
-        // $table->text('link_bank')->nullable()->comment('Ссылка для оплаты на страницу банка');
+        // $table->text('url_bank')->nullable()->comment('Ссылка для оплаты на страницу банка');
         // $table->timestamps();
         // $table->timestamp('sent_at')->nullable()->comment('Время отправки письма');
         // $table->timestamp('opened_at')->nullable()->comment('Время открытия письма клиентом');
@@ -67,7 +67,7 @@ class AccrualFactory extends Factory
             'org_name' => 'А101-КОМФОРТ ООО',
             'org_account' => '40702810438000083214',
             // 'date_a101' => null,
-            'link_bank' => '',
+            'url_bank' => '',
             'created_at' => $this->faker->dateTimeBetween('-1 week'),
             'updated_at' => now(),
             // 'sent_at' => null,

@@ -45,7 +45,7 @@ class Probe extends Command
         echo $a->valid_till;
 
         $module = new MoneyMailRu();
-            // print_r($module->startTransaction(user_id: '123', amount: 10, description: 'Тестовый платеж'));
+            // print_r($module->transactionStart(user_id: '123', amount: 10, description: 'Тестовый платеж'));
 
                 return 0;
     }

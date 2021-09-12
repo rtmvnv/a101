@@ -2,9 +2,13 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Http\Request;
 use App\Models\Accrual;
+use App\MoneyMailRu\Callback;
 
 class MoneyMailRuTest extends TestCase
 {
@@ -15,8 +19,9 @@ class MoneyMailRuTest extends TestCase
      *
      * @return void
      */
-    public function test_callback_is_processed()
+    public function testCallbackIsProcessed()
     {
+        $this->withoutExceptionHandling();
 
         /**
          * Создать счет и отметить отправленным
@@ -30,43 +35,54 @@ class MoneyMailRuTest extends TestCase
          */
         $response = $this->get('/' . $accrual->uuid);
         $response->assertStatus(200);
-
         $accrual->refresh();
+
+        /**
+         * Клиент получает ссылку на оплату
+         */
+        $transaction_id = (string) Str::uuid();
+        $accrual->transaction_id = $transaction_id;
+        $accrual->confirmed_at = now();
+        $accrual->save();
 
         /**
          * Подготовить данные колбека Mailru
          */
-        $action = '/api/mailru';
-        $params = [];
+        $data = base64_encode(json_encode([
+            'body' => [
+                'notify_type' => 'TRANSACTION_STATUS',
+                'issuer_id' => $accrual->uuid,
+                'transaction_id' => $transaction_id,
+                'status' => 'PAID',
+            ],
+            'header' => [
+                'status' => 'OK',
+                'ts' => (string)time(),
+                'client_id' => config('services.money_mail_ru.merchant_id'),
+            ]
+        ]));
 
-        $paramsObject = (object)[];
-        $paramsObject->body = (object)$params;
-        $paramsObject->header = (object)[];
-        $paramsObject->header->ts = time();
-        $paramsObject->header->client_id = config('services.money_mail_ru.merchant_id');
+        // Не проверять signature, так как мы не можем ее сгенерировать вместо Mail.ru
+        Config::set("services.money_mail_ru.verify_signature", false);
 
-        $paramsJson = json_encode($paramsObject);
-        $data = base64_encode($paramsJson);
-
-        $signatureString = $action . $data . config('services.money_mail_ru.key');
-        $signature = sha1($signatureString);
         $response = $this->post(
-            $action,
+            '/api/mailru',
             [
-                'version' => env('MONEYMAILRU_VERSION'),
+                'version' => config('services.money_mail_ru.version'),
                 'data' => $data,
-                'signature' => $signature
+                'signature' => 'dummysignature',
             ]
         );
 
+        // Интерфейс API доступен
         $response->assertStatus(200);
 
-        // $this->assertDatabaseHas(
-        //     'accruals',
-        //     [
-        //         'uuid' => $accrual->uuid,
-        //         'completed_at' => ''
-        //     ]
-        // );
+        // Информация о платеже есть в базе
+        $this->assertDatabaseHas('accruals', ['transaction_id' => $transaction_id ]);
+
+        $accrual = Accrual::where('transaction_id', $transaction_id)->first();
+        $this->assertNotEmpty($accrual);
+
+        $this->assertEquals('completed', $accrual->status);
     }
 }

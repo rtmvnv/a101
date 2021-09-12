@@ -30,7 +30,7 @@ class CreateAccrualsTable extends Migration
             $table->string('org_name')->comment('"ОрганизацияНаименование"');
             $table->string('org_account')->comment('"НаименованиеБанковскогоСчетаУК"');
             $table->date('date_a101')->nullable()->comment('"ДатаВыгрузки"');
-            $table->text('link_bank')->nullable()->comment('Ссылка для оплаты на страницу банка');
+            $table->text('url_bank')->nullable()->comment('Ссылка для оплаты на страницу банка');
             $table->string('transaction_id')->nullable()->comment('Номер транзакции у Mail.ru');
             $table->timestamps();
             $table->timestamp('sent_at')->nullable()->comment('Время отправки письма');

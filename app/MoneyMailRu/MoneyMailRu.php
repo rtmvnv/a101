@@ -1,8 +1,8 @@
 <?php
 
-namespace App;
+namespace App\MoneyMailRu;
 
-use App\MoneyMailRuException;
+use App\MoneyMailRu\Exception;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
@@ -13,22 +13,7 @@ use Illuminate\Http\Request;
  */
 class MoneyMailRu
 {
-    const BASE_URI = 'https://api.money.mail.ru/money'; // URL для запросов, не включая номер версии API, без слеша
-
-    private $key; // ключ доступа для формирования подписи запроса
-    private $pay_method;
-    private $merchant_id; // номер пользователя в Системе
-    private $public_key; // ключ для проверки подписи ответа
-    private $version; // Версия API Mail.ru
-
-    public function __construct()
-    {
-        $this->merchant_id = config('services.money_mail_ru.merchant_id');
-        $this->pay_method = config('services.money_mail_ru.pay_method');
-        $this->key = config('services.money_mail_ru.key');
-        $this->version = config('services.money_mail_ru.version');
-        $this->public_key = file_get_contents(storage_path('app/' . config('services.money_mail_ru.public_key')));
-    }
+    protected const BASE_URI = 'https://api.money.mail.ru/money'; // URL для запросов, не включая номер версии API, без слеша
 
     public function request($action, $params = [])
     {
@@ -38,17 +23,17 @@ class MoneyMailRu
         $paramsObject = (object)[];
         $paramsObject->body = (object)$params;
         $paramsObject->header = (object)[];
-        $paramsObject->header->ts = time();
-        $paramsObject->header->client_id = $this->merchant_id;
+        $paramsObject->header->ts = (string)time();
+        $paramsObject->header->client_id = config('services.money_mail_ru.merchant_id');
 
         $paramsJson = json_encode($paramsObject);
         $data = base64_encode($paramsJson);
 
-        $url = self::BASE_URI . '/' . $this->version . '/' . $action . '/';
+        $url = self::BASE_URI . '/' . config('services.money_mail_ru.version') . '/' . $action . '/';
         $urlArray = parse_url($url); // [ scheme => https, host => api.money.mail.ru, path => /money ]
         $urlArray['path'] = preg_replace('/\/$/', '', $urlArray['path']); // remove tailing slash
 
-        $signatureString = $urlArray['path'] . $data . $this->key;
+        $signatureString = $urlArray['path'] . $data . config('services.money_mail_ru.key');
         $signature = sha1($signatureString);
 
         /**
@@ -76,6 +61,10 @@ class MoneyMailRu
         }
         // $timeStart = $this->logSendRequest($request, $talkCode, 80405817);
 
+        Log::info('mailru.outgoing.request', [
+            'request' => $request
+        ]);
+
         $curlResponse = curl_exec($curl);
         $info = curl_getinfo($curl);
         $info["errno"] = curl_errno($curl);
@@ -90,50 +79,51 @@ class MoneyMailRu
 
             if ($curlResponse === FALSE) {
                 $response['curl'] = $curlResponse;
-                throw new MoneyMailRuException("CURL failed. URL:{$info["url"]}; errno:" . $info['errno'] . '; error:' . $info["error"], 11881481);
+                throw new MoneyMailRu\Exception("CURL failed. URL:{$info["url"]}; errno:" . $info['errno'] . '; error:' . $info["error"], 11881481);
             };
 
             if ($info["http_code"] !== 200) {
                 $response['curl'] = $curlResponse;
-                throw new MoneyMailRuException("CURL http_code:{$info["http_code"]} url:{$info["url"]}", 34308418);
+                throw new MoneyMailRu\Exception("CURL http_code:{$info["http_code"]} url:{$info["url"]}", 34308418);
             }
 
             // Разбор текста ответа
             $mailruResponse = json_decode($curlResponse, true);
             if ($mailruResponse === null or empty($mailruResponse['data']) or empty($mailruResponse['signature'])) {
-                throw new MoneyMailRuException("Некорректный ответ Mail.ru: " . print_r($curlResponse, true), 16093706);
+                throw new MoneyMailRu\Exception("Некорректный ответ Mail.ru: " . print_r($curlResponse, true), 16093706);
             }
             $response = array_merge($response, $mailruResponse);
 
             // Проверить подпись
             $signature = base64_decode($mailruResponse['signature']);
-            $verificationResult =  openssl_verify($mailruResponse['data'], $signature, $this->public_key);
+            $public_key = file_get_contents(storage_path('app/' . config('services.money_mail_ru.public_key')));
+            $verificationResult =  openssl_verify($mailruResponse['data'], $signature, $public_key);
             switch ($verificationResult) {
                 case 1:
                     // Signature is correct
                     break;
 
                 case 0:
-                    throw new MoneyMailRuException("Mailru returned an incorrect signature", 48842114);
+                    throw new MoneyMailRu\Exception("Mailru returned an incorrect signature", 48842114);
                     break;
 
                 case -1:
-                    throw new MoneyMailRuException("Error on signature verification", 74043881);
+                    throw new MoneyMailRu\Exception("Error on signature verification", 74043881);
                     break;
 
                 default:
-                    throw new MoneyMailRuException("Unknown error on signature verification", 65060528);
+                    throw new MoneyMailRu\Exception("Unknown error on signature verification", 65060528);
                     break;
             }
 
             $dataString = base64_decode($mailruResponse['data'], true);
             if (!$dataString) {
-                throw new MoneyMailRuException("base64_decode(data) failed '{$mailruResponse['data']}'", 75360949);
+                throw new MoneyMailRu\Exception("base64_decode(data) failed '{$mailruResponse['data']}'", 75360949);
             }
 
             $data = json_decode($dataString, true);
             if (!$data) {
-                throw new MoneyMailRuException("json_decode(data) failed '{$dataString}'", 97580775);
+                throw new MoneyMailRu\Exception("json_decode(data) failed '{$dataString}'", 97580775);
             }
             $response = array_merge($response, $data);
 
@@ -142,7 +132,7 @@ class MoneyMailRu
             }
 
             // if ($data['header']['status'] !== 'OK') {
-            //     throw new MoneyMailRuException('Mailru reported status ' . $data['header']['status'], 49117962);
+            //     throw new MoneyMailRu\Exception('Mailru reported status ' . $data['header']['status'], 49117962);
             // }
 
             // Расшифровать date в запросе merchant/history
@@ -155,6 +145,11 @@ class MoneyMailRu
         } catch (\Throwable $th) {
             $response['result_code'] = $th->getCode();
             $response['result_message'] = $th->getMessage();
+        } finally {
+            Log::info('mailru.outgoing.response', [
+                'request' => $request,
+                'response' => $response
+            ]);
         }
 
         // $this->logReceiveResponse(array('action' => $action, 'response' => $response, 'request' => $request, 'url' => $curlopt[CURLOPT_URL]), $talkCode, 61778102, $timeStart);
@@ -162,141 +157,11 @@ class MoneyMailRu
         return $response;
     }
 
-    /**
-     * Обрабатывает запрос Mail.ru.
-     * Возвращает массив данных запроса.
-     *
-     * Колбек содержит 3 POST поля:
-     * {
-     * 	"data" : "eyJib2R...19fQ==",
-     * 	"signature" : "s7AMY...GH5roQ==",
-     * 	"version" : "2-03"
-     * }
-     *
-     * Пример данных запроса
-     * data = {
-     * "body": {
-     *     "notify_type": "TRANSACTION_STATUS",
-     *     "issuer_id": "29cc7c18-242d-4b11-93c4-506c8deaf986",
-     *     "status": "PAID",
-     *     "added": "2021-09-07T14:09:23.000+03:00",
-     *     "txn_id": "10752588639032211961",
-     *     "user_info": {
-     *         "user_id": "6c565f5b-9e9e-48c6-9e3f-98003e5f1090"
-     *     },
-     *     "currency": "RUB",
-     *     "keep_uniq": "0",
-     *     "pay_system_name": "Бановские карты (ТЕСТ)",
-     *     "payee_fee_amount": "25.60",
-     *     "payee_amount": "486.23",
-     *     "pay_method": "cpgtest",
-     *     "merchant_id": "252520",
-     *     "description": "Оплата квитанции A101 по лицевому счету {{ БВ668872 }} за {{ сентябрь 2021 }}",
-     *     "merchant_name": "А101 Комфорт",
-     *     "merchant_param": {},
-     *     "paid": "2021-09-07T14:10:49.000+03:00",
-     *     "amount": "511.83",
-     *     "transaction_id": "0EEF9138-0FCC-11EC-89AC-9934AE8EF485"
-     * },
-     * "header": {
-     *     "status": "OK",
-     *     "ts": "1631013051",
-     *     "client_id": "252520",
-     *     "error": {
-     *         "details": {}
-     *     }
-     * }
-     * }
-     *
-     * Ответ на уведомление:
-     * data = {
-     * 	“body": {
-     * 		“transaction_id":"66908AC4-7F96-8425-B88E-2DB2D3562AF0",
-     * 		“notify_type":"TRANSACTION_STATUS"
-     * 	},
-     * 	“header": {
-     * 		“status":"OK",
-     * 		“ts":1530714471,
-     * 		“client_id":"123456"
-     * 	}
-     * }
-     *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @return array
-     * @throws MoneyMailRuException
-     */
-    public static function parseCallback($request)
-    {
-        Log::debug('POST request from Mailru');
-
-        // Проверить подпись
-        $public_key = file_get_contents(storage_path('app/' . config('services.money_mail_ru.public_key')));
-        $verificationResult = openssl_verify($request['data'], base64_decode($request['signature']), $public_key);
-
-        switch ($verificationResult) {
-            case 1:
-                // Signature is correct
-                break;
-
-            case 0:
-                throw new MoneyMailRuException('Mailru sent an incorrect signature', 58222341);
-                break;
-
-            default:
-                throw new MoneyMailRuException('Error on signature verification', 65144333);
-                break;
-        }
-
-        $json = base64_decode($request['data'], true);
-        Log::debug($json);
-        $data = json_decode($json, true);
-        if (!$data) {
-            throw new MoneyMailRuException("json_decode() failed '{$json}'", 71237043);
-        }
-
-        return $data;
-    }
-
-    public function responseError($code, $message, $error_id = '')
-    {
-        $response = [
-            'header' => [
-                'status' => 'ERROR',
-                'ts' => time(),
-                'error' => [
-                    'code' => $code,
-                    'message' => $message
-                ]
-            ]
-        ];
-
-        if (!empty($error_id)) {
-            $response['header']['error']['error_id'] = $error_id;
-        }
-
-        return $response;
-    }
-
-    public function responseOK($client_id, $transaction_id)
-    {
-        return [
-            'header' => [
-                'status' => 'OK',
-                'ts' => time(),
-                'client_id' => $client_id
-            ],
-            'body' => [
-                'transaction_id' => $transaction_id,
-                'notify_type' => 'TRANSACTION_STATUS'
-            ]
-        ];
-    }
-
-    public function startTransaction(
+    public function transactionStart(
+        $issuerId,
         $userId,
         $amount,
         $description = '',
-        $issuerId = '',
         $notifyEmail = '',
         $backUrl = '',
         $successUrl = '',
@@ -337,7 +202,7 @@ class MoneyMailRu
 
         $request = [
             'currency' => 'RUB',
-            'pay_method' => $this->pay_method,
+            'pay_method' => config('services.money_mail_ru.pay_method'),
             'amount' => $amount,
             'user_info' => ['user_id' => $userId],
         ];
