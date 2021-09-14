@@ -10,7 +10,7 @@ class A101
     /**
      * Получить и записать в БД счета за прошлый месяц.
      * Счета без email не пропускаются.
-     * 
+     *
      * @return int Количество записанных счетов
      */
     public function receiveAccruals(): int
@@ -24,7 +24,7 @@ class A101
 
     /**
      * Получить pdf файл с начислениями по одному лицевому счету.
-     * 
+     *
      * @param string $account Лицевой счет
      * @param string $period  Месяц формате "ГодМесяц", пример: "202105"
      * @return mixed
@@ -32,12 +32,11 @@ class A101
     public function getAccrualFromPeriodPDF($account, $period)
     {
         // $results = Http::get($url)->json();
-
     }
 
     /**
      * Получить данные с начислениями по одному лицевому счету.
-     * 
+     *
      * @param string $account Лицевой счет
      * @param string $period  Месяц формате "ГодМесяц", пример: "202105"
      * @return Accrual
@@ -51,7 +50,7 @@ class A101
     /**
      * Получить данные с начислениями по всем лицевым счетам
      * (по которым есть начисления в выбранном периоде).
-     * 
+     *
      * @param string $org     Организация
      * @param string $period  Месяц формате "ГодМесяц", пример: "202105"
      * @return array
@@ -85,7 +84,7 @@ class A101
 
             if (empty($fields['Email'])) continue;
 
-            $accrual = new Accrual;
+            $accrual = new Accrual();
             $accrual->uuid = (string) Str::uuid();
             $accrual->period = $period;
             $accrual->person = $fields['ФизическоеЛицо'];
@@ -101,6 +100,7 @@ class A101
             $accrual->org_name = $fields['ОрганизацияНаименование'];
             $accrual->org_account = $fields['НаименованиеБанковскогоСчетаУК'];
             $accrual->date_a101 = $fields['ДатаВыгрузки'];
+            $accrual->comment = '';
 
 
             if ($updateDb) {

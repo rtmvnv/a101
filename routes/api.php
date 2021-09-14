@@ -38,8 +38,11 @@ Route::post('/mailru', function (Request $request) {
         return $callback->respondError('Transaction not found: ' . $callback->body['transaction_id']);
     }
 
-    if ($callback->body['status'] === 'PAID') {
-        // Тспешная транзакция
+    $accrual->callback_data = base64_decode($request['data'], true);
+    $accrual->save();
+
+    if ($callback->body['status'] === 'PAID') { // Принимаемое значение: (new|rejected|paid|expired|held|hold_failed|hold_canceled)
+        // Успешная транзакция
         if ($accrual->completed_at !== null) {
             // Уже был колбек об успешном завершении транзакции
             Log::notice(
@@ -51,13 +54,13 @@ Route::post('/mailru', function (Request $request) {
         $accrual->completed_at = now();
         $accrual->save();
     } else {
-        $accrual->failed_at = now();
-        $accrual->failed_comment = 'unknown';
+        // Транзакция отменена
+        $accrual->comment = 'Оплата не прошла. ' . ($callback->body['decline_reason']) ?? 'unknown';
         $accrual->save();
     }
 
     return $callback->respondOk();
-})->middleware('log.http:mailru.incoming');
+})->middleware('log.api:mailru.incoming');
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();

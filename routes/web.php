@@ -18,7 +18,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function (Request $request) {
-    echo 'test in the root path';
+    $p = 'eyJtZXJjaGFudF9uYW1lIjoiVGVzdFNob3BzIiwiaW50eXBlIjoiT1JEUEFZIiwiYW1vdW50IjoiODczLjA2IFJVQiIsInRyYW5zYWN0aW9uX2lkIjoiMTA2NDI2NTIxNTQ5NTE4OTA5NDIiLCJjb21wYW55Ijoi0KDQndCa0J4gwqvQlNC10L3RjNCz0Lgu0JzRjdC50Lsu0KDRg8K7ICjQntCe0J4pIiwib3BlcmF0aW9uX3R5cGUiOiLQntC/0LvQsNGC0LAiLCJkYXRlIjoiMjAyMS0wOS0xNCAxMzowMiJ9';
+    $p = json_decode(base64_decode($p), JSON_OBJECT_AS_ARRAY);
+    print_r($p);
+    print_r(json_encode($p, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
 });
 
 
@@ -62,14 +65,12 @@ Route::get('/{accrual:uuid}/pay', function (Accrual $accrual) {
                 userId: $accrual->account,
                 amount: $accrual->sum,
                 description: "Оплата квитанции A101 по лицевому счету {{ $accrual->account_name }} за {{ $accrual->period_text }}",
-                backUrl: url('/') . '/' . $accrual->uuid . '/pay',
-                successUrl: url('/') . '/' . $accrual->uuid . '/completed',
-                failUrl: url('/') . '/' . $accrual->uuid . '/failed',
+                backUrl: url('/') . '/' . $accrual->uuid . '/back',
             );
 
             // Временная ошибка
             if ($response['result_code'] !== 0) {
-                $accrual->failed_comment = 'Система временно недоступна. Повторите запрос позже.';
+                $accrual->comment = 'Система временно недоступна. Повторите запрос позже.';
                 $accrual->save();
                 return view('failed', $accrual->toArray());
             }
@@ -77,7 +78,7 @@ Route::get('/{accrual:uuid}/pay', function (Accrual $accrual) {
             // Постоянная ошибка
             if ($response['header']['status'] !== 'OK') {
                 $accrual->failed_at = now();
-                $accrual->failed_comment = 'При обращении в банк произошла ошибка, для оплаты квитанции обратитесь в службу поддержки.';
+                $accrual->comment = 'При обращении в банк произошла ошибка, для оплаты квитанции обратитесь в службу поддержки.';
                 $accrual->save();
                 return view('failed', $accrual->toArray());
             }
@@ -106,3 +107,40 @@ Route::get('/{accrual:uuid}/pay', function (Accrual $accrual) {
             break;
     }
 })->whereUuid('accrual');
+
+Route::get('/{accrual:uuid}/back', function (Accrual $accrual, Request $request) {
+
+    switch ($accrual->status) {
+        case 'confirmed':
+        case 'completed':
+        case 'failed':
+            if ($request->input('status') !== 'success') {
+                throw new ModelNotFoundException('status is not "success"');
+            }
+
+            $paymentInfo = json_decode(
+                base64_decode($request->input('payment_info')),
+                JSON_OBJECT_AS_ARRAY | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+            );
+
+            Log::info('mailru.back_url.process', [
+                'uuid' => $accrual->uuid,
+                'status' => $request->input('status'),
+                'payment_info' => $paymentInfo
+            ]);
+
+            $accrual->back_data = base64_decode($request->input('payment_info'));
+            $accrual->save();
+
+            if ($request->input('issuer_id') === $accrual->uuid) {
+                return view('completed', $accrual->toArray());
+            } else {
+                return view('failed', $accrual->toArray());
+            }
+            break;
+
+        default:
+            throw new ModelNotFoundException('Expected accrual status "confirmed"');
+            break;
+    }
+})->whereUuid('accrual')->middleware('log.web:mailru.back_url');

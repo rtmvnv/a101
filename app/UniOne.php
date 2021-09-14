@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Utils;
@@ -26,7 +27,7 @@ class UniOne
 
     /**
      * Perform actual request to UniSender.
-     * 
+     *
      * Examples of respose:
      * error
      * [
@@ -47,10 +48,10 @@ class UniOne
      *     [emails_sent] => 0
      *   ]
      * ]
-     * 
+     *
      * @param  string  $uri
      * @param  string  $body
-     * 
+     *
      * @return array
      */
     protected function request(string $uri, array $body = [])
@@ -60,12 +61,23 @@ class UniOne
             'Accept' => 'application/json',
             'X-API-KEY' => $this->apiKey
         ];
-        
+
         // Workaround for a bug on Unisender. To avoid error code 150:
         // вместо $obj = []; передавать $obj = {}; использовать явные кавычки {} для передачи.
-        if (empty($body)) $body = new \stdClass();
+        if (empty($body)) {
+            $body = new \stdClass();
+        }
 
         $client = new Client(['base_uri' => self::BASE_URI]);
+
+        /**
+         * Лог запроса
+         */
+        $bodyLog = $body;
+        unset($bodyLog['message']['body']['plaintext']);
+        unset($bodyLog['message']['body']['html']);
+        Log::info('unione.request', ['request' => ['uri' => $uri, 'body' => $bodyLog]]);
+
         $response = $client->request(
             'POST',
             $uri,
@@ -76,7 +88,15 @@ class UniOne
             ]
         );
 
-        return \json_decode($response->getBody(), true, 10, JSON_THROW_ON_ERROR);
+        /**
+         * Лог ответа
+         */
+        Log::info('unione.response', [
+            'request' => ['uri' => $uri,'body' => $bodyLog],
+            'response' => [json_decode($response->getBody(), true)]
+        ]);
+
+        return json_decode($response->getBody(), true, 10, JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -85,7 +105,7 @@ class UniOne
      *
      * @param  string  $uri
      * @param  string  $body
-     * 
+     *
      * @return array
      */
     public function systemInfo()
@@ -99,7 +119,7 @@ class UniOne
      *
      * @param  string  $uri
      * @param  string  $body
-     * 
+     *
      * @return array
      */
     public function emailSend(UniOneMessage $message)

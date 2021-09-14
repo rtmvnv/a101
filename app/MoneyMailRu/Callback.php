@@ -60,8 +60,8 @@ class Callback
             $request = new Request();
         }
 
-        $this->data = $request['data'];
         $this->signature = base64_decode($request['signature']);
+        $this->data = $request['data'];
 
         $json = base64_decode($request['data'], true);
         if ($json === false) {
@@ -114,7 +114,6 @@ class Callback
             }
         }
         */
-
         $response = [
             'body' => [
                 'transaction_id' => $this->body['transaction_id'],

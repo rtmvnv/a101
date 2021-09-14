@@ -46,7 +46,7 @@ class AccrualFactory extends Factory
         // $table->timestamp('confirmed_at')->nullable()->comment('Время нажатия клиентом ссылки "Оплатить"');
         // $table->timestamp('completed_at')->nullable()->comment('Время проведения платежа');
         // $table->timestamp('failed_at')->nullable()->comment('Время когда произошла ошибка');
-        // $table->string('failed_comment')->nullable()->comment('Пояснение произошедшей ошибки');
+        // $table->string('comment')->nullable()->comment('Пояснение произошедшей ошибки');
 
         // https://github.com/fzaninotto/Faker
         return [

@@ -20,14 +20,14 @@ class MoneyMailRu
         /**
          * Подготовить данные запроса
          */
-        $paramsObject = (object)[];
-        $paramsObject->body = (object)$params;
-        $paramsObject->header = (object)[];
-        $paramsObject->header->ts = (string)time();
-        $paramsObject->header->client_id = config('services.money_mail_ru.merchant_id');
-
-        $paramsJson = json_encode($paramsObject);
-        $data = base64_encode($paramsJson);
+        $dataArray = [
+            'body' => $params,
+            'header' => [
+                'ts' => (string)time(),
+                'client_id' => config('services.money_mail_ru.merchant_id')
+            ]
+        ];
+        $data = base64_encode(json_encode($dataArray, JSON_FORCE_OBJECT));
 
         $url = self::BASE_URI . '/' . config('services.money_mail_ru.version') . '/' . $action . '/';
         $urlArray = parse_url($url); // [ scheme => https, host => api.money.mail.ru, path => /money ]
@@ -43,28 +43,33 @@ class MoneyMailRu
         $curlopt = array();
         $curlopt[CURLOPT_URL] = $url;
         $curlopt[CURLOPT_HTTPHEADER] = array('Content-Type: application/x-www-form-urlencoded');
-        $curlopt[CURLOPT_POST] = TRUE;
+        $curlopt[CURLOPT_POST] = true;
         $curlopt[CURLOPT_TIMEOUT_MS] = 5000;
-        $curlopt[CURLOPT_RETURNTRANSFER] = TRUE;
-        $curlopt[CURLOPT_FORBID_REUSE] = TRUE;
-        $curlopt[CURLOPT_FRESH_CONNECT] = TRUE;
+        $curlopt[CURLOPT_RETURNTRANSFER] = true;
+        $curlopt[CURLOPT_FORBID_REUSE] = true;
+        $curlopt[CURLOPT_FRESH_CONNECT] = true;
         $curlopt[CURLOPT_POSTFIELDS] = http_build_query(['data' => $data, 'signature' => $signature]);
         curl_setopt_array($curl, $curlopt);
+
+        /**
+         * Записать лог
+         */
+        $request = [
+            'action' => $action,
+            'body' => $dataArray['body'],
+            'header' => $dataArray['header'],
+            'data' => $data,
+            'signature' => $signature,
+            'url' => $curlopt[CURLOPT_URL]
+        ];
+        if (!empty($request['header']['ts'])) {
+            $request['header']['ts_string'] = date('c', $request['header']['ts']);
+        }
+        Log::info('mailru.outgoing.request', ['request' => $request]);
 
         /*
          * Выполнить запрос
          */
-        // $talkCode = \qubz\generateTalkCode();
-        $request = ['action' => $action, 'body' => $paramsObject->body, 'header' => $paramsObject->header, 'data' => $data, 'signature' => $signature, 'url' => $curlopt[CURLOPT_URL]];
-        if (!empty($request['header']->ts)) {
-            $request['header']->ts_string = date('c', $request['header']->ts);
-        }
-        // $timeStart = $this->logSendRequest($request, $talkCode, 80405817);
-
-        Log::info('mailru.outgoing.request', [
-            'request' => $request
-        ]);
-
         $curlResponse = curl_exec($curl);
         $info = curl_getinfo($curl);
         $info["errno"] = curl_errno($curl);
@@ -77,7 +82,7 @@ class MoneyMailRu
         try {
             $response = ['result_code' => 0, 'result_message' => 'success'];
 
-            if ($curlResponse === FALSE) {
+            if ($curlResponse === false) {
                 $response['curl'] = $curlResponse;
                 throw new MoneyMailRu\Exception("CURL failed. URL:{$info["url"]}; errno:" . $info['errno'] . '; error:' . $info["error"], 11881481);
             };
@@ -152,8 +157,6 @@ class MoneyMailRu
             ]);
         }
 
-        // $this->logReceiveResponse(array('action' => $action, 'response' => $response, 'request' => $request, 'url' => $curlopt[CURLOPT_URL]), $talkCode, 61778102, $timeStart);
-
         return $response;
     }
 
@@ -221,19 +224,19 @@ class MoneyMailRu
             $request['issuer_id'] = $issuerId;
         }
 
-        if (empty($notifyEmail)) {
+        if (!empty($notifyEmail)) {
             $request['user_info']['notify_email'] = $notifyEmail;
         }
 
-        if (empty($backUrl)) {
+        if (!empty($backUrl)) {
             $request['notify']['back_url'] = $backUrl;
         }
 
-        if (empty($successUrl)) {
+        if (!empty($successUrl)) {
             $request['notify']['success_url'] = $successUrl;
         }
 
-        if (empty($failUrl)) {
+        if (!empty($failUrl)) {
             $request['notify']['fail_url'] = $failUrl;
         }
 

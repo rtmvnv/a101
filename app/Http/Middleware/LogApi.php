@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
-class LogHttpRequests
+class LogApi
 {
     /**
      * Handle an incoming request.
@@ -19,7 +19,13 @@ class LogHttpRequests
     {
         Log::info($name . '.request', ['request' => $request->all()]);
         $response = $next($request);
-        Log::info($name . '.response', ['request' => $request->all(), 'response' => $response]);
+        Log::info(
+            $name . '.response',
+            [
+                'request' => $request->all(),
+                'response' => str_replace(array("\r","\n"), "", $response)
+            ]
+        );
         return $response;
     }
 }

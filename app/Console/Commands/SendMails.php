@@ -49,7 +49,7 @@ class SendMails extends Command
             $plain = view('mail_plain', $accrual->toArray())->render();
             $html = view('mail_html_' . $accrual->complex, $accrual->toArray())->render();
 
-            $message = new UniOneMessage;
+            $message = new UniOneMessage();
             $message->to($accrual->email, $accrual->full_name)
                 ->subject("Квитанция по лицевому счету {$accrual->account_name} за {$accrual->period_text}")
                 ->plain($plain)

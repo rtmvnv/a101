@@ -38,7 +38,9 @@ class CreateAccrualsTable extends Migration
             $table->timestamp('confirmed_at')->nullable()->comment('Время нажатия клиентом ссылки "Оплатить"');
             $table->timestamp('completed_at')->nullable()->comment('Время проведения платежа');
             $table->timestamp('failed_at')->nullable()->comment('Время когда произошла ошибка');
-            $table->string('failed_comment')->nullable()->comment('Пояснение произошедшей ошибки');
+            $table->string('comment')->nullable()->comment('Пояснение текущего статуса');
+            $table->text('callback_data')->nullable()->comment('Содержимое колбека от Mail.ru о статусе платежа');
+            $table->text('back_data')->nullable()->comment('Содержимое запроса при возвращении пользователя после оплаты');
             $table->unique(['period', 'person', 'org']);
         });
     }
