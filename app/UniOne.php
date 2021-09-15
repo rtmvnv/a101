@@ -62,6 +62,14 @@ class UniOne
             'X-API-KEY' => $this->apiKey
         ];
 
+        /**
+         * Лог запроса
+         */
+        $bodyLog = (array)$body;
+        unset($bodyLog['message']['body']['plaintext']);
+        unset($bodyLog['message']['body']['html']);
+        Log::info('unione.request', ['request' => ['uri' => $uri, 'body' => $bodyLog]]);
+
         // Workaround for a bug on Unisender. To avoid error code 150:
         // вместо $obj = []; передавать $obj = {}; использовать явные кавычки {} для передачи.
         if (empty($body)) {
@@ -69,15 +77,6 @@ class UniOne
         }
 
         $client = new Client(['base_uri' => self::BASE_URI]);
-
-        /**
-         * Лог запроса
-         */
-        $bodyLog = $body;
-        unset($bodyLog['message']['body']['plaintext']);
-        unset($bodyLog['message']['body']['html']);
-        Log::info('unione.request', ['request' => ['uri' => $uri, 'body' => $bodyLog]]);
-
         $response = $client->request(
             'POST',
             $uri,

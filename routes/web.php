@@ -18,10 +18,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function (Request $request) {
-    $p = 'eyJtZXJjaGFudF9uYW1lIjoiVGVzdFNob3BzIiwiaW50eXBlIjoiT1JEUEFZIiwiYW1vdW50IjoiODczLjA2IFJVQiIsInRyYW5zYWN0aW9uX2lkIjoiMTA2NDI2NTIxNTQ5NTE4OTA5NDIiLCJjb21wYW55Ijoi0KDQndCa0J4gwqvQlNC10L3RjNCz0Lgu0JzRjdC50Lsu0KDRg8K7ICjQntCe0J4pIiwib3BlcmF0aW9uX3R5cGUiOiLQntC/0LvQsNGC0LAiLCJkYXRlIjoiMjAyMS0wOS0xNCAxMzowMiJ9';
-    $p = json_decode(base64_decode($p), JSON_OBJECT_AS_ARRAY);
-    print_r($p);
-    print_r(json_encode($p, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+    $accruals = Accrual::where('account', '9257e70d-650e-4a59-bd49-260ef2d4e2e4')
+        ->where('period', '==', '202101')
+        ->get();
+    print_r($accruals);
+    if (count($accruals) == 0) echo 'empty';
 });
 
 

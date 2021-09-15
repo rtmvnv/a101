@@ -7,12 +7,57 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Http\Request;
+use App\A101;
 use App\Models\Accrual;
 use App\MoneyMailRu\Callback;
 
 class MoneyMailRuTest extends TestCase
 {
     use RefreshDatabase;
+
+
+    /**
+     * При получении нового счета старый неоплаченный счет
+     * на данный аккаунт получает статус failed
+     *
+     * @return void
+     */
+    public function testOldAccountIsSetFailed()
+    {
+        $this->withoutExceptionHandling();
+
+        /**
+         * Создать счет и отметить отправленным
+         */
+        $accrualNotCompleted = Accrual::factory()->create();
+        $accrualNotCompleted->sent_at = now();
+        $accrualNotCompleted->save();
+
+        $accrualCompleted = Accrual::factory()->create();
+        $accrualCompleted->account = $accrualNotCompleted->account;
+        $accrualCompleted->sent_at = now();
+        $accrualCompleted->opened_at = now();
+        $accrualCompleted->confirmed_at = now();
+        $accrualCompleted->completed_at = now();
+        $accrualCompleted->save();
+
+        $accrualNew = Accrual::factory()->create();
+        $accrualNew->account = $accrualNotCompleted->account;
+        $accrualNew->period = date('Ym', strtotime('next month'));
+        $accrualNew->save();
+
+        $a101 = new A101();
+        $a101->cancelOldAccruals($accrualNew);
+
+        $this->assertDatabaseMissing(
+            'accruals',
+            [
+                'period' => $accrualNotCompleted->period,
+                'completed_at' => null,
+                'failed_at' => null,
+            ]
+        );
+    }
 
     /**
      * Колбек от Mailru корректно обрабатывается для существующего счета.

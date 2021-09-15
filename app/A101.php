@@ -82,7 +82,9 @@ class A101
                 }
             }
 
-            if (empty($fields['Email'])) continue;
+            if (empty($fields['Email'])) {
+                continue;
+            }
 
             $accrual = new Accrual();
             $accrual->uuid = (string) Str::uuid();
@@ -102,20 +104,40 @@ class A101
             $accrual->date_a101 = $fields['ДатаВыгрузки'];
             $accrual->comment = '';
 
-
             if ($updateDb) {
                 $accrual->save();
+                $this->cancelOldAccruals($accrual);
             } else {
                 $accruals[] = $accrual;
             }
 
             $countAccruals++;
+
+            /**
+             * Отменить счет за предыдущий период
+             */
         }
 
         if ($updateDb) {
             return $countAccruals;
         } else {
             return $accruals;
+        }
+    }
+
+    /**
+     * Для каждого account может быть актуален только один счет на оплату.
+     * При поступлении нового счета старые неоплаченные отменяются
+     */
+    public function cancelOldAccruals(Accrual $newAccrual)
+    {
+        $oldAccruals = Accrual::where('account', $newAccrual->account)
+            ->where('completed_at', null)
+            ->get();
+        foreach ($oldAccruals as $oldAccrual) {
+            $oldAccrual->failed_at = now();
+            $oldAccrual->comment = 'Счет устарел';
+            $oldAccrual->save();
         }
     }
 }

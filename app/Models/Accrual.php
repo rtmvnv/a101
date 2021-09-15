@@ -118,10 +118,10 @@ class Accrual extends Model
     {
         $complex = mb_strtoupper(mb_substr($this->account_name, 0, 2));
 
-        if ($complex === 'ИК' OR $complex === 'БВ') {
+        if ($complex === 'ИК' or $complex === 'БВ') {
             return 'spanish';
         }
-        if ($complex === 'СК' OR $complex === 'ЛП' OR $complex === 'ЭГ') {
+        if ($complex === 'СК' or $complex === 'ЛП' or $complex === 'ЭГ') {
             return 'scandinavia';
         }
         if ($complex === 'ПР') {
