@@ -106,7 +106,7 @@ class A101
 
             if ($updateDb) {
                 $accrual->save();
-                $this->cancelOldAccruals($accrual);
+                $this->cancelPreviousAccruals($accrual);
             } else {
                 $accruals[] = $accrual;
             }
@@ -128,14 +128,18 @@ class A101
     /**
      * Для каждого account может быть актуален только один счет на оплату.
      * При поступлении нового счета старые неоплаченные отменяются
+     *
+     * @param Accrual $newAccrual Новый счет на оплату
+     * @return null
      */
-    public function cancelOldAccruals(Accrual $newAccrual)
+    public function cancelPreviousAccruals(Accrual $newAccrual)
     {
         $oldAccruals = Accrual::where('account', $newAccrual->account)
-            ->where('completed_at', null)
+            ->where('archived_at', null)
+            ->where('period', '<>', $newAccrual->period)
             ->get();
         foreach ($oldAccruals as $oldAccrual) {
-            $oldAccrual->failed_at = now();
+            $oldAccrual->archived_at = now();
             $oldAccrual->comment = 'Счет устарел';
             $oldAccrual->save();
         }

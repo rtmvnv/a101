@@ -38,7 +38,7 @@ class MoneyMailRuTest extends TestCase
         $accrualCompleted->sent_at = now();
         $accrualCompleted->opened_at = now();
         $accrualCompleted->confirmed_at = now();
-        $accrualCompleted->completed_at = now();
+        $accrualCompleted->payed_at = now();
         $accrualCompleted->save();
 
         $accrualNew = Accrual::factory()->create();
@@ -47,14 +47,23 @@ class MoneyMailRuTest extends TestCase
         $accrualNew->save();
 
         $a101 = new A101();
-        $a101->cancelOldAccruals($accrualNew);
+        $a101->cancelPreviousAccruals($accrualNew);
 
+        // Старые квитанции отмечены archived
         $this->assertDatabaseMissing(
             'accruals',
             [
                 'period' => $accrualNotCompleted->period,
-                'completed_at' => null,
-                'failed_at' => null,
+                'archived_at' => null,
+            ]
+        );
+
+        // Новая квитанция не отмечена archived
+        $this->assertDatabaseHas(
+            'accruals',
+            [
+                'period' => $accrualNew->period,
+                'archived_at' => null,
             ]
         );
     }
@@ -128,6 +137,6 @@ class MoneyMailRuTest extends TestCase
         $accrual = Accrual::where('transaction_id', $transaction_id)->first();
         $this->assertNotEmpty($accrual);
 
-        $this->assertEquals('completed', $accrual->status);
+        $this->assertEquals('payed', $accrual->status);
     }
 }

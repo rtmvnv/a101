@@ -22,32 +22,6 @@ class AccrualFactory extends Factory
      */
     public function definition()
     {
-
-        // $table->id();
-        // $table->uuid('uuid')->unique();
-        // $table->string('period', 6)->comment('Период начислений. "202105" - май 2021 года');
-        // $table->string('person')->comment('"ФизическоеЛицо"');
-        // $table->string('full_name')->comment('"ФИО"');
-        // $table->string('email')->comment('"Email"');
-        // $table->string('account')->comment('"ЛицевойСчет" - уникальный идентификатор лицевого счета');
-        // $table->string('account_name')->comment('"ЛС" - наименование лицевого счета');
-        // $table->decimal('sum', 10, 2)->comment('"СуммаОплаты"');
-        // $table->decimal('sum_accrual', 15, 2)->comment('"СуммаНачисления"');
-        // $table->decimal('sum_advance', 15, 2)->comment('"Аванс"');
-        // $table->decimal('sum_debt', 15, 2)->comment('"СуммаДолга"');
-        // $table->string('org')->comment('"Организация"');
-        // $table->string('org_name')->comment('"ОрганизацияНаименование"');
-        // $table->string('org_account')->comment('"НаименованиеБанковскогоСчетаУК"');
-        // $table->date('date_a101')->nullable()->comment('"ДатаВыгрузки"');
-        // $table->text('url_bank')->nullable()->comment('Ссылка для оплаты на страницу банка');
-        // $table->timestamps();
-        // $table->timestamp('sent_at')->nullable()->comment('Время отправки письма');
-        // $table->timestamp('opened_at')->nullable()->comment('Время открытия письма клиентом');
-        // $table->timestamp('confirmed_at')->nullable()->comment('Время нажатия клиентом ссылки "Оплатить"');
-        // $table->timestamp('completed_at')->nullable()->comment('Время проведения платежа');
-        // $table->timestamp('failed_at')->nullable()->comment('Время когда произошла ошибка');
-        // $table->string('comment')->nullable()->comment('Пояснение произошедшей ошибки');
-
         // https://github.com/fzaninotto/Faker
         return [
             'sum' => mt_rand(1, 9999),
@@ -73,10 +47,9 @@ class AccrualFactory extends Factory
             // 'sent_at' => null,
             // 'opened_at' => null,
             // 'confirmed_at' => null,
-            // 'completed_at' => null,
-            // 'failed_at' => null,
-            // 'failed_comment' => '',
-            // 'completed_at' => null,
+            // 'payed_at' => null,
+            // 'archived_at' => null,
+            // 'comment' => '',
         ];
     }
 }

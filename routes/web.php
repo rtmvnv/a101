@@ -30,15 +30,18 @@ Route::get('/', function (Request $request) {
 Route::get('/{accrual:uuid}', function (Accrual $accrual) {
     switch ($accrual->status) {
         case 'sent': // Клиент первый раз перешел по ссылке из письма
-        case 'opened': // Клиент перезагрузил страницу
-        case 'confirmed': // Клиент еще раз перешел из письма
             $accrual->opened_at = now();
             $accrual->save();
             return view('confirm', $accrual->toArray());
             break;
 
-        case 'completed':
-            return view('completed', $accrual->toArray());
+        case 'opened': // Клиент перезагрузил страницу
+        case 'confirmed': // Клиент еще раз перешел из письма
+            return view('confirm', $accrual->toArray());
+            break;
+
+        case 'payed':
+            return view('payed', $accrual->toArray());
             break;
 
         case 'failed':
@@ -69,16 +72,15 @@ Route::get('/{accrual:uuid}/pay', function (Accrual $accrual) {
                 backUrl: url('/') . '/' . $accrual->uuid . '/back',
             );
 
-            // Временная ошибка
+            // Ошибка при осуществлении запроса
             if ($response['result_code'] !== 0) {
                 $accrual->comment = 'Система временно недоступна. Повторите запрос позже.';
                 $accrual->save();
                 return view('failed', $accrual->toArray());
             }
 
-            // Постоянная ошибка
+            // Mailru вернул ошибку
             if ($response['header']['status'] !== 'OK') {
-                $accrual->failed_at = now();
                 $accrual->comment = 'При обращении в банк произошла ошибка, для оплаты квитанции обратитесь в службу поддержки.';
                 $accrual->save();
                 return view('failed', $accrual->toArray());
@@ -95,8 +97,8 @@ Route::get('/{accrual:uuid}/pay', function (Accrual $accrual) {
             return view('pay', $accrual->toArray());
             break;
 
-        case 'completed':
-            return view('completed', $accrual->toArray());
+        case 'payed':
+            return view('payed', $accrual->toArray());
             break;
 
         case 'failed':
@@ -113,7 +115,7 @@ Route::get('/{accrual:uuid}/back', function (Accrual $accrual, Request $request)
 
     switch ($accrual->status) {
         case 'confirmed':
-        case 'completed':
+        case 'payed':
         case 'failed':
             if ($request->input('status') !== 'success') {
                 throw new ModelNotFoundException('status is not "success"');
@@ -134,7 +136,7 @@ Route::get('/{accrual:uuid}/back', function (Accrual $accrual, Request $request)
             $accrual->save();
 
             if ($request->input('issuer_id') === $accrual->uuid) {
-                return view('completed', $accrual->toArray());
+                return view('payed', $accrual->toArray());
             } else {
                 return view('failed', $accrual->toArray());
             }

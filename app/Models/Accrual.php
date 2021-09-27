@@ -30,7 +30,7 @@ class Accrual extends Model
     public function scopeToSend($query)
     {
         // https://laravel.com/docs/8.x/eloquent#query-scopes
-        return $query->where('sent_at', null)->where('failed_at', null);
+        return $query->where('sent_at', null)->where('archived_at', null);
     }
 
     /**
@@ -83,10 +83,6 @@ class Accrual extends Model
      */
     public function getStatusAttribute()
     {
-        if (!empty($this->failed_at)) {
-            return 'failed';
-        }
-
         if (empty($this->sent_at)) {
             return 'created';
         }
@@ -99,11 +95,11 @@ class Accrual extends Model
             return 'opened';
         }
 
-        if (empty($this->completed_at)) {
+        if (empty($this->payed_at)) {
             return 'confirmed';
         }
 
-        return 'completed';
+        return 'payed';
     }
 
     /**

@@ -41,9 +41,10 @@ Route::post('/mailru', function (Request $request) {
     $accrual->callback_data = base64_decode($request['data'], true);
     $accrual->save();
 
-    if ($callback->body['status'] === 'PAID') { // Принимаемое значение: (new|rejected|paid|expired|held|hold_failed|hold_canceled)
+    // Принимаемое значение: (new|rejected|paid|expired|held|hold_failed|hold_canceled)
+    if ($callback->body['status'] === 'PAID') {
         // Успешная транзакция
-        if ($accrual->completed_at !== null) {
+        if ($accrual->payed_at !== null) {
             // Уже был колбек об успешном завершении транзакции
             Log::notice(
                 'MoneyMailRu прислал колбек OK для уже завершенной транзакции',
@@ -51,7 +52,8 @@ Route::post('/mailru', function (Request $request) {
             );
             return $callback->respondError('Transaction already completed: ' . $callback->body['transaction_id'], 'ERR_DUPLICATE');
         }
-        $accrual->completed_at = now();
+        $accrual->payed_at = now();
+        $accrual->archived_at = now();
         $accrual->save();
     } else {
         // Транзакция отменена
