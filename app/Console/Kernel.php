@@ -13,7 +13,9 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        Commands\ReceiveAccruals::class,
+        Commands\SendMails::class,
+        Commands\Reconciliation::class,
     ];
 
     /**

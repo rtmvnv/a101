@@ -47,7 +47,7 @@ class SendMails extends Command
         $countFailed = 0;
         foreach ($accruals as $accrual) {
             $plain = view('mail_plain', $accrual->toArray())->render();
-            $html = view('mail_html_' . $accrual->complex, $accrual->toArray())->render();
+            $html = view('mail_html_' . $accrual->estate, $accrual->toArray())->render();
 
             $message = new UniOneMessage();
             $message->to($accrual->email, $accrual->full_name)
@@ -67,7 +67,7 @@ class SendMails extends Command
             }
         }
 
-        echo $countSuccess . ' messages sent, ' . $countFailed . ' messages failed.';
+        $this->info($countSuccess . ' messages sent, ' . $countFailed . ' messages failed.');
 
         return 0;
     }

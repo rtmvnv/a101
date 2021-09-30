@@ -5,8 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\MoneyMailRu;
 use App\Models\Accrual;
-use Illuminate\Support\Str;
-
+use SoapClient;
 
 class Probe extends Command
 {
@@ -41,12 +40,19 @@ class Probe extends Command
      */
     public function handle()
     {
-        $a = Accrual::first();
-        echo $a->valid_till;
-
-        $module = new MoneyMailRu();
-            // print_r($module->transactionStart(user_id: '123', amount: 10, description: 'Тестовый платеж'));
-
-                return 0;
+        ;
+        $client = new SoapClient(
+            // storage_path('app/MailExchange.1cws.xml'),
+            'http://10.75.0.120/test_gkh5/ws/MailExchange.1cws',
+            [
+                'login' => "victoriya", //логин пользователя к базе 1С
+                'password' => "Ci8DA4ba", //пароль пользователя к базе 1С
+                'soap_version' => SOAP_1_2, //версия SOAP
+                'cache_wsdl' => WSDL_CACHE_NONE,
+                'trace' => true,
+                'exceptions' => true
+            ]
+        );
+        return 0;
     }
 }

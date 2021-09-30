@@ -21,7 +21,8 @@ class Accrual extends Model
         'link_pay',
         'full_name_case',
         'status',
-        'complex',
+        'archived',
+        'estate',
     ];
 
     /**
@@ -103,6 +104,18 @@ class Accrual extends Model
     }
 
     /**
+     * Статус счета
+     */
+    public function getArchivedAttribute()
+    {
+        if (empty($this->archived_at)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Жилой комплекс
      * Определяется по первым двум буквам лицевого счета.
      * spanish = Испанские кварталы: ИКХХХХХХХХ, БВХХХХХХХХ
@@ -110,23 +123,23 @@ class Accrual extends Model
      * nights = Белые ночи: ПРХХХХХХХХ
      * spanish2 = Испанские Кварталы 2: ПМХХХХХХХХ
      */
-    public function getComplexAttribute()
+    public function getEstateAttribute()
     {
-        $complex = mb_strtoupper(mb_substr($this->account_name, 0, 2));
+        $estate = mb_strtoupper(mb_substr($this->account_name, 0, 2));
 
-        if ($complex === 'ИК' or $complex === 'БВ') {
+        if ($estate === 'ИК' or $estate === 'БВ') {
             return 'spanish';
         }
-        if ($complex === 'СК' or $complex === 'ЛП' or $complex === 'ЭГ') {
+        if ($estate === 'СК' or $estate === 'ЛП' or $estate === 'ЭГ') {
             return 'scandinavia';
         }
-        if ($complex === 'ПР') {
+        if ($estate === 'ПР') {
             return 'nights';
         }
-        if ($complex === 'ПМ') {
+        if ($estate === 'ПМ') {
             return 'spanish2';
         }
 
-        throw new Exception("Complex '$complex' is unknown");
+        throw new Exception("Estate '$estate' is unknown");
     }
 }
