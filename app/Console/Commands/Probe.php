@@ -3,9 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\MoneyMailRu;
-use App\Models\Accrual;
-use SoapClient;
+use Illuminate\Support\Facades\Log;
+use App\Soap1C;
 
 class Probe extends Command
 {
@@ -40,19 +39,16 @@ class Probe extends Command
      */
     public function handle()
     {
-        ;
-        $client = new SoapClient(
-            // storage_path('app/MailExchange.1cws.xml'),
-            'http://10.75.0.120/test_gkh5/ws/MailExchange.1cws',
-            [
-                'login' => "victoriya", //логин пользователя к базе 1С
-                'password' => "Ci8DA4ba", //пароль пользователя к базе 1С
-                'soap_version' => SOAP_1_2, //версия SOAP
-                'cache_wsdl' => WSDL_CACHE_NONE,
-                'trace' => true,
-                'exceptions' => true
-            ]
+        $soap1C = new Soap1C();
+
+        // $rows = $soap1C->getAllAccrualsFromPeriod('august 2021');
+        // print_r($rows);
+
+        $result = $soap1C->GetAccrualFromPeriodPDF(
+            'august 2021',
+            '28cd2c3c-64eb-11e9-8114-0025902b4045',
+            '28cd2c3d-64eb-11e9-8114-0025902b4045',
         );
-        return 0;
+        print_r($result);
     }
 }
