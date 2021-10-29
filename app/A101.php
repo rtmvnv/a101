@@ -17,7 +17,7 @@ class A101
     {
         $period = (new \DateTime('last day of last month'))->format('Ym');
 
-        $json = file_get_contents(storage_path('app/A101/GetAllAccrualsFromPeriodExample3.json'));
+        $json = file_get_contents(storage_path('app/A101/GetAllAccrualsFromPeriod.json'));
 
         return $this->parseJson($json, $period, updateDb: true);
     }

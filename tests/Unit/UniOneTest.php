@@ -46,6 +46,9 @@ class UniOneTest extends TestCase
         $message->subject('subject');
         $message->plain('body');
         $this->assertIsArray($message->build());
+
+        $result = $message->send();
+        $this->assertTrue($result['status'] === 'success');
     }
 
 }

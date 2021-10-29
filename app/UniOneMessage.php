@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\UniOne;
 use App\UniOneException;
 
 class UniOneMessage
@@ -102,5 +103,16 @@ class UniOneMessage
         }
 
         return $body;
+    }
+
+    /**
+     * Метод для отправки писем вашим подписчикам.
+     * https://docs.unione.ru/web-api-ref?php#email-send
+     *
+     * @return array
+     */
+    function send() {
+        $unione = app(UniOne::class);
+        return $unione->request('email/send.json', $this->build());
     }
 }

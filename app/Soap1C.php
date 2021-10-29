@@ -8,12 +8,6 @@ use Illuminate\Support\Facades\Log;
 
 class Soap1C
 {
-    protected $tempDirectory;
-
-    function __construct() {
-        $this->tempDirectory = storage_path('soap1c');
-    }
-
     /**
      * Получить данные с начислениями по всем лицевым счетам
      * (по которым есть начисления в выбранном периоде)
@@ -82,12 +76,13 @@ class Soap1C
         }
 
         // Сделать директорию для временных файлов
-        if (!file_exists($this->tempDirectory)) {
-            mkdir($this->tempDirectory, 0777, true);
+        $tempDirectory = storage_path('soap1c');
+        if (!file_exists($tempDirectory)) {
+            mkdir($tempDirectory, 0777, true);
         }
 
         // Записать файл
-        $fileName = $this->tempDirectory . '/' . $carbon->format('Y-m') . "_$account.pdf";
+        $fileName = $tempDirectory . '/' . $carbon->format('Y-m') . "_$account.pdf";
         file_put_contents($fileName, $result->return);
 
         return $fileName;

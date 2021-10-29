@@ -12,19 +12,6 @@ class UniOne
 {
     const BASE_URI = 'https://eu1.unione.io/ru/transactional/api/v1/';
 
-    private string $apiKey;
-
-    /**
-     * Constructor.
-     *
-     * @param string $apiKey
-     */
-    public function __construct(string $apiKey)
-    {
-        $this->apiKey = $apiKey;
-    }
-
-
     /**
      * Perform actual request to UniSender.
      *
@@ -54,12 +41,12 @@ class UniOne
      *
      * @return array
      */
-    protected function request(string $uri, array $body = [])
+    public function request(string $uri, array $body = [])
     {
         $headers = [
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
-            'X-API-KEY' => $this->apiKey
+            'X-API-KEY' => config('services.unione.api_key')
         ];
 
         /**
@@ -110,19 +97,5 @@ class UniOne
     public function systemInfo()
     {
         return $this->request('system/info.json');
-    }
-
-    /**
-     * Метод для отправки писем вашим подписчикам.
-     * https://docs.unione.ru/web-api-ref?php#email-send
-     *
-     * @param  string  $uri
-     * @param  string  $body
-     *
-     * @return array
-     */
-    public function emailSend(UniOneMessage $message)
-    {
-        return $this->request('email/send.json', $message->build());
     }
 }

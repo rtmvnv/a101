@@ -24,16 +24,6 @@ class SendMails extends Command
     protected $description = 'Send all pending e-mail messages';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return int
@@ -55,7 +45,7 @@ class SendMails extends Command
                 ->plain($plain)
                 ->html($html);
 
-            $result = $unione->emailSend($message);
+            $result = $message->send();
 
             if ($result['status'] === 'success') {
                 $accrual->sent_at = now();

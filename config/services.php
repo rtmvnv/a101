@@ -28,5 +28,15 @@ return [
         'public_key' => env('MONEYMAILRU_PUBLIC_KEY'), // Открытый ключ Mail.ru для проверки подписи ответа
         'verify_signature' => true, // При unit-тестировании устанавливается в false, у нас нет закрытого ключа Mail.ru
     ],
-    
+
+    'payments_imap' => [
+        'url' => env('PAYMENTS_IMAP_URL'), // "{imap.mail.ru:993/imap/ssl}INBOX"
+        'username' => env('PAYMENTS_IMAP_USERNAME'),
+        'password' => env('PAYMENTS_IMAP_PASSWORD'),        
+    ],
+
+    'reconciliation' => [
+        'from' => env('RECONCILIATION_FROM'),
+        'subject' => env('RECONCILIATION_SUBJECT'),
+    ],
 ];
