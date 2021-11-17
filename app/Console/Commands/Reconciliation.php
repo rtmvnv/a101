@@ -9,7 +9,6 @@ use App\Models\Accrual;
 use Carbon\Carbon;
 use PhpImap\Mailbox;
 
-
 class Reconciliation extends Command
 {
     /**
@@ -25,16 +24,6 @@ class Reconciliation extends Command
      * @var string
      */
     protected $description = 'Perform reconciliation from an e-mail';
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     /**
      * Execute the console command.
@@ -141,16 +130,43 @@ class Reconciliation extends Command
             $line = mb_convert_encoding(fgets($handle), 'utf-8', $attachement->charset);
             $header = array_map('trim', explode(';', $line));
 
+            $result = []; // Итоговый список расхождений
+
+            //
             // Перебрать все строки реестра
+            //
+            $transactions = []; // Копия реестра
             while (($line = fgets($handle)) !== false) {
                 $line = mb_convert_encoding($line, 'utf-8', $attachement->charset);
                 $transaction = array_map('trim', explode(';', $line));
-                print_r($transaction);
+                $transactions[$transaction[4]] = $transaction;
 
-                $accrual = Accrual::find($transaction[4]);
-                var_dump($accrual);
+                $accrual = Accrual::where('uuid', $transaction[4])->first();
+                if (empty($accrual)) {
+                    $result[] = [
+                        'uuid' => $transaction[4],
+                        'message' => 'Транзакция есть в реестре Mail.ru, но нет в базе данных'
+                    ];
+                    continue;
+                }
+            }
+
+            //
+            // Перебрать все записи в базе данных
+            //
+            $accruals = Accrual::whereDate('payed_at', $date->format('Y-m-d'))->get();
+            foreach ($accruals as $accrual) {
+                if (!isset($transactions[$accrual->uuid])) {
+                    $result[] = [
+                        'uuid' => $accrual->uuid,
+                        'message' => 'Транзакция есть в базе данных, но нет в реестре Mail.ru'
+                    ];
+                    continue;
+                }
             }
         }
+
+        print_r($result);
 
         return 0;
     }

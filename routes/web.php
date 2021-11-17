@@ -5,6 +5,7 @@ use App\Models\Accrual;
 use App\MoneyMailRu\MoneyMailRu;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,11 +19,14 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function (Request $request) {
-    $accruals = Accrual::where('account', '9257e70d-650e-4a59-bd49-260ef2d4e2e4')
-        ->where('period', '==', '202101')
-        ->get();
-    print_r($accruals);
-    if (count($accruals) == 0) echo 'empty';
+
+    echo (string) Str::uuid();
+
+    $string = '123400202112ИК12345678user@example.comПупкин В.А.';
+
+    $string1 = 'MTIzNDAwMjAyMTEy0JjQmjEyMzQ1Njc4dXNlckBleGFtcGxlLmNvbdCf0YPQv9C60LjQvSDQki7QkC4=b3ff7d3e-fb87-47f2-84a0-5b75a7b115d9';
+
+    echo sha1($string1);
 });
 
 
