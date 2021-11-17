@@ -18,6 +18,14 @@ use App\MoneyMailRu\Callback;
 |
 */
 
+Route::any('/a101/accruals', function (Request $request) {
+    return 'test';
+});
+
+Route::any('/a101/payments', function (Request $request) {
+    return 'test';
+});
+
 Route::post('/mailru', function (Request $request) {
     // Прочитать колбек
     try {
