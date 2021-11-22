@@ -3,9 +3,11 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use App\Models\Accrual;
 use App\MoneyMailRu\MoneyMailRu;
 use App\MoneyMailRu\Callback;
+use App\A101;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,13 +20,9 @@ use App\MoneyMailRu\Callback;
 |
 */
 
-Route::any('/a101/accruals', function (Request $request) {
-    return 'test';
-});
+Route::any('/a101/accruals', [A101::class, 'apiAccrualsPost']);
 
-Route::any('/a101/payments', function (Request $request) {
-    return 'test';
-});
+Route::get('/a101/payments', [A101::class, 'apiPaymentsGet']);
 
 Route::post('/mailru', function (Request $request) {
     // Прочитать колбек

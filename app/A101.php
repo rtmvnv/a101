@@ -4,9 +4,141 @@ namespace App;
 
 use App\Models\Accrual;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
 
 class A101
 {
+    /**
+     * Обработчик POST запросов к /api/a101/accruals
+     *
+     * @return Response 
+     */
+    function apiAccrualsPost(Request $request) {
+        // Про формат обмена данными JSON API
+        // https://jsonapi.org/examples/#error-objects
+        // https://datatracker.ietf.org/doc/html/rfc7807
+        // https://lakitna.medium.com/understanding-problem-json-adf68e5cf1f8
+    
+        /**
+         * Валидировать данные запроса
+         * https://laravel.su/docs/8.x/validation
+         */
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'sum' => 'required|numeric',
+                'period' => 'required|date_format:Ym',
+                'account' => 'required|alpha_num',
+                'email' => 'required|email:rfc',
+                'name' => 'required|string',
+                'signature' => 'required|alpha_dash',
+            ]
+        );
+    
+        if ($validator->stopOnFirstFailure()->fails()) {
+            $errors = $validator->errors();
+            $data = [
+                'status' => 400,
+                'title' => $errors->first(),
+            ];
+            return response($data, $data['status'])
+                ->header('Content-Type', 'application/problem+json');
+        }
+    
+        /**
+         * Проверить подпись
+         */
+        $signature = $request->sum
+            . $request->period
+            . $request->account
+            . $request->email
+            . $request->name;
+    
+        $signature = base64_encode($signature);
+        $signature = $signature . env('A101_SIGNATURE');
+        $signature = hash('sha1', $signature);
+    
+        if (strcmp($request->signature, $signature) !== 0) {
+            $data = [
+                'status' => 401,
+                'title' => 'Wrong signature',
+            ];
+            return response($data, $data['status'])
+                ->header('Content-Type', 'application/problem+json');
+        }
+    
+        $data = [];
+        $data['status'] = 500;
+        $data['title'] = 'Work in progress';
+    
+        return response($data, $data['status'])
+            ->header('Content-Type', ((int)$data['status'] == 200) ? 'application/json' : 'application/problem+json');
+    }
+
+    /**
+     * Обработчик GET запросов к /api/a101/payments
+     *
+     * @return Response 
+     */
+    function apiPaymentsGet(Request $request) {
+        /**
+         * Валидировать данные запроса
+         * https://laravel.su/docs/8.x/validation
+         */
+
+        print_r($request->all());
+
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'from' => 'required',
+                'to' => 'date_format:c',
+                'signature' => 'required|alpha_dash',
+            ]
+        );
+    
+        if ($validator->stopOnFirstFailure()->fails()) {
+            $errors = $validator->errors();
+            $data = [
+                'status' => 400,
+                'title' => $errors->first(),
+            ];
+            print_r($data);
+            return response($data, $data['status'])
+                ->header('Content-Type', 'application/problem+json');
+        }
+    
+        /**
+         * Проверить подпись
+         */
+        $signature = $request->sum
+            . $request->period
+            . $request->account
+            . $request->email
+            . $request->name;
+    
+        $signature = base64_encode($signature);
+        $signature = $signature . env('A101_SIGNATURE');
+        $signature = hash('sha1', $signature);
+    
+        if (strcmp($request->signature, $signature) !== 0) {
+            $data = [
+                'status' => 401,
+                'title' => 'Wrong signature',
+            ];
+            return response($data, $data['status'])
+                ->header('Content-Type', 'application/problem+json');
+        }
+    
+        $data = [];
+        $data['status'] = 500;
+        $data['title'] = 'Work in progress';
+    
+        return response($data, $data['status'])
+            ->header('Content-Type', ((int)$data['status'] == 200) ? 'application/json' : 'application/problem+json');
+    }
+
     /**
      * Получить и записать в БД счета за прошлый месяц.
      * Счета без email не пропускаются.
