@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 class Accrual extends Model
@@ -24,6 +25,15 @@ class Accrual extends Model
         'archived',
         'estate',
     ];
+
+    /**
+     * Constructor
+     */
+    public function __construct(array $attributes = array())
+    {
+        parent::__construct($attributes);
+        $this->uuid = (string) Str::uuid();
+    }
 
     /**
      * Счета, которые не были отправлены и не имеют ошибки.

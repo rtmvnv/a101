@@ -38,7 +38,7 @@ class A101ApiTest extends TestCase
         $signature = hash('sha1', $signature);
         $requestData['signature'] = $signature;
         $response = $this->post('/api/a101/accruals', $requestData);
-        $response->assertStatus(500);
+        $response->assertStatus(200);
     }
 
     /**
@@ -49,23 +49,31 @@ class A101ApiTest extends TestCase
     public function test_payments()
     {
         $requestData =  [];
-        $response = $this->get('/api/a101/payments', $requestData);
+        $response = $this->call('GET', '/api/a101/payments', $requestData);
         $response->assertStatus(400);
+        $response->assertJson(['title' => 'The from field is required.']);
 
-        $requestData['from'] = '100';
-        $response = $this->get('/api/a101/payments', $requestData);
+        $requestData['from'] = 'test';
+        $response = $this->call('GET', '/api/a101/payments', $requestData);
         $response->assertStatus(400);
+        $response->assertJson(['title' => 'The from is not a valid date.']);
+
+        $requestData['from'] = '1 june 2021';
+        $response = $this->call('GET', '/api/a101/payments', $requestData);
+        $response->assertStatus(400);
+        $response->assertJson(['title' => 'The signature field is required.']);
 
         $requestData['signature'] = 'test';
-        $response = $this->get('/api/a101/payments', $requestData);
+        $response = $this->call('GET', '/api/a101/payments', $requestData);
         $response->assertStatus(401);
+        $response->assertJson(['title' => 'Wrong signature']);
 
         $signature = $requestData['from'];
         $signature = base64_encode($signature);
         $signature = $signature . env('A101_SIGNATURE');
         $signature = hash('sha1', $signature);
         $requestData['signature'] = $signature;
-        $response = $this->get('/api/a101/payments', $requestData);
+        $response = $this->call('GET', '/api/a101/payments', $requestData);
         $response->assertStatus(200);
 
         print_r($response);

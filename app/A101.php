@@ -14,12 +14,13 @@ class A101
      *
      * @return Response 
      */
-    function apiAccrualsPost(Request $request) {
+    function apiAccrualsPost(Request $request)
+    {
         // Про формат обмена данными JSON API
         // https://jsonapi.org/examples/#error-objects
         // https://datatracker.ietf.org/doc/html/rfc7807
         // https://lakitna.medium.com/understanding-problem-json-adf68e5cf1f8
-    
+
         /**
          * Валидировать данные запроса
          * https://laravel.su/docs/8.x/validation
@@ -35,7 +36,7 @@ class A101
                 'signature' => 'required|alpha_dash',
             ]
         );
-    
+
         if ($validator->stopOnFirstFailure()->fails()) {
             $errors = $validator->errors();
             $data = [
@@ -45,7 +46,7 @@ class A101
             return response($data, $data['status'])
                 ->header('Content-Type', 'application/problem+json');
         }
-    
+
         /**
          * Проверить подпись
          */
@@ -54,11 +55,11 @@ class A101
             . $request->account
             . $request->email
             . $request->name;
-    
+
         $signature = base64_encode($signature);
         $signature = $signature . env('A101_SIGNATURE');
         $signature = hash('sha1', $signature);
-    
+
         if (strcmp($request->signature, $signature) !== 0) {
             $data = [
                 'status' => 401,
@@ -67,11 +68,18 @@ class A101
             return response($data, $data['status'])
                 ->header('Content-Type', 'application/problem+json');
         }
-    
-        $data = [];
-        $data['status'] = 500;
-        $data['title'] = 'Work in progress';
-    
+
+        /**
+         * Создать запись о начислении
+         */
+
+
+
+        $data = [
+            'status' => 200,
+            'title' => 'OK',
+        ];
+
         return response($data, $data['status'])
             ->header('Content-Type', ((int)$data['status'] == 200) ? 'application/json' : 'application/problem+json');
     }
@@ -81,7 +89,8 @@ class A101
      *
      * @return Response 
      */
-    function apiPaymentsGet(Request $request) {
+    function apiPaymentsGet(Request $request)
+    {
         /**
          * Валидировать данные запроса
          * https://laravel.su/docs/8.x/validation
@@ -92,12 +101,12 @@ class A101
         $validator = Validator::make(
             $request->all(),
             [
-                'from' => 'required',
+                'from' => 'required|date:c',
                 'to' => 'date_format:c',
                 'signature' => 'required|alpha_dash',
             ]
         );
-    
+
         if ($validator->stopOnFirstFailure()->fails()) {
             $errors = $validator->errors();
             $data = [
@@ -108,36 +117,73 @@ class A101
             return response($data, $data['status'])
                 ->header('Content-Type', 'application/problem+json');
         }
-    
+
         /**
          * Проверить подпись
          */
-        $signature = $request->sum
-            . $request->period
-            . $request->account
-            . $request->email
-            . $request->name;
-    
+        $signature = $request->from;
+        if (!empty($request->to)) {
+            $signature .= $request->to;
+        }
+
         $signature = base64_encode($signature);
         $signature = $signature . env('A101_SIGNATURE');
         $signature = hash('sha1', $signature);
-    
+
         if (strcmp($request->signature, $signature) !== 0) {
             $data = [
                 'status' => 401,
                 'title' => 'Wrong signature',
             ];
+            print_r($data);
             return response($data, $data['status'])
                 ->header('Content-Type', 'application/problem+json');
         }
-    
-        $data = [];
-        $data['status'] = 500;
-        $data['title'] = 'Work in progress';
-    
+
+        $data = [
+            'status' => 200,
+            'title' => 'OK',
+        ];
+
+        print_r($data);
         return response($data, $data['status'])
             ->header('Content-Type', ((int)$data['status'] == 200) ? 'application/json' : 'application/problem+json');
     }
+
+    public function saveAccrual()
+    {
+        $accrual = new Accrual();
+        $accrual->uuid = (string) Str::uuid();
+        $accrual->period = $period;
+        $accrual->person = $fields['ФизическоеЛицо'];
+        $accrual->full_name = $fields['ФИО'];
+        $accrual->email = $fields['Email'];
+        $accrual->account = $fields['ЛицевойСчет'];
+        $accrual->account_name = $fields['ЛС'];
+        $accrual->sum = $fields['СуммаОплаты'];
+        $accrual->sum_accrual = $fields['СуммаНачисления'];
+        $accrual->sum_advance = $fields['Аванс'];
+        $accrual->sum_debt = $fields['СуммаДолга'];
+        $accrual->org = $fields['Организация'];
+        $accrual->org_name = $fields['ОрганизацияНаименование'];
+        $accrual->org_account = $fields['НаименованиеБанковскогоСчетаУК'];
+        $accrual->date_a101 = $fields['ДатаВыгрузки'];
+        $accrual->comment = '';
+
+        if ($updateDb) {
+            $accrual->save();
+            $this->cancelPreviousAccruals($accrual);
+        } else {
+            $accruals[] = $accrual;
+        }
+
+        $countAccruals++;
+
+        /**
+         * Отменить счет за предыдущий период
+         */
+    }
+
 
     /**
      * Получить и записать в БД счета за прошлый месяц.
