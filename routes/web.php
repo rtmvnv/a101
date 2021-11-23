@@ -20,13 +20,30 @@ use Illuminate\Support\Str;
 
 Route::get('/', function (Request $request) {
 
-    echo (string) Str::uuid();
+    $requestData =  [
+        'sum' => '794905',
+        'period' => '202110',
+        'account' => 'ПР241Н011',
+        'email' => 'kalibr.m5@mail.ru',
+        'name' => 'Калибр ООО',
+    ];
 
-    $string = '123400202112ИК12345678user@example.comПупкин В.А.';
+    $signature = $requestData['sum']
+        . $requestData['period']
+        . $requestData['account']
+        . $requestData['email']
+        . $requestData['name'];
 
-    $string1 = 'MTIzNDAwMjAyMTEy0JjQmjEyMzQ1Njc4dXNlckBleGFtcGxlLmNvbdCf0YPQv9C60LjQvSDQki7QkC4=b3ff7d3e-fb87-47f2-84a0-5b75a7b115d9';
+    echo '1. ' . $signature . PHP_EOL;
 
-    echo sha1($string1);
+    $signature = base64_encode($signature);
+    echo '2. ' . $signature . PHP_EOL;
+
+    $signature = $signature . env('A101_SIGNATURE');
+    // echo '3. ' . $signature . PHP_EOL;
+
+    $signature = hash('sha1', $signature);
+    echo '4. ' . $signature . PHP_EOL;
 });
 
 
