@@ -3,9 +3,11 @@
 namespace App;
 
 use App\Models\Accrual;
+use App\Rules\ValidDate;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class A101
 {
@@ -78,6 +80,9 @@ class A101
         $data = [
             'status' => 200,
             'title' => 'OK',
+            'data' => [
+                'accrual_id' => '64f0f970-2bcf-48fa-9104-21d00eb1a1ec'
+            ]
         ];
 
         return response($data, $data['status'])
@@ -95,14 +100,11 @@ class A101
          * Валидировать данные запроса
          * https://laravel.su/docs/8.x/validation
          */
-
-        print_r($request->all());
-
         $validator = Validator::make(
             $request->all(),
             [
-                'from' => 'required|date:c',
-                'to' => 'date_format:c',
+                'from' => ['required', new ValidDate],
+                'to' => [new ValidDate],
                 'signature' => 'required|alpha_dash',
             ]
         );
@@ -113,7 +115,6 @@ class A101
                 'status' => 400,
                 'title' => $errors->first(),
             ];
-            print_r($data);
             return response($data, $data['status'])
                 ->header('Content-Type', 'application/problem+json');
         }
@@ -130,54 +131,72 @@ class A101
         $signature = $signature . env('A101_SIGNATURE');
         $signature = hash('sha1', $signature);
 
-        if (strcmp($request->signature, $signature) !== 0) {
-            $data = [
-                'status' => 401,
-                'title' => 'Wrong signature',
-            ];
-            print_r($data);
-            return response($data, $data['status'])
-                ->header('Content-Type', 'application/problem+json');
+        // if (strcmp($request->signature, $signature) !== 0) {
+        //     $data = [
+        //         'status' => 401,
+        //         'title' => 'Wrong signature',
+        //     ];
+        //     return response($data, $data['status'])
+        //         ->header('Content-Type', 'application/problem+json');
+        // }
+
+        /**
+         * Получить данные
+         */
+        $from = new Carbon($request->get('from'));
+        if ($request->has('to')) {
+            $to = new Carbon($request->get('to'));
+        } else {
+            $to = new Carbon();
         }
 
         $data = [
             'status' => 200,
             'title' => 'OK',
+            'data' => [
+                'from' => $from->format('c'),
+                'to' =>  $to->format('c'),
+                'payments' => [
+                    'date' => $from->format('c'),
+                    'accrual_id' => '6c565f5b-9e9e-48c6-9e3f-98003e5f1090',
+                    'account' => 'ИК123456',
+                    'sum' => '51100',
+                ]
+            ]
         ];
 
-        print_r($data);
         return response($data, $data['status'])
             ->header('Content-Type', ((int)$data['status'] == 200) ? 'application/json' : 'application/problem+json');
     }
 
     public function saveAccrual()
     {
-        $accrual = new Accrual();
-        $accrual->uuid = (string) Str::uuid();
-        $accrual->period = $period;
-        $accrual->person = $fields['ФизическоеЛицо'];
-        $accrual->full_name = $fields['ФИО'];
-        $accrual->email = $fields['Email'];
-        $accrual->account = $fields['ЛицевойСчет'];
-        $accrual->account_name = $fields['ЛС'];
-        $accrual->sum = $fields['СуммаОплаты'];
-        $accrual->sum_accrual = $fields['СуммаНачисления'];
-        $accrual->sum_advance = $fields['Аванс'];
-        $accrual->sum_debt = $fields['СуммаДолга'];
-        $accrual->org = $fields['Организация'];
-        $accrual->org_name = $fields['ОрганизацияНаименование'];
-        $accrual->org_account = $fields['НаименованиеБанковскогоСчетаУК'];
-        $accrual->date_a101 = $fields['ДатаВыгрузки'];
-        $accrual->comment = '';
+        // $accrual = new Accrual();
+        // $accrual->uuid = (string) Str::uuid();
+        // $accrual->period = $period;
+        // $accrual->person = $fields['ФизическоеЛицо'];
+        // $accrual->full_name = $fields['ФИО'];
+        // $accrual->email = $fields['Email'];
+        // $accrual->account = $fields['ЛицевойСчет'];
+        // $accrual->account_name = $fields['ЛС'];
+        // $accrual->sum = $fields['СуммаОплаты'];
+        // $accrual->sum_accrual = $fields['СуммаНачисления'];
+        // $accrual->sum_advance = $fields['Аванс'];
+        // $accrual->sum_debt = $fields['СуммаДолга'];
+        // $accrual->org = $fields['Организация'];
+        // $accrual->org_name = $fields['ОрганизацияНаименование'];
+        // $accrual->org_account = $fields['НаименованиеБанковскогоСчетаУК'];
+        // $accrual->date_a101 = $fields['ДатаВыгрузки'];
+        // $accrual->comment = '';
 
-        if ($updateDb) {
-            $accrual->save();
-            $this->cancelPreviousAccruals($accrual);
-        } else {
-            $accruals[] = $accrual;
-        }
+        // if ($updateDb) {
+        //     $accrual->save();
+        //     $this->cancelPreviousAccruals($accrual);
+        // } else {
+        //     $accruals[] = $accrual;
+        // }
 
-        $countAccruals++;
+        // $countAccruals++;
 
         /**
          * Отменить счет за предыдущий период

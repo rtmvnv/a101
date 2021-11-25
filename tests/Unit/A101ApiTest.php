@@ -75,8 +75,5 @@ class A101ApiTest extends TestCase
         $requestData['signature'] = $signature;
         $response = $this->call('GET', '/api/a101/payments', $requestData);
         $response->assertStatus(200);
-
-        print_r($response);
-
     }
 }
