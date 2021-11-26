@@ -401,7 +401,7 @@
                                                     style="line-height: 1.2; font-size: 12px; color: #555555; font-family: Arial, Helvetica Neue, Helvetica, sans-serif; mso-line-height-alt: 14px;">
                                                     <p
                                                         style="margin: 0; font-size: 15px; line-height: 1.2; word-break: break-word; text-align: left; mso-line-height-alt: 18px; margin-top: 0; margin-bottom: 0;">
-                                                        <span style="font-size: 15px;">{{ $account_name }}</span>
+                                                        <span style="font-size: 15px;">{{ $account }}</span>
                                                     </p>
                                                 </div>
                                             </div>

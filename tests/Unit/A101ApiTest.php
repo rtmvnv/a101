@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
+use Illuminate\Support\Facades\Log;
 
 class A101ApiTest extends TestCase
 {
@@ -19,7 +20,7 @@ class A101ApiTest extends TestCase
         $requestData =  [
             'sum' => '100',
             'period' => '202111',
-            'account' => 'TEST',
+            'account' => 'ИК123456',
             'email' => 'test@example.com',
             'name' => 'Имя User-Name',
         ];
@@ -56,9 +57,9 @@ class A101ApiTest extends TestCase
         $requestData['from'] = 'test';
         $response = $this->call('GET', '/api/a101/payments', $requestData);
         $response->assertStatus(400);
-        $response->assertJson(['title' => 'The from is not a valid date.']);
+        $response->assertJson(['title' => 'The from field is not a valid date.']);
 
-        $requestData['from'] = '1 june 2021';
+        $requestData['from'] = '-1 week';
         $response = $this->call('GET', '/api/a101/payments', $requestData);
         $response->assertStatus(400);
         $response->assertJson(['title' => 'The signature field is required.']);

@@ -154,7 +154,7 @@ class Reconciliation extends Command
             //
             // Перебрать все записи в базе данных
             //
-            $accruals = Accrual::whereDate('payed_at', $date->format('Y-m-d'))->get();
+            $accruals = Accrual::whereDate('paid_at', $date->format('Y-m-d'))->get();
             foreach ($accruals as $accrual) {
                 if (!isset($transactions[$accrual->uuid])) {
                     $result[] = [

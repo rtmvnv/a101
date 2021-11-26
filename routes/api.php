@@ -20,7 +20,7 @@ use App\A101;
 |
 */
 
-Route::any('/a101/accruals', [A101::class, 'apiAccrualsPost']);
+Route::post('/a101/accruals', [A101::class, 'apiAccrualsPost']);
 
 Route::get('/a101/payments', [A101::class, 'apiPaymentsGet']);
 
@@ -50,7 +50,7 @@ Route::post('/mailru', function (Request $request) {
     // Принимаемое значение: (new|rejected|paid|expired|held|hold_failed|hold_canceled)
     if ($callback->body['status'] === 'PAID') {
         // Успешная транзакция
-        if ($accrual->payed_at !== null) {
+        if ($accrual->paid_at !== null) {
             // Уже был колбек об успешном завершении транзакции
             Log::notice(
                 'MoneyMailRu прислал колбек OK для уже завершенной транзакции',
@@ -58,7 +58,7 @@ Route::post('/mailru', function (Request $request) {
             );
             return $callback->respondError('Transaction already completed: ' . $callback->body['transaction_id'], 'ERR_DUPLICATE');
         }
-        $accrual->payed_at = now();
+        $accrual->paid_at = now();
         $accrual->archived_at = now();
         $accrual->save();
     } else {

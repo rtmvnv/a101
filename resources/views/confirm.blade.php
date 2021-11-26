@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 
 <head>
-    <title>Квитанция A101 по лицевому счету {{ $account_name }} за {{ $period_text }}</title>
+    <title>Квитанция A101 по лицевому счету {{ $account }} за {{ $period_text }}</title>
     <!--[if gte mso 9]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width">
@@ -300,7 +300,7 @@
                                             <div style="color:#555555;font-family:Arial, Helvetica Neue, Helvetica, sans-serif;line-height:1.2;padding-top:5px;padding-right:10px;padding-bottom:5px;padding-left:10px;">
                                                 <div class="txtTinyMce-wrapper" style="line-height: 1.2; font-size: 12px; color: #555555; font-family: Arial, Helvetica Neue, Helvetica, sans-serif; mso-line-height-alt: 14px;">
                                                     <p style="margin: 0; font-size: 15px; line-height: 1.2; word-break: break-word; text-align: left; mso-line-height-alt: 18px; margin-top: 0; margin-bottom: 0;">
-                                                        <span style="font-size: 15px;">{{ $account_name }}</span>
+                                                        <span style="font-size: 15px;">{{ $account }}</span>
                                                     </p>
                                                 </div>
                                             </div>

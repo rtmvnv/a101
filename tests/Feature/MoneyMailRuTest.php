@@ -27,29 +27,36 @@ class MoneyMailRuTest extends TestCase
         $this->withoutExceptionHandling();
 
         /**
-         * Создать счет и отметить отправленным
+         * Первое начисление за предыдущий месяц в статусе "отправлено"
          */
         $accrualNotCompleted = Accrual::factory()->create();
         $accrualNotCompleted->sent_at = now();
+        $accrualNotCompleted->period = date('Ym', strtotime('previous month'));
         $accrualNotCompleted->save();
 
+        /**
+         * Второе начисление за текущий месяц в статусе "оплачено"
+         */
         $accrualCompleted = Accrual::factory()->create();
         $accrualCompleted->account = $accrualNotCompleted->account;
         $accrualCompleted->sent_at = now();
         $accrualCompleted->opened_at = now();
         $accrualCompleted->confirmed_at = now();
-        $accrualCompleted->payed_at = now();
+        $accrualCompleted->paid_at = now();
         $accrualCompleted->save();
 
+        /**
+         * Третье начисление за следующий месяц в статусе "создано"
+         */
         $accrualNew = Accrual::factory()->create();
         $accrualNew->account = $accrualNotCompleted->account;
         $accrualNew->period = date('Ym', strtotime('next month'));
         $accrualNew->save();
 
         $a101 = new A101();
-        $a101->cancelPreviousAccruals($accrualNew);
+        $a101->cancelOtherAccruals($accrualNew);
 
-        // Старые квитанции отмечены archived
+        // Первое начисление отмечено archived
         $this->assertDatabaseMissing(
             'accruals',
             [
@@ -58,7 +65,16 @@ class MoneyMailRuTest extends TestCase
             ]
         );
 
-        // Новая квитанция не отмечена archived
+        // Второе начисление не отмечено archived
+        $this->assertDatabaseHas(
+            'accruals',
+            [
+                'period' => $accrualCompleted->period,
+                'archived_at' => null,
+            ]
+        );
+
+        // Третье начисление не отмечено archived
         $this->assertDatabaseHas(
             'accruals',
             [
@@ -137,6 +153,6 @@ class MoneyMailRuTest extends TestCase
         $accrual = Accrual::where('transaction_id', $transaction_id)->first();
         $this->assertNotEmpty($accrual);
 
-        $this->assertEquals('payed', $accrual->status);
+        $this->assertEquals('paid', $accrual->status);
     }
 }

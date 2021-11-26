@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 
@@ -14,6 +15,7 @@ class Accrual extends Model
     protected $primaryKey = 'uuid';
     protected $keyType = 'string';
     public $incrementing = false;
+    protected $dateFormat = 'c';
 
     protected $appends = [
         'period_text',
@@ -22,7 +24,6 @@ class Accrual extends Model
         'link_pay',
         'full_name_case',
         'status',
-        'archived',
         'estate',
     ];
 
@@ -33,15 +34,6 @@ class Accrual extends Model
     {
         parent::__construct($attributes);
         $this->uuid = (string) Str::uuid();
-    }
-
-    /**
-     * Счета, которые не были отправлены и не имеют ошибки.
-     */
-    public function scopeToSend($query)
-    {
-        // https://laravel.com/docs/8.x/eloquent#query-scopes
-        return $query->where('sent_at', null)->where('archived_at', null);
     }
 
     /**
@@ -94,35 +86,27 @@ class Accrual extends Model
      */
     public function getStatusAttribute()
     {
-        if (empty($this->sent_at)) {
-            return 'created';
+        if (!empty($this->paid_at)) {
+            return 'paid';
         }
 
-        if (empty($this->opened_at)) {
-            return 'sent';
+        if (!empty($this->archived_at)) {
+            return 'archived';
         }
 
-        if (empty($this->confirmed_at)) {
-            return 'opened';
-        }
-
-        if (empty($this->payed_at)) {
+        if (!empty($this->confirmed_at)) {
             return 'confirmed';
         }
 
-        return 'payed';
-    }
-
-    /**
-     * Статус счета
-     */
-    public function getArchivedAttribute()
-    {
-        if (empty($this->archived_at)) {
-            return false;
+        if (empty($this->opened_at)) {
+            return 'opened';
         }
 
-        return true;
+        if (empty($this->sent_at)) {
+            return 'sent';
+        }
+
+        return 'created';
     }
 
     /**
@@ -135,7 +119,7 @@ class Accrual extends Model
      */
     public function getEstateAttribute()
     {
-        $estate = mb_strtoupper(mb_substr($this->account_name, 0, 2));
+        $estate = mb_strtoupper(mb_substr($this->account, 0, 2));
 
         if ($estate === 'ИК' or $estate === 'БВ') {
             return 'spanish';
@@ -150,6 +134,6 @@ class Accrual extends Model
             return 'spanish2';
         }
 
-        throw new Exception("Estate '$estate' is unknown");
+        throw new \Exception("Estate '$estate' is unknown");
     }
 }

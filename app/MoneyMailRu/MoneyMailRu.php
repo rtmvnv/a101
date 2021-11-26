@@ -148,7 +148,7 @@ class MoneyMailRu
             //     $mailruResponse['body']['transactions'][$key] = $transaction;
             // }
         } catch (\Throwable $th) {
-            $response['result_code'] = $th->getCode();
+            $response['result_code'] = 73846608;
             $response['result_message'] = $th->getMessage();
         } finally {
             Log::info('mailru.outgoing.response', [
@@ -170,7 +170,7 @@ class MoneyMailRu
         $successUrl = '',
         $failUrl = '',
     ) {
-        // Пример ответа при временной ошибки
+        // Пример ответа при временной ошибке
         // [result_code] => 11881481
         // [result_message] => CURL failed. URL:https://api.money.mail.ru/money/2-03/transaction/start/; errno:28; error:Resolving timed out after 5001 milliseconds
         // [curl] =>
@@ -263,7 +263,7 @@ class MoneyMailRu
 
         // Записать лог об ошибке
         if ($response['result_code'] !== 0) {
-            Log::warning('MoneyMailRu request failed. message:'
+            Log::error('MoneyMailRu request failed. message:'
                 . $response['result_message']);
         } elseif ($response['header']['status'] !== 'OK') {
             Log::warning('MoneyMailRu returned error. code:'

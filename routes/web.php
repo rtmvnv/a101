@@ -61,8 +61,8 @@ Route::get('/{accrual:uuid}', function (Accrual $accrual) {
             return view('confirm', $accrual->toArray());
             break;
 
-        case 'payed':
-            return view('payed', $accrual->toArray());
+        case 'paid':
+            return view('paid', $accrual->toArray());
             break;
 
         case 'failed':
@@ -118,8 +118,8 @@ Route::get('/{accrual:uuid}/pay', function (Accrual $accrual) {
             return view('pay', $accrual->toArray());
             break;
 
-        case 'payed':
-            return view('payed', $accrual->toArray());
+        case 'paid':
+            return view('paid', $accrual->toArray());
             break;
 
         case 'failed':
@@ -136,7 +136,7 @@ Route::get('/{accrual:uuid}/back', function (Accrual $accrual, Request $request)
 
     switch ($accrual->status) {
         case 'confirmed':
-        case 'payed':
+        case 'paid':
         case 'failed':
             if ($request->input('status') !== 'success') {
                 throw new ModelNotFoundException('status is not "success"');
@@ -157,7 +157,7 @@ Route::get('/{accrual:uuid}/back', function (Accrual $accrual, Request $request)
             $accrual->save();
 
             if ($request->input('issuer_id') === $accrual->uuid) {
-                return view('payed', $accrual->toArray());
+                return view('paid', $accrual->toArray());
             } else {
                 return view('failed', $accrual->toArray());
             }
