@@ -46,7 +46,6 @@ Route::get('/', function (Request $request) {
     echo '4. ' . $signature . PHP_EOL;
 });
 
-
 // Найти запись по полю uuid и вернуть в переменной accrual
 Route::get('/{accrual:uuid}', function (Accrual $accrual) {
     switch ($accrual->status) {
@@ -89,7 +88,7 @@ Route::get('/{accrual:uuid}/pay', function (Accrual $accrual) {
                 issuerId: $accrual->uuid,
                 userId: $accrual->account,
                 amount: $accrual->sum,
-                description: "Оплата квитанции A101 по лицевому счету {{ $accrual->account_name }} за {{ $accrual->period_text }}",
+                description: "Оплата квитанции A101 по лицевому счету {{ $accrual->account }} за {{ $accrual->period_text }}",
                 backUrl: url('/') . '/' . $accrual->uuid . '/back',
             );
 

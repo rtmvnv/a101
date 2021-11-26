@@ -41,7 +41,7 @@ class SendMails extends Command
 
             $message = new UniOneMessage();
             $message->to($accrual->email, $accrual->full_name)
-                ->subject("Квитанция по лицевому счету {$accrual->account_name} за {$accrual->period_text}")
+                ->subject("Квитанция по лицевому счету {$accrual->account} за {$accrual->period_text}")
                 ->plain($plain)
                 ->html($html);
 

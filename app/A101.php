@@ -15,7 +15,7 @@ class A101
     /**
      * Обработчик POST запросов к /api/a101/accruals
      *
-     * @return Response 
+     * @return Response
      */
     function apiAccrualsPost(Request $request)
     {
@@ -98,6 +98,8 @@ class A101
             $this->cancelOtherAccruals($accrual);
             $accrual->save();
 
+            file_put_contents(storage_path('file.pdf'), $request->getContent());
+
             /**
              * Отправить письмо
              */
@@ -138,7 +140,7 @@ class A101
     /**
      * Обработчик GET запросов к /api/a101/payments
      *
-     * @return Response 
+     * @return Response
      */
     function apiPaymentsGet(Request $request)
     {
@@ -257,7 +259,7 @@ class A101
 
         $message = new UniOneMessage();
         $message->to($accrual->email, $accrual->full_name)
-            ->subject("Квитанция по лицевому счету {$accrual->account_name} за {$accrual->period_text}")
+            ->subject("Квитанция по лицевому счету {$accrual->account} за {$accrual->period_text}")
             ->plain($plain)
             ->html($html);
 
