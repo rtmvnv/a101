@@ -14,9 +14,9 @@ class A101ApiTest extends TestCase
      */
     public function test_accruals()
     {
-        $response = $this->post('/api/a101/accruals', []);
-        $response->assertStatus(400);
-
+        /*
+         * Проверить, что подпись проверяется
+         */
         $requestData =  [
             'sum' => '100',
             'period' => '202111',
@@ -24,11 +24,23 @@ class A101ApiTest extends TestCase
             'email' => 'test@example.com',
             'name' => 'Имя User-Name',
         ];
+        $content = 'c2FtcGxlIHBkZiBmaWxl';
 
         $requestData['signature'] = 'test';
-        $response = $this->post('/api/a101/accruals', $requestData);
+        $response = $this->call(
+            'POST',
+            '/api/a101/accruals',
+            $requestData,
+            array(),
+            array(),
+            array(),
+            $content,
+        );
         $response->assertStatus(401);
 
+        /*
+         * Проверить, что корректный запрос проходит
+         */
         $signature = $requestData['sum']
             . $requestData['period']
             . $requestData['account']
@@ -38,7 +50,15 @@ class A101ApiTest extends TestCase
         $signature = $signature . env('A101_SIGNATURE');
         $signature = hash('sha1', $signature);
         $requestData['signature'] = $signature;
-        $response = $this->post('/api/a101/accruals', $requestData);
+        $response = $this->call(
+            'POST',
+            '/api/a101/accruals',
+            $requestData,
+            array(),
+            array(),
+            array(),
+            $content,
+        );
         $response->assertStatus(200);
     }
 

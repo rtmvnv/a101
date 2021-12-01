@@ -19,35 +19,14 @@ use Illuminate\Support\Str;
 */
 
 Route::get('/', function (Request $request) {
-
-    $requestData =  [
-        'sum' => '794905',
-        'period' => '202110',
-        'account' => 'ПР241Н011',
-        'email' => 'kalibr.m5@mail.ru',
-        'name' => 'Калибр ООО',
-    ];
-
-    $signature = $requestData['sum']
-        . $requestData['period']
-        . $requestData['account']
-        . $requestData['email']
-        . $requestData['name'];
-
-    echo '1. ' . $signature . PHP_EOL;
-
-    $signature = base64_encode($signature);
-    echo '2. ' . $signature . PHP_EOL;
-
-    $signature = $signature . env('A101_SIGNATURE');
-    // echo '3. ' . $signature . PHP_EOL;
-
-    $signature = hash('sha1', $signature);
-    echo '4. ' . $signature . PHP_EOL;
 });
 
 // Найти запись по полю uuid и вернуть в переменной accrual
 Route::get('/{accrual:uuid}', function (Accrual $accrual) {
+    Log::debug('web//uuid//', [
+        'uuid' => $accrual->uuid,
+        'status' => $accrual->status,
+    ]);
     switch ($accrual->status) {
         case 'sent': // Клиент первый раз перешел по ссылке из письма
             $accrual->opened_at = now();
@@ -75,6 +54,10 @@ Route::get('/{accrual:uuid}', function (Accrual $accrual) {
 })->whereUuid('accrual');
 
 Route::get('/{accrual:uuid}/pay', function (Accrual $accrual) {
+    Log::debug('web//uuid//pay', [
+        'uuid' => $accrual->uuid,
+        'status' => $accrual->status,
+    ]);
     switch ($accrual->status) {
         case 'sent':
             $accrual->opened_at = now();
@@ -132,11 +115,18 @@ Route::get('/{accrual:uuid}/pay', function (Accrual $accrual) {
 })->whereUuid('accrual');
 
 Route::get('/{accrual:uuid}/back', function (Accrual $accrual, Request $request) {
+    Log::info('test1', [
+        'uuid' => $accrual->uuid,
+    ]);
 
     switch ($accrual->status) {
         case 'confirmed':
         case 'paid':
         case 'failed':
+            Log::info('test2', [
+                'uuid' => $accrual->uuid,
+            ]);
+
             if ($request->input('status') !== 'success') {
                 throw new ModelNotFoundException('status is not "success"');
             }

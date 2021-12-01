@@ -30,7 +30,11 @@ Route::post('/a101/accruals', [A101::class, 'apiAccrualsPost']);
 
 Route::get('/a101/payments', [A101::class, 'apiPaymentsGet']);
 
-Route::post('/mailru', function (Request $request) {
+Route::any('/mailru', function (Request $request) {
+    Log::info('test2', [
+        'request' => $request,
+    ]);
+    
     // Прочитать колбек
     try {
         $callback = new Callback($request);

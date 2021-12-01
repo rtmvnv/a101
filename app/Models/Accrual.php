@@ -22,7 +22,7 @@ class Accrual extends Model
         'valid_till',
         'link_confirm',
         'link_pay',
-        'full_name_case',
+        'name_case',
         'status',
         'estate',
     ];
@@ -76,9 +76,9 @@ class Accrual extends Model
     /**
      * ФИО с заглавной буквы
      */
-    public function getFullNameCaseAttribute()
+    public function getNameCaseAttribute()
     {
-        return mb_convert_case($this->full_name, MB_CASE_TITLE);
+        return mb_convert_case($this->name, MB_CASE_TITLE);
     }
 
     /**

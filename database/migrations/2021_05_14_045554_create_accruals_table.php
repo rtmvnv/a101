@@ -18,9 +18,10 @@ class CreateAccrualsTable extends Migration
             $table->uuid('uuid')->unique();
             $table->decimal('sum', 10, 2)->comment('"СуммаОплаты"');
             $table->string('period', 6)->comment('Период начислений. "202105" - май 2021 года');
-            $table->string('account')->comment('"ЛС" - наименование лицевого счета');
-            $table->string('email')->comment('"Email"');
-            $table->string('name')->comment('"ФИО"');
+            $table->string('account')->comment('ЛС - наименование лицевого счета');
+            $table->string('email')->comment('Email');
+            $table->string('name')->comment('ФИО');
+            $table->binary('attachment')->comment('Квитанция в формате PDF');
             $table->text('url_bank')->nullable()->comment('Ссылка для оплаты на страницу банка');
             $table->string('transaction_id')->nullable()->comment('Номер транзакции у Mail.ru');
             $table->timestampsTz();

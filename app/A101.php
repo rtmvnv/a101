@@ -12,6 +12,59 @@ use Carbon\Carbon;
 
 class A101
 {
+
+    /**
+     * Обработчик POST запросов к /api/mailru
+     *
+     * @return Response
+     */
+    function apiMailruPost(Request $request)
+    {
+        // Прочитать колбек
+        try {
+            $callback = new Callback($request);
+        } catch (\Throwable $th) {
+            return Callback::respondFatal($th->getMessage());
+        }
+
+        // Проверить корректность
+        $validationResult = $callback->validate();
+        if ($validationResult !== true) {
+            return $validationResult;
+        }
+
+        // Найти транзакцию
+        $accrual = Accrual::where('transaction_id', $callback->body['transaction_id'])->first();
+        if (empty($accrual)) {
+            return $callback->respondError('Transaction not found: ' . $callback->body['transaction_id']);
+        }
+
+        $accrual->callback_data = base64_decode($request['data'], true);
+        $accrual->save();
+
+        // Принимаемое значение: (new|rejected|paid|expired|held|hold_failed|hold_canceled)
+        if ($callback->body['status'] === 'PAID') {
+            // Успешная транзакция
+            if ($accrual->paid_at !== null) {
+                // Уже был колбек об успешном завершении транзакции
+                Log::notice(
+                    'MoneyMailRu прислал колбек OK для уже завершенной транзакции',
+                    ['header' => $callback->header, 'body' => $callback->body]
+                );
+                return $callback->respondError('Transaction already completed: ' . $callback->body['transaction_id'], 'ERR_DUPLICATE');
+            }
+            $accrual->paid_at = now();
+            $accrual->archived_at = now();
+            $accrual->save();
+        } else {
+            // Транзакция отменена
+            $accrual->comment = 'Оплата не прошла. ' . ($callback->body['decline_reason']) ?? 'unknown';
+            $accrual->save();
+        }
+
+        return $callback->respondOk();
+    }
+
     /**
      * Обработчик POST запросов к /api/a101/accruals
      *
@@ -72,6 +125,33 @@ class A101
                 return response($data, $data['status'])
                     ->header('Content-Type', 'application/problem+json');
             }
+
+            /**
+             * Проверить приложение
+             */
+            $attachmentEncoded = $request->getContent();
+
+            if (empty($attachmentEncoded)) {
+                $data = [
+                    'status' => 401,
+                    'title' => 'Empty attachment',
+                ];
+                return response($data, $data['status'])
+                    ->header('Content-Type', 'application/problem+json');
+            }
+
+            // Убрать лишние переносы строк для дальнейшего сравнения
+            $attachmentEncoded = str_replace(array("\r", "\n"), '', $attachmentEncoded);
+            $attachmentBinary = base64_decode($attachmentEncoded, true);
+
+            if (base64_encode($attachmentBinary) !== $attachmentEncoded) {
+                $data = [
+                    'status' => 401,
+                    'title' => 'Attachment is not encoded in base64',
+                ];
+                return response($data, $data['status'])
+                    ->header('Content-Type', 'application/problem+json');
+            }
         } catch (\Throwable $th) {
             $data = [
                 'status' => 400,
@@ -94,11 +174,10 @@ class A101
             $accrual->email = $request->email;
             $accrual->name = $request->name;
             $accrual->comment = '';
+            $accrual->attachment = $attachmentBinary;
 
             $this->cancelOtherAccruals($accrual);
             $accrual->save();
-
-            file_put_contents(storage_path('file.pdf'), $request->getContent());
 
             /**
              * Отправить письмо
@@ -125,7 +204,6 @@ class A101
 
             return response($data, $data['status'])
                 ->header('Content-Type', 'application/json');
-
         } catch (\Throwable $th) {
             $data = [
                 'status' => 500,
@@ -258,10 +336,11 @@ class A101
         $html = view('mail_html_' . $accrual->estate, $accrual->toArray())->render();
 
         $message = new UniOneMessage();
-        $message->to($accrual->email, $accrual->full_name)
+        $message->to($accrual->email, $accrual->name)
             ->subject("Квитанция по лицевому счету {$accrual->account} за {$accrual->period_text}")
             ->plain($plain)
-            ->html($html);
+            ->html($html)
+            ->addAttachment('application/pdf', 'file.pdf', $accrual->attachment);
 
         $result = $message->send();
 

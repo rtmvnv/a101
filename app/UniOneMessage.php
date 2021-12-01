@@ -13,6 +13,7 @@ class UniOneMessage
     public $recipients = [];
     public $bodyHtml;
     public $bodyPlain;
+    public $attachments = [];
 
     public function to($email, $name = '')
     {
@@ -52,6 +53,17 @@ class UniOneMessage
     public function html($bodyHtml)
     {
         $this->bodyHtml = $bodyHtml;
+        
+        return $this;
+    }
+
+    /**
+     * 
+     * $content должен быть закодирован в base64
+     */
+    public function addAttachment($type, $name, $content)
+    {
+        $this->attachments[] = ['type' => $type, 'name' => $name, 'content' => $content];
         
         return $this;
     }
@@ -100,6 +112,11 @@ class UniOneMessage
         // bodyHtml
         if (!empty($this->bodyHtml)) {
             $body['message']['body']['html'] = $this->bodyHtml;
+        }
+
+        // attachments
+        if (!empty($this->attachments)) {
+            $body['message']['attachments'] = $this->attachments;
         }
 
         return $body;
