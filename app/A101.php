@@ -12,13 +12,12 @@ use Carbon\Carbon;
 
 class A101
 {
-
     /**
      * Обработчик POST запросов к /api/mailru
      *
      * @return Response
      */
-    function apiMailruPost(Request $request)
+    public function apiMailruPost(Request $request)
     {
         // Прочитать колбек
         try {
@@ -70,7 +69,7 @@ class A101
      *
      * @return Response
      */
-    function apiAccrualsPost(Request $request)
+    public function apiAccrualsPost(Request $request)
     {
         try {
             // Про формат обмена данными JSON API
@@ -129,9 +128,9 @@ class A101
             /**
              * Проверить приложение
              */
-            $attachmentEncoded = $request->getContent();
+            $attachment = $request->getContent();
 
-            if (empty($attachmentEncoded)) {
+            if (empty($attachment)) {
                 $data = [
                     'status' => 401,
                     'title' => 'Empty attachment',
@@ -141,10 +140,9 @@ class A101
             }
 
             // Убрать лишние переносы строк для дальнейшего сравнения
-            $attachmentEncoded = str_replace(array("\r", "\n"), '', $attachmentEncoded);
-            $attachmentBinary = base64_decode($attachmentEncoded, true);
+            $attachment = str_replace(array("\r", "\n"), '', $attachment);
 
-            if (base64_encode($attachmentBinary) !== $attachmentEncoded) {
+            if (base64_encode(base64_decode($attachment, true)) !== $attachment) {
                 $data = [
                     'status' => 401,
                     'title' => 'Attachment is not encoded in base64',
@@ -174,8 +172,7 @@ class A101
             $accrual->email = $request->email;
             $accrual->name = $request->name;
             $accrual->comment = '';
-            $accrual->attachment = $attachmentBinary;
-            // $accrual->attachment = $attachmentEncoded;
+            $accrual->attachment = $attachment;
 
             $this->cancelOtherAccruals($accrual);
             $accrual->save();
@@ -220,7 +217,7 @@ class A101
      *
      * @return Response
      */
-    function apiPaymentsGet(Request $request)
+    public function apiPaymentsGet(Request $request)
     {
         /**
          * Валидировать данные запроса
@@ -229,8 +226,8 @@ class A101
         $validator = Validator::make(
             $request->all(),
             [
-                'from' => ['bail', 'required', new ValidDate],
-                'to' => ['bail', new ValidDate],
+                'from' => ['bail', 'required', new ValidDate()],
+                'to' => ['bail', new ValidDate()],
                 'signature' => ['bail', 'required', 'alpha_dash'],
             ]
         );
@@ -340,7 +337,11 @@ class A101
             ->subject("Квитанция по лицевому счету {$accrual->account} за {$accrual->period_text}")
             ->plain($plain)
             ->html($html)
-            ->addAttachment('application/pdf', 'file.pdf', $accrual->attachment);
+            ->addAttachment(
+                'application/pdf',
+                "Квитанция по ЛС {$accrual->account} за {$accrual->period_text}.pdf",
+                $accrual->attachment
+            );
 
         $result = $message->send();
 

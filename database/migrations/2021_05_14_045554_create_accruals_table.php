@@ -33,7 +33,6 @@ class CreateAccrualsTable extends Migration
             $table->string('comment')->nullable()->comment('Пояснение текущего статуса');
             $table->text('callback_data')->nullable()->comment('Содержимое колбека от Mail.ru о статусе платежа');
             $table->text('back_data')->nullable()->comment('Содержимое запроса при возвращении пользователя после оплаты');
-            // $table->unique(['period', 'account']);
         });
     }
 
