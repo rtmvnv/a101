@@ -20,12 +20,6 @@ use App\A101;
 |
 */
 
-Route::any('/', function (Request $request) {
-    echo var_dump($request->all());
-    $content = $request->getContent();
-    echo $content;
-});
-
 Route::post('/a101/accruals', [A101::class, 'apiAccrualsPost']);
 
 Route::get('/a101/payments', [A101::class, 'apiPaymentsGet']);
