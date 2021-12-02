@@ -103,7 +103,7 @@ class MoneyMailRuTest extends TestCase
         /**
          * Клиент переходит по ссылке
          */
-        $response = $this->get('/' . $accrual->uuid);
+        $response = $this->get('/accural/' . $accrual->uuid);
         $response->assertStatus(200);
         $accrual->refresh();
 

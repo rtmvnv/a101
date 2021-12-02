@@ -22,6 +22,7 @@ class Accrual extends Model
         'valid_till',
         'link_confirm',
         'link_pay',
+        'link_back',
         'name_case',
         'status',
         'estate',
@@ -62,7 +63,7 @@ class Accrual extends Model
      */
     public function getLinkConfirmAttribute()
     {
-        return url('/') . '/' . $this->uuid;
+        return url('/') . '/accrual/' . $this->uuid;
     }
 
     /**
@@ -70,7 +71,15 @@ class Accrual extends Model
      */
     public function getLinkPayAttribute()
     {
-        return url('/') . '/' . $this->uuid . '/pay';
+        return url('/') . '/accrual/' . $this->uuid . '/pay';
+    }
+
+    /**
+     * Ссылка для возврата пользователя после оплаты
+     */
+    public function getLinkBackAttribute()
+    {
+        return url('/') . '/accrual/' . $this->uuid . '/back';
     }
 
     /**

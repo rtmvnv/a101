@@ -18,12 +18,12 @@ use Illuminate\Support\Str;
 |
 */
 
-Route::get('/', function (Request $request) {
-});
+// Route::get('/', function (Request $request) {
+// });
 
 // Найти запись по полю uuid и вернуть в переменной accrual
-Route::get('/{accrual:uuid}', function (Accrual $accrual) {
-    Log::info('web/' . $accrual->uuid . '/', [
+Route::get('/accrual/{accrual:uuid}', function (Accrual $accrual) {
+    Log::info('web/accrual', [
         'uuid' => $accrual->uuid,
         'status' => $accrual->status,
     ]);
@@ -53,8 +53,8 @@ Route::get('/{accrual:uuid}', function (Accrual $accrual) {
     }
 })->whereUuid('accrual');
 
-Route::get('/{accrual:uuid}/pay', function (Accrual $accrual) {
-    Log::info('web/' . $accrual->uuid . '/pay', [
+Route::get('/accrual/{accrual:uuid}/pay', function (Accrual $accrual) {
+    Log::info('web/accrual/pay', [
         'uuid' => $accrual->uuid,
         'status' => $accrual->status,
     ]);
@@ -73,7 +73,7 @@ Route::get('/{accrual:uuid}/pay', function (Accrual $accrual) {
                 userId: base64_encode($accrual->account), // Mail.ru не принимает кириллицу в этом поле
                 amount: $accrual->sum,
                 description: "Оплата квитанции A101 по лицевому счету {{ $accrual->account }} за {{ $accrual->period_text }}",
-                backUrl: url('/') . '/' . $accrual->uuid . '/back',
+                backUrl: $accrual->link_back,
             );
 
             // Ошибка при осуществлении запроса
@@ -111,19 +111,11 @@ Route::get('/{accrual:uuid}/pay', function (Accrual $accrual) {
     }
 })->whereUuid('accrual');
 
-Route::get('/{accrual:uuid}/back', function (Accrual $accrual, Request $request) {
-    Log::info('test1', [
-        'uuid' => $accrual->uuid,
-    ]);
-
+Route::get('/accrual/{accrual:uuid}/back', function (Accrual $accrual, Request $request) {
     switch ($accrual->status) {
         case 'confirmed':
         case 'paid':
         case 'failed':
-            Log::info('test3', [
-                'uuid' => $accrual->uuid,
-            ]);
-
             if ($request->input('status') === 'fail') {
                 return view('failed', $accrual->toArray());
             }
@@ -157,4 +149,4 @@ Route::get('/{accrual:uuid}/back', function (Accrual $accrual, Request $request)
             throw new ModelNotFoundException('Expected accrual status "confirmed"');
             break;
     }
-})->whereUuid('accrual')->middleware('log.web:web/uuid/back');
+})->whereUuid('accrual')->middleware('log.web:web/accrual/back');
