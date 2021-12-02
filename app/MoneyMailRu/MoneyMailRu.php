@@ -208,6 +208,7 @@ class MoneyMailRu
             'pay_method' => config('services.money_mail_ru.pay_method'),
             'amount' => $amount,
             'user_info' => ['user_id' => $userId],
+            'keep_uniq' => 1,
         ];
 
         if (empty($description)) {

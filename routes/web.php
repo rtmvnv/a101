@@ -23,7 +23,7 @@ Route::get('/', function (Request $request) {
 
 // Найти запись по полю uuid и вернуть в переменной accrual
 Route::get('/{accrual:uuid}', function (Accrual $accrual) {
-    Log::debug('web//uuid//', [
+    Log::info('web/' . $accrual->uuid . '/', [
         'uuid' => $accrual->uuid,
         'status' => $accrual->status,
     ]);
@@ -54,7 +54,7 @@ Route::get('/{accrual:uuid}', function (Accrual $accrual) {
 })->whereUuid('accrual');
 
 Route::get('/{accrual:uuid}/pay', function (Accrual $accrual) {
-    Log::debug('web//uuid//pay', [
+    Log::info('web/' . $accrual->uuid . '/pay', [
         'uuid' => $accrual->uuid,
         'status' => $accrual->status,
     ]);
@@ -66,10 +66,11 @@ Route::get('/{accrual:uuid}/pay', function (Accrual $accrual) {
             break;
 
         case 'opened':
-            $mailru = app(MoneyMailRu::class);
+        case 'confirmed':
+                $mailru = app(MoneyMailRu::class);
             $response = $mailru->transactionStart(
                 issuerId: $accrual->uuid,
-                userId: $accrual->account,
+                userId: base64_encode($accrual->account), // Mail.ru не принимает кириллицу в этом поле
                 amount: $accrual->sum,
                 description: "Оплата квитанции A101 по лицевому счету {{ $accrual->account }} за {{ $accrual->period_text }}",
                 backUrl: url('/') . '/' . $accrual->uuid . '/back',
@@ -96,10 +97,6 @@ Route::get('/{accrual:uuid}/pay', function (Accrual $accrual) {
             return view('pay', $accrual->toArray());
             break;
 
-        case 'confirmed':
-            return view('pay', $accrual->toArray());
-            break;
-
         case 'paid':
             return view('paid', $accrual->toArray());
             break;
@@ -123,9 +120,13 @@ Route::get('/{accrual:uuid}/back', function (Accrual $accrual, Request $request)
         case 'confirmed':
         case 'paid':
         case 'failed':
-            Log::info('test2', [
+            Log::info('test3', [
                 'uuid' => $accrual->uuid,
             ]);
+
+            if ($request->input('status') === 'fail') {
+                return view('failed', $accrual->toArray());
+            }
 
             if ($request->input('status') !== 'success') {
                 throw new ModelNotFoundException('status is not "success"');
@@ -136,7 +137,7 @@ Route::get('/{accrual:uuid}/back', function (Accrual $accrual, Request $request)
                 JSON_OBJECT_AS_ARRAY | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
             );
 
-            Log::info('mailru.back_url.process', [
+            Log::info('web/uuid/back.process', [
                 'uuid' => $accrual->uuid,
                 'status' => $request->input('status'),
                 'payment_info' => $paymentInfo
@@ -156,4 +157,4 @@ Route::get('/{accrual:uuid}/back', function (Accrual $accrual, Request $request)
             throw new ModelNotFoundException('Expected accrual status "confirmed"');
             break;
     }
-})->whereUuid('accrual')->middleware('log.web:mailru.back_url');
+})->whereUuid('accrual')->middleware('log.web:web/uuid/back');
