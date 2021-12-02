@@ -175,6 +175,7 @@ class A101
             $accrual->name = $request->name;
             $accrual->comment = '';
             $accrual->attachment = $attachmentBinary;
+            // $accrual->attachment = $attachmentEncoded;
 
             $this->cancelOtherAccruals($accrual);
             $accrual->save();
@@ -201,7 +202,6 @@ class A101
                     'accrual_id' => $accrual->uuid
                 ]
             ];
-
             return response($data, $data['status'])
                 ->header('Content-Type', 'application/json');
         } catch (\Throwable $th) {

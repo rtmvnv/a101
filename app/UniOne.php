@@ -55,6 +55,7 @@ class UniOne
         $bodyLog = (array)$body;
         unset($bodyLog['message']['body']['plaintext']);
         unset($bodyLog['message']['body']['html']);
+        unset($bodyLog['message']['attachments']);
         Log::info('unione.request', ['request' => ['uri' => $uri, 'body' => $bodyLog]]);
 
         // Workaround for a bug on Unisender. To avoid error code 150:

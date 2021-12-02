@@ -112,18 +112,10 @@ Route::get('/{accrual:uuid}/pay', function (Accrual $accrual) {
 })->whereUuid('accrual');
 
 Route::get('/{accrual:uuid}/back', function (Accrual $accrual, Request $request) {
-    Log::info('test1', [
-        'uuid' => $accrual->uuid,
-    ]);
-
     switch ($accrual->status) {
         case 'confirmed':
         case 'paid':
         case 'failed':
-            Log::info('test3', [
-                'uuid' => $accrual->uuid,
-            ]);
-
             if ($request->input('status') === 'fail') {
                 return view('failed', $accrual->toArray());
             }

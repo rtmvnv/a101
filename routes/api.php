@@ -20,21 +20,11 @@ use App\A101;
 |
 */
 
-Route::any('/', function (Request $request) {
-    echo var_dump($request->all());
-    $content = $request->getContent();
-    echo $content;
-});
+Route::post('/a101/accruals', [A101::class, 'apiAccrualsPost'])->middleware('log.api:api_accruals');
 
-Route::post('/a101/accruals', [A101::class, 'apiAccrualsPost']);
+Route::get('/a101/payments', [A101::class, 'apiPaymentsGet'])->middleware('log.api:api_payments');
 
-Route::get('/a101/payments', [A101::class, 'apiPaymentsGet']);
-
-Route::any('/mailru', function (Request $request) {
-    Log::info('test2', [
-        'request' => $request,
-    ]);
-    
+Route::post('/mailru', function (Request $request) {
     // Прочитать колбек
     try {
         $callback = new Callback($request);
@@ -78,8 +68,8 @@ Route::any('/mailru', function (Request $request) {
     }
 
     return $callback->respondOk();
-})->middleware('log.api:mailru.incoming');
+})->middleware('log.api:api_mailru');
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
