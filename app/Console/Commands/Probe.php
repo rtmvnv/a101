@@ -42,35 +42,25 @@ class Probe extends Command
      */
     public function handle()
     {
-        $accrual = Accrual::where('uuid', '320ade49-5bd8-4e58-b748-7c8ddfecf3eb')->first();
+        $mongo = (new \MongoDB\Client(
+            'mongodb://' . config('services.mongo.server'),
+            [
+                'username' => config('services.mongo.username'),
+                'password' => config('services.mongo.password'),
+                'authSource' => config('services.mongo.auth_source'),
+            ],
+            [
+                'typeMap' => [
+                    'array' => 'array',
+                    'document' => 'array',
+                    'root' => 'array',
+                ],
+            ],
+        ))->a101->events;
 
-        print_r($accrual->status);
+        $mongo->insertOne(['test' => 'test']);
 
-        // $data = file_get_contents(storage_path('file 30.11.2021 09-30-34.pdf'));
-        // $data = str_replace(array("\r", "\n"), '', $data);
-
-        // $decodedData = base64_decode($data, true);
-        // $encodedData = base64_encode($decodedData);
-
-        // echo 'ORIGINAL:' . PHP_EOL;
-        // echo $data . PHP_EOL . PHP_EOL;
-        // echo 'ENCODED:' . PHP_EOL;
-        // echo $encodedData;
-
-        // if (base64_encode(base64_decode($data, true)) === $data) {
-        //     echo '$data is valid' . PHP_EOL;
-        // } else {
-        //     echo '$data is NOT valid' . PHP_EOL;
-        // }
-
-        // $message = new UniOneMessage();
-        // $message->to('aivanov@vic-insurance.ru', 'No Name');
-        // $message->subject('subject');
-        // $message->plain('body');
-        // $message->addAttachment('application/pdf', 'file.pdf', $data);
-
-        // $result = $message->send();
-
-        // print_r($result);
+        // $accrual = Accrual::where('uuid', '320ade49-5bd8-4e58-b748-7c8ddfecf3eb')->first();
+        // print_r($accrual->status);
     }
 }

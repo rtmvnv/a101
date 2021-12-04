@@ -20,9 +20,9 @@ use App\A101;
 |
 */
 
-Route::post('/a101/accruals', [A101::class, 'apiAccrualsPost'])->middleware('log.api:api_accruals');
+Route::post('/a101/accruals', [A101::class, 'apiAccrualsPost'])->middleware('log.api:a101-accruals');
 
-Route::get('/a101/payments', [A101::class, 'apiPaymentsGet'])->middleware('log.api:api_payments');
+Route::get('/a101/payments', [A101::class, 'apiPaymentsGet'])->middleware('log.api:a101-payments');
 
 Route::post('/mailru', function (Request $request) {
     // Прочитать колбек
@@ -68,7 +68,7 @@ Route::post('/mailru', function (Request $request) {
     }
 
     return $callback->respondOk();
-})->middleware('log.api:api_mailru');
+})->middleware('log.api:mailru');
 
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();

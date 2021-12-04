@@ -84,18 +84,18 @@ class MoneyMailRu
 
             if ($curlResponse === false) {
                 $response['curl'] = $curlResponse;
-                throw new MoneyMailRu\Exception("CURL failed. URL:{$info["url"]}; errno:" . $info['errno'] . '; error:' . $info["error"], 11881481);
+                throw new Exception("CURL failed. URL:{$info["url"]}; errno:" . $info['errno'] . '; error:' . $info["error"], 11881481);
             };
 
             if ($info["http_code"] !== 200) {
                 $response['curl'] = $curlResponse;
-                throw new MoneyMailRu\Exception("CURL http_code:{$info["http_code"]} url:{$info["url"]}", 34308418);
+                throw new Exception("CURL http_code:{$info["http_code"]} url:{$info["url"]}", 34308418);
             }
 
             // Разбор текста ответа
             $mailruResponse = json_decode($curlResponse, true);
             if ($mailruResponse === null or empty($mailruResponse['data']) or empty($mailruResponse['signature'])) {
-                throw new MoneyMailRu\Exception("Некорректный ответ Mail.ru: " . print_r($curlResponse, true), 16093706);
+                throw new Exception("Некорректный ответ Mail.ru: " . print_r($curlResponse, true), 16093706);
             }
             $response = array_merge($response, $mailruResponse);
 
@@ -109,26 +109,26 @@ class MoneyMailRu
                     break;
 
                 case 0:
-                    throw new MoneyMailRu\Exception("Mailru returned an incorrect signature", 48842114);
+                    throw new Exception("Mailru returned an incorrect signature", 48842114);
                     break;
 
                 case -1:
-                    throw new MoneyMailRu\Exception("Error on signature verification", 74043881);
+                    throw new Exception("Error on signature verification", 74043881);
                     break;
 
                 default:
-                    throw new MoneyMailRu\Exception("Unknown error on signature verification", 65060528);
+                    throw new Exception("Unknown error on signature verification", 65060528);
                     break;
             }
 
             $dataString = base64_decode($mailruResponse['data'], true);
             if (!$dataString) {
-                throw new MoneyMailRu\Exception("base64_decode(data) failed '{$mailruResponse['data']}'", 75360949);
+                throw new Exception("base64_decode(data) failed '{$mailruResponse['data']}'", 75360949);
             }
 
             $data = json_decode($dataString, true);
             if (!$data) {
-                throw new MoneyMailRu\Exception("json_decode(data) failed '{$dataString}'", 97580775);
+                throw new Exception("json_decode(data) failed '{$dataString}'", 97580775);
             }
             $response = array_merge($response, $data);
 
@@ -270,7 +270,7 @@ class MoneyMailRu
             Log::warning('MoneyMailRu returned error. code:'
                 . $response['header']['error']['code']
                 . ' message:'
-                . $response['header']['error']['message']
+                . print_r($response['header']['error']['message'], true)
                 . ' error_id:'
                 . $response['header']['error']['error_id']);
         }
