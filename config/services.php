@@ -39,4 +39,11 @@ return [
         'from' => env('RECONCILIATION_FROM'),
         'subject' => env('RECONCILIATION_SUBJECT'),
     ],
+
+    'mongo' => [
+        'server' => env('MONGO_SERVER'),
+        'username' => env('MONGO_USERNAME'),
+        'password' => env('MONGO_PASSWORD'),
+        'auth_source' => env('MONGO_AUTH_SOURCE'),
+    ]
 ];

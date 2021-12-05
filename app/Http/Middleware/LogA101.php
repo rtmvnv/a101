@@ -4,9 +4,8 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
-class LogApi
+class LogA101
 {
     /**
      * Handle an incoming request.
@@ -15,21 +14,11 @@ class LogApi
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle(Request $request, Closure $next, $api)
+    public function handle(Request $request, Closure $next, string $api)
     {
-        Log::info($api . '.request', ['request' => $request->all()]);
-        $response = $next($request);
-        Log::info(
-            $api . '.response',
-            [
-                'request' => $request->all(),
-                'response' => str_replace(array("\r","\n"), "", $response)
-            ]
-        );
 
-        /**
-         * Log to MongoDB
-         */
+        $response = $next($request);
+
         $mongo = (new \MongoDB\Client(
             'mongodb://' . config('services.mongo.server'),
             [
@@ -52,7 +41,7 @@ class LogApi
             'api' => $api,
             'request' => [
                 'datetime' => new \MongoDB\BSON\UTCDateTime(1000 * LARAVEL_START),
-                'data' => $request->all(),
+                // 'data' => $request->all(),
             ],
             'response' => [
                 'datetime' => new \MongoDB\BSON\UTCDateTime(),

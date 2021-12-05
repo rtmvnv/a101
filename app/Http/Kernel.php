@@ -53,6 +53,8 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
+        'log.mailru' => \App\Http\Middleware\LogMailru::class,
+        'log.a101' => \App\Http\Middleware\LogA101::class,
         'log.api' => \App\Http\Middleware\LogApi::class,
         'log.web' => \App\Http\Middleware\LogWeb::class,
         'auth' => \App\Http\Middleware\Authenticate::class,
