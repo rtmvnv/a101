@@ -20,6 +20,7 @@ class Accrual extends Model
     protected $appends = [
         'period_text',
         'valid_till',
+        'base_url',
         'link_confirm',
         'link_pay',
         'link_back',
@@ -56,6 +57,14 @@ class Accrual extends Model
             ->startOfMonth()
             ->addDays(9)
             ->translatedFormat('d.m.Y');
+    }
+
+    /**
+     * Ссылка на корень сайта (для вставки изображений)
+     */
+    public function getBaseUrlAttribute()
+    {
+        return url('/');
     }
 
     /**
@@ -142,7 +151,6 @@ class Accrual extends Model
         if ($estate === 'ПМ') {
             return 'spanish2';
         }
-
-        throw new \Exception("Estate '$estate' is unknown");
+        return 'unknown';
     }
 }

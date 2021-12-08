@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Utils;
+use Carbon\CarbonImmutable;
 use App\UniOneMessage;
 
 class UniOne
@@ -43,12 +44,6 @@ class UniOne
      */
     public function request(string $uri, array $body = [])
     {
-        $headers = [
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json',
-            'X-API-KEY' => config('services.unione.api_key')
-        ];
-
         /**
          * Лог запроса
          */
@@ -56,7 +51,14 @@ class UniOne
         unset($bodyLog['message']['body']['plaintext']);
         unset($bodyLog['message']['body']['html']);
         unset($bodyLog['message']['attachments']);
-        Log::info('unione.request', ['request' => ['uri' => $uri, 'body' => $bodyLog]]);
+
+        $requestTime = CarbonImmutable::now();
+
+        $record = [
+            'request' => $bodyLog,
+            'request_url' => $uri,
+            'request_time' => $requestTime->format('c'),
+        ];
 
         // Workaround for a bug on Unisender. To avoid error code 150:
         // вместо $obj = []; передавать $obj = {}; использовать явные кавычки {} для передачи.
@@ -65,23 +67,49 @@ class UniOne
         }
 
         $client = new Client(['base_uri' => self::BASE_URI]);
-        $response = $client->request(
-            'POST',
-            $uri,
-            [
-                'headers' => $headers,
-                'json' => $body,
-                'http_errors' => false
-            ]
-        );
+        try {
+            $response = $client->request(
+                'POST',
+                $uri,
+                [
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                        'Accept' => 'application/json',
+                        'X-API-KEY' => config('services.unione.api_key')
+                    ],
+                    'json' => $body,
+                    'http_errors' => false
+                ]
+            );
+            $responseTime = CarbonImmutable::now();
 
-        /**
-         * Лог ответа
-         */
-        Log::info('unione.response', [
-            'request' => ['uri' => $uri,'body' => $bodyLog],
-            'response' => [json_decode($response->getBody(), true)]
-        ]);
+            /**
+             * Лог ответа
+             */
+            $jsonResponse = json_decode($response->getBody(), true, 512, JSON_OBJECT_AS_ARRAY);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                // В ответе пришел JSON
+                $record['response']['content'] = $jsonResponse;
+            } else {
+                // Ответ неструктурирован
+                $record['response']['raw'] = $response->getBody();
+            }
+        } catch (\Throwable $th) {
+            $responseTime = CarbonImmutable::now();
+            $record['response'] = [
+                'exception' => [
+                    'message' => $th->getMessage(),
+                    'code' => $th->getCode(),
+                    'file' => $th->getFile(),
+                    'line' => $th->getLine(),
+                ],
+            ];
+        }
+
+        $record['response_time'] = $responseTime->format('c');
+        $record['elapsed'] = $responseTime->floatDiffInSeconds($requestTime);
+
+        Log::info('outgoing-unione', $record);
 
         return json_decode($response->getBody(), true, 10, JSON_THROW_ON_ERROR);
     }

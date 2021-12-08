@@ -32,18 +32,11 @@ return [
     'payments_imap' => [
         'url' => env('PAYMENTS_IMAP_URL'), // "{imap.mail.ru:993/imap/ssl}INBOX"
         'username' => env('PAYMENTS_IMAP_USERNAME'),
-        'password' => env('PAYMENTS_IMAP_PASSWORD'),        
+        'password' => env('PAYMENTS_IMAP_PASSWORD'),
     ],
 
     'reconciliation' => [
         'from' => env('RECONCILIATION_FROM'),
         'subject' => env('RECONCILIATION_SUBJECT'),
     ],
-
-    'mongo' => [
-        'server' => env('MONGO_SERVER'),
-        'username' => env('MONGO_USERNAME'),
-        'password' => env('MONGO_PASSWORD'),
-        'auth_source' => env('MONGO_AUTH_SOURCE'),
-    ]
 ];

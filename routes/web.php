@@ -23,10 +23,6 @@ use Illuminate\Support\Str;
 
 // Найти запись по полю uuid и вернуть в переменной accrual
 Route::get('/accrual/{accrual:uuid}', function (Accrual $accrual) {
-    Log::info('web/accrual', [
-        'uuid' => $accrual->uuid,
-        'status' => $accrual->status,
-    ]);
     switch ($accrual->status) {
         case 'sent': // Клиент первый раз перешел по ссылке из письма
             $accrual->opened_at = now();
@@ -51,13 +47,9 @@ Route::get('/accrual/{accrual:uuid}', function (Accrual $accrual) {
             throw new ModelNotFoundException('Expected accrual status "sent"');
             break;
     }
-})->whereUuid('accrual');
+})->whereUuid('accrual')->middleware('log.web:incoming-web-accrual');
 
 Route::get('/accrual/{accrual:uuid}/pay', function (Accrual $accrual) {
-    Log::info('web/accrual/pay', [
-        'uuid' => $accrual->uuid,
-        'status' => $accrual->status,
-    ]);
     switch ($accrual->status) {
         case 'sent':
             $accrual->opened_at = now();
@@ -109,7 +101,7 @@ Route::get('/accrual/{accrual:uuid}/pay', function (Accrual $accrual) {
             throw new ModelNotFoundException('Expected accrual status "opened"');
             break;
     }
-})->whereUuid('accrual');
+})->whereUuid('accrual')->middleware('log.web:incoming-web-pay');
 
 Route::get('/accrual/{accrual:uuid}/back', function (Accrual $accrual, Request $request) {
     switch ($accrual->status) {
@@ -129,12 +121,6 @@ Route::get('/accrual/{accrual:uuid}/back', function (Accrual $accrual, Request $
                 JSON_OBJECT_AS_ARRAY | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
             );
 
-            Log::info('web/uuid/back.process', [
-                'uuid' => $accrual->uuid,
-                'status' => $request->input('status'),
-                'payment_info' => $paymentInfo
-            ]);
-
             $accrual->back_data = base64_decode($request->input('payment_info'));
             $accrual->save();
 
@@ -149,4 +135,4 @@ Route::get('/accrual/{accrual:uuid}/back', function (Accrual $accrual, Request $
             throw new ModelNotFoundException('Expected accrual status "confirmed"');
             break;
     }
-})->whereUuid('accrual')->middleware('log.web:web/accrual/back');
+})->whereUuid('accrual')->middleware('log.web:incoming-web-back');

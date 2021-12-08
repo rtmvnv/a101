@@ -4,8 +4,9 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
-class LogMailru
+class LogMailru extends LogApi
 {
     /**
      * Handle an incoming request.
@@ -14,33 +15,31 @@ class LogMailru
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle(Request $request, Closure $next)
-    {
-        $mongo = new \MongoDB\Client(
-            'mongodb://' . config('services.mongo.server'),
-            [
-                'username' => config('services.mongo.username'),
-                'password' => config('services.mongo.password'),
-                'authSource' => config('services.mongo.auth_source'),
-            ],
-            [
-                'typeMap' => [
-                    'array' => 'array',
-                    'document' => 'array',
-                    'root' => 'array',
-                ],
-            ],
-        );
 
-        // Log::info('request', ['request' => $request->all()]);
-        $response = $next($request);
-        // Log::info(
-        //     $name . '.response',
-        //     [
-        //         'request' => $request->all(),
-        //         'response' => str_replace(array("\r","\n"), "", $response)
-        //     ]
-        // );
-        return $response;
+    protected function render()
+    {
+        parent::render();
+
+        $json = base64_decode($this->record['request']['data'], true);
+        if ($json !== false) {
+            $array = json_decode($json, true);
+            if (!$array) {
+                $this->record['request']['json'] = $json;
+            } else {
+                $this->record['request_decoded'] = $array;
+            }
+        }
+
+        if ($this->record['response_type'] === 'json') {
+            $json = base64_decode($this->record['response']['data'], true);
+            if ($json !== false) {
+                $array = json_decode($json, true);
+                if (!$array) {
+                    $this->record['response']['json'] = $json;
+                } else {
+                    $this->record['response_decoded'] = $array;
+                }
+            }
+        }
     }
 }

@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use App\Models\Accrual;
+use App\A101;
 use App\UniOne;
 use App\UniOneMessage;
 use App\UniOneException;
@@ -42,23 +43,14 @@ class Probe extends Command
      */
     public function handle()
     {
-        $mongo = (new \MongoDB\Client(
-            'mongodb://' . config('services.mongo.server'),
-            [
-                'username' => config('services.mongo.username'),
-                'password' => config('services.mongo.password'),
-                'authSource' => config('services.mongo.auth_source'),
-            ],
-            [
-                'typeMap' => [
-                    'array' => 'array',
-                    'document' => 'array',
-                    'root' => 'array',
-                ],
-            ],
-        ))->a101->events;
-
-        $mongo->insertOne(['test' => 'test']);
+        $a101 = new A101();
+        echo $a101->apiAccrualsPostSignature([
+            'sum' => 0,
+            'period' => '202111',
+            'email' => 'test@example.com',
+            'account' => 'ИК123456',
+            'name' => 'Имя User-Name',
+        ]);
 
         // $accrual = Accrual::where('uuid', '320ade49-5bd8-4e58-b748-7c8ddfecf3eb')->first();
         // print_r($accrual->status);

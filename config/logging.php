@@ -37,15 +37,34 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['daily'],
+            'channels' => ['daily', 'mongodb'],
             'ignore_exceptions' => false,
         ],
 
-        'single' => [
-            'driver' => 'single',
-            'path' => storage_path('logs/laravel.log'),
-            'level' => env('LOG_LEVEL', 'debug'),
-            'permission' => 0666,
+        'mongodb' => [
+            'driver' => 'monolog',
+            'tap' => [App\RunIdFormatter::class],
+            'handler' => \Monolog\Handler\MongoDBHandler::class,
+            'handler_with' => [
+                'mongodb' => new \MongoDB\Client(
+                    'mongodb://'
+                        . env('MONGODB_USERNAME')
+                        . ':'
+                        . env('MONGODB_PASSWORD')
+                        . '@'
+                        . env('MONGODB_SERVER')
+                        . ':'
+                        . env('MONGODB_PORT')
+                        . '/?authSource='
+                        . env('MONGODB_AUTH_SOURCE'),
+                ),
+                'database' => 'a101',
+                'collection' => 'events'
+            ],
+            'formatter' => \Monolog\Formatter\MongoDBFormatter::class,
+            'formatter_with' => [
+                'maxNestingLevel' => 20,
+            ],
         ],
 
         'daily' => [
@@ -53,6 +72,13 @@ return [
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => 100,
+            'permission' => 0666,
+        ],
+
+        'single' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/laravel.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
             'permission' => 0666,
         ],
 

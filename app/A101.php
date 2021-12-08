@@ -64,6 +64,25 @@ class A101
         return $callback->respondOk();
     }
 
+    public function apiAccrualsPostSignature(array $data)
+    {
+        $signature = $data['sum']
+            . $data['period']
+            . $data['account']
+            . $data['email']
+            . $data['name'];
+
+        $signature = base64_encode($signature);
+        $signature = $signature . env('A101_SIGNATURE');
+        $signature = hash('sha1', $signature);
+
+        $signature = base64_encode($signature);
+        $signature = $signature . env('A101_SIGNATURE');
+        $signature = hash('sha1', $signature);
+
+        return $signature;
+    }
+
     /**
      * Обработчик POST запросов к /api/a101/accruals
      *
@@ -106,15 +125,7 @@ class A101
             /**
              * Проверить подпись
              */
-            $signature = $request->sum
-                . $request->period
-                . $request->account
-                . $request->email
-                . $request->name;
-
-            $signature = base64_encode($signature);
-            $signature = $signature . env('A101_SIGNATURE');
-            $signature = hash('sha1', $signature);
+            $signature = $this->apiAccrualsPostSignature($request->all());
 
             if (strcmp($request->signature, $signature) !== 0) {
                 $data = [
@@ -212,6 +223,20 @@ class A101
         }
     }
 
+    public function apiPaymentsGetSignature(array $data)
+    {
+        $signature = $data['from'];
+        if (!empty($data['to'])) {
+            $signature .= $data['to'];
+        }
+
+        $signature = base64_encode($signature);
+        $signature = $signature . env('A101_SIGNATURE');
+        $signature = hash('sha1', $signature);
+
+        return $signature;
+    }
+
     /**
      * Обработчик GET запросов к /api/a101/payments
      *
@@ -245,14 +270,7 @@ class A101
         /**
          * Проверить подпись
          */
-        $signature = $request->from;
-        if (!empty($request->to)) {
-            $signature .= $request->to;
-        }
-
-        $signature = base64_encode($signature);
-        $signature = $signature . env('A101_SIGNATURE');
-        $signature = hash('sha1', $signature);
+        $signature = $this->apiPaymentsGetSignature($request->all());
 
         if (strcmp($request->signature, $signature) !== 0) {
             $data = [
@@ -348,10 +366,8 @@ class A101
         if ($result['status'] === 'success') {
             $accrual->sent_at = now();
             $accrual->save();
-            Log::info($result);
             return true;
         } else {
-            Log::info($result);
             return $result['message'];
         }
     }

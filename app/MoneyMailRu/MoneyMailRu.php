@@ -6,6 +6,7 @@ use App\MoneyMailRu\Exception;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use Carbon\CarbonImmutable;
 
 /**
  * Модуль реализует взаимодействие с Mail.ru через API.
@@ -54,18 +55,22 @@ class MoneyMailRu
         /**
          * Записать лог
          */
-        $request = [
+        $record = [];
+        $record['request'] = [
             'action' => $action,
             'body' => $dataArray['body'],
             'header' => $dataArray['header'],
             'data' => $data,
             'signature' => $signature,
-            'url' => $curlopt[CURLOPT_URL]
         ];
+
         if (!empty($request['header']['ts'])) {
             $request['header']['ts_string'] = date('c', $request['header']['ts']);
         }
-        Log::info('mailru.outgoing.request', ['request' => $request]);
+
+        $record['request_url'] = $curlopt[CURLOPT_URL];
+        $requestTime = CarbonImmutable::now();
+        $record['request_time'] = $requestTime->format('c');
 
         /*
          * Выполнить запрос
@@ -75,6 +80,8 @@ class MoneyMailRu
         $info["errno"] = curl_errno($curl);
         $info["error"] = curl_error($curl);
         curl_close($curl);
+
+        $responseTime = CarbonImmutable::now();
 
         /*
          * Анализ ответа
@@ -150,11 +157,17 @@ class MoneyMailRu
         } catch (\Throwable $th) {
             $response['result_code'] = 73846608;
             $response['result_message'] = $th->getMessage();
+            $response['exception'] = [
+                'message' => $th->getMessage(),
+                'code' => $th->getCode(),
+                'file' => $th->getFile(),
+                'line' => $th->getLine(),
+            ];
         } finally {
-            Log::info('mailru.outgoing.response', [
-                'request' => $request,
-                'response' => $response
-            ]);
+            $record['response'] = $response;
+            $record['response_time'] = $responseTime->format('c');
+            $record['elapsed'] = $responseTime->floatDiffInSeconds($requestTime);
+            Log::info('outgoing-mailru', $record);
         }
 
         return $response;

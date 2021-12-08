@@ -74,10 +74,6 @@ class Callback
 
         $this->body = $array['body'];
         $this->header = $array['header'];
-
-        Log::info('mailru.callback.request', [
-            'request' => ['body' => $this->body, 'header' => $this->header]
-        ]);
     }
 
     public function validate()
@@ -126,11 +122,6 @@ class Callback
             ]
         ];
 
-        Log::info('mailru.callback.response', [
-            'request' => ['body' => $this->body, 'header' => $this->header],
-            'response' => $response
-        ]);
-
         return self::encrypt($response);
     }
 
@@ -169,11 +160,6 @@ class Callback
             ]
         ];
 
-        Log::info('mailru.callback.response', [
-            'request' => ['body' => $this->body, 'header' => $this->header],
-            'response' => $response
-        ]);
-
         return self::encrypt($response);
     }
 
@@ -198,11 +184,6 @@ class Callback
                 ]
             ]
         ];
-
-        Log::info('mailru.callback.response', [
-            'request' => ['body' => [], 'header' => []],
-            'response' => $response
-        ]);
 
         return self::encrypt($response);
     }
