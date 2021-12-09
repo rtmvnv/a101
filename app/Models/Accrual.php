@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use NumberFormatter;
 
 class Accrual extends Model
 {
@@ -27,16 +28,8 @@ class Accrual extends Model
         'name_case',
         'status',
         'estate',
+        'balance_text',
     ];
-
-    /**
-     * Constructor
-     */
-    public function __construct(array $attributes = array())
-    {
-        parent::__construct($attributes);
-        $this->uuid = (string) Str::uuid();
-    }
 
     /**
      * Период начислений в текстовом виде.
@@ -152,5 +145,10 @@ class Accrual extends Model
             return 'spanish2';
         }
         return 'unknown';
+    }
+
+    public function getBalanceTextAttribute()
+    {
+        return number_format(-$this->sum, 2, ',', '.') . ' руб.';
     }
 }

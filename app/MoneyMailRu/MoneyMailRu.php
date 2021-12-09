@@ -277,15 +277,9 @@ class MoneyMailRu
 
         // Записать лог об ошибке
         if ($response['result_code'] !== 0) {
-            Log::error('MoneyMailRu request failed. message:'
-                . $response['result_message']);
+            Log::error('MoneyMailRu request failed', $response);
         } elseif ($response['header']['status'] !== 'OK') {
-            Log::warning('MoneyMailRu returned error. code:'
-                . $response['header']['error']['code']
-                . ' message:'
-                . print_r($response['header']['error']['message'], true)
-                . ' error_id:'
-                . $response['header']['error']['error_id']);
+            Log::warning('MoneyMailRu returned error', $response);
         }
 
         return $response;

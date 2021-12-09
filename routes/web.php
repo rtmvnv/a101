@@ -59,7 +59,7 @@ Route::get('/accrual/{accrual:uuid}/pay', function (Accrual $accrual) {
 
         case 'opened':
         case 'confirmed':
-                $mailru = app(MoneyMailRu::class);
+            $mailru = app(MoneyMailRu::class);
             $response = $mailru->transactionStart(
                 issuerId: $accrual->uuid,
                 userId: base64_encode($accrual->account), // Mail.ru не принимает кириллицу в этом поле

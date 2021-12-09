@@ -185,6 +185,11 @@ class A101
             $accrual->comment = '';
             $accrual->attachment = $attachment;
 
+            if ($accrual->sum <= 0) {
+                $accrual->archived_at = now();
+                $accrual->comment = 'Баланс положительный, оплата не требуется';
+            }
+
             $this->cancelOtherAccruals($accrual);
             $accrual->save();
 
@@ -347,8 +352,14 @@ class A101
         //@debug
         $accrual->email = 'null@vic-insurance.ru';
 
-        $plain = view('mail_plain', $accrual->toArray())->render();
-        $html = view('mail_html_' . $accrual->estate, $accrual->toArray())->render();
+        if ($accrual->sum > 0) {
+            $plain = view('mail/plain', $accrual->toArray())->render();
+            $html = view('mail/' . $accrual->estate, $accrual->toArray())->render();
+        } else {
+            // Долга нет, оплата не требуется
+            $plain = view('mail/plain_zero', $accrual->toArray())->render();
+            $html = view('mail/' . $accrual->estate . '_zero', $accrual->toArray())->render();
+        }
 
         $message = new UniOneMessage();
         $message->to($accrual->email, $accrual->name)

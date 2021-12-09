@@ -168,7 +168,7 @@
                                                 <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr style="line-height:0px"><td style="padding-right: 0px;padding-left: 0px;" align="center"><![endif]--><a
                                                     href="https://a101comfort.ru" target="_blank" style="outline:none"
                                                     tabindex="-1"><img class="center fixedwidth" align="center"
-                                                        border="0" src="https://i.postimg.cc/2j1DdFZf/a101-comfort.png"
+                                                        border="0" src="h{{ $base_url }}/images/a101-comfort.png"
                                                         style="text-decoration: none; -ms-interpolation-mode: bicubic; height: auto; border: 0; width: 100%; max-width: 192px; display: block;"
                                                         width="192"></a>
                                                 <!--[if mso]></td></tr></table><![endif]-->
@@ -201,7 +201,7 @@
                                                 style="padding-right: 0px;padding-left: 0px;">
                                                 <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr style="line-height:0px"><td style="padding-right: 0px;padding-left: 0px;" align="center"><![endif]--><img
                                                     class="center fixedwidth" align="center" border="0"
-                                                    src="https://i.postimg.cc/mtxDbP98/spanish.jpg"
+                                                    src="{{ $base_url }}/images/unknown.jpg"
                                                     alt="ЖК «Испанские кварталы»"
                                                     title="ЖК «Испанские кварталы»"
                                                     style="text-decoration: none; -ms-interpolation-mode: bicubic; height: auto; border: 0; width: 100%; max-width: 480px; display: block;"
@@ -277,6 +277,18 @@
                                                         style="margin: 0; font-size: 15px; line-height: 1.2; word-break: break-word; text-align: center; mso-line-height-alt: 18px; margin-top: 0; margin-bottom: 0;">
                                                         <span style="font-size: 15px;">Во вложении счёт за коммунальные
                                                             услуги.</span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <!--[if mso]></td></tr></table><![endif]-->
+                                            <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 25px; padding-left: 25px; padding-top: 5px; padding-bottom: 0px; font-family: Arial, sans-serif"><![endif]-->
+                                            <div
+                                                style="color:#555555;font-family:'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;line-height:1.2;padding-top:5px;padding-right:25px;padding-bottom:0px;padding-left:25px;">
+                                                <div class="txtTinyMce-wrapper"
+                                                    style="line-height: 1.2; font-size: 12px; font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #555555; mso-line-height-alt: 14px;">
+                                                    <p
+                                                        style="margin: 0; font-size: 15px; line-height: 1.2; word-break: break-word; text-align: center; mso-line-height-alt: 18px; margin-top: 0; margin-bottom: 0;">
+                                                            <span style="font-size: 15px;">Баланс вашего лицевого счета составляет {{ $balance_text }} Оплата не требуется.</span>
                                                     </p>
                                                 </div>
                                             </div>
@@ -362,20 +374,7 @@
                                                     <p
                                                         style="margin: 0; font-size: 14px; line-height: 1.2; word-break: break-word; text-align: right; mso-line-height-alt: 17px; margin-top: 0; margin-bottom: 0;">
                                                         <strong><span
-                                                                style="font-size: 15px;">Сумма<br></span></strong>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <!--[if mso]></td></tr></table><![endif]-->
-                                            <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 10px; padding-left: 10px; padding-top: 5px; padding-bottom: 5px; font-family: Arial, sans-serif"><![endif]-->
-                                            <div
-                                                style="color:#555555;font-family:Arial, Helvetica Neue, Helvetica, sans-serif;line-height:1.2;padding-top:5px;padding-right:10px;padding-bottom:5px;padding-left:10px;">
-                                                <div class="txtTinyMce-wrapper"
-                                                    style="line-height: 1.2; font-size: 12px; color: #555555; font-family: Arial, Helvetica Neue, Helvetica, sans-serif; mso-line-height-alt: 14px;">
-                                                    <p
-                                                        style="margin: 0; font-size: 14px; line-height: 1.2; word-break: break-word; text-align: right; mso-line-height-alt: 17px; margin-top: 0; margin-bottom: 0;">
-                                                        <strong><span
-                                                                style="font-size: 15px;">Срок оплаты до<br></span></strong>
+                                                                style="font-size: 15px;">Баланс<br></span></strong>
                                                     </p>
                                                 </div>
                                             </div>
@@ -425,19 +424,7 @@
                                                     style="line-height: 1.2; font-size: 12px; color: #555555; font-family: Arial, Helvetica Neue, Helvetica, sans-serif; mso-line-height-alt: 14px;">
                                                     <p
                                                         style="margin: 0; font-size: 15px; line-height: 1.2; word-break: break-word; text-align: left; mso-line-height-alt: 18px; margin-top: 0; margin-bottom: 0;">
-                                                        <span style="font-size: 15px;">{{ $sum }} руб.<br></span>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <!--[if mso]></td></tr></table><![endif]-->
-                                            <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 10px; padding-left: 10px; padding-top: 5px; padding-bottom: 5px; font-family: Arial, sans-serif"><![endif]-->
-                                            <div
-                                                style="color:#555555;font-family:Arial, Helvetica Neue, Helvetica, sans-serif;line-height:1.2;padding-top:5px;padding-right:10px;padding-bottom:5px;padding-left:10px;">
-                                                <div class="txtTinyMce-wrapper"
-                                                    style="line-height: 1.2; font-size: 12px; color: #555555; font-family: Arial, Helvetica Neue, Helvetica, sans-serif; mso-line-height-alt: 14px;">
-                                                    <p
-                                                        style="margin: 0; font-size: 15px; line-height: 1.2; word-break: break-word; text-align: left; mso-line-height-alt: 18px; margin-top: 0; margin-bottom: 0;">
-                                                        <span style="font-size: 15px;">{{ $valid_till }}<br></span>
+                                                        <span style="font-size: 15px;">{{ $balance_text }}<br></span>
                                                     </p>
                                                 </div>
                                             </div>
@@ -490,15 +477,6 @@
                                                     </tr>
                                                 </tbody>
                                             </table>
-                                            <div class="button-container" align="center"
-                                                style="padding-top:10px;padding-right:10px;padding-bottom:10px;padding-left:10px;">
-                                                <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-spacing: 0; border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;"><tr><td style="padding-top: 10px; padding-right: 10px; padding-bottom: 10px; padding-left: 10px" align="center"><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="{{ $link_confirm }}" style="height:31.5pt;width:187.5pt;v-text-anchor:middle;" arcsize="10%" stroke="false" fillcolor="#fb2e3b"><w:anchorlock/><v:textbox inset="0,0,0,0"><center style="color:#ffffff; font-family:Arial, sans-serif; font-size:16px"><![endif]--><a
-                                                    href="{{ $link_confirm }}" target="_blank"
-                                                    style="-webkit-text-size-adjust: none; text-decoration: none; display: inline-block; color: #ffffff; background-color: #fb2e3b; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; width: auto; width: auto; border-top: 1px solid #fb2e3b; border-right: 1px solid #fb2e3b; border-bottom: 1px solid #fb2e3b; border-left: 1px solid #fb2e3b; padding-top: 5px; padding-bottom: 5px; font-family: Arial, Helvetica Neue, Helvetica, sans-serif; text-align: center; mso-border-alt: none; word-break: keep-all;"><span
-                                                        style="padding-left:45px;padding-right:45px;font-size:16px;display:inline-block;letter-spacing:undefined;"><span
-                                                            style="font-size: 16px; line-height: 2; word-break: break-word; mso-line-height-alt: 32px;">Оплатить</span></span></a>
-                                                <!--[if mso]></center></v:textbox></v:roundrect></td></tr></table><![endif]-->
-                                            </div>
                                             <table class="divider" border="0" cellpadding="0" cellspacing="0"
                                                 width="100%"
                                                 style="table-layout: fixed; vertical-align: top; border-spacing: 0; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;"

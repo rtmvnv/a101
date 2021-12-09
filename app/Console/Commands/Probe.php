@@ -4,11 +4,14 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use App\Models\Accrual;
+use App\MoneyMailRu\MoneyMailRu;
 use App\A101;
 use App\UniOne;
 use App\UniOneMessage;
 use App\UniOneException;
+use NumberFormatter;
 
 class Probe extends Command
 {
@@ -45,7 +48,7 @@ class Probe extends Command
     {
         $a101 = new A101();
         echo $a101->apiAccrualsPostSignature([
-            'sum' => 0,
+            'sum' => 100,
             'period' => '202111',
             'email' => 'test@example.com',
             'account' => 'ИК123456',

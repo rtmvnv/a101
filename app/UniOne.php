@@ -48,7 +48,6 @@ class UniOne
          * Лог запроса
          */
         $bodyLog = (array)$body;
-        unset($bodyLog['message']['body']['plaintext']);
         unset($bodyLog['message']['body']['html']);
         unset($bodyLog['message']['attachments']);
 
