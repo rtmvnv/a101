@@ -76,10 +76,6 @@ class A101
         $signature = $signature . env('A101_SIGNATURE');
         $signature = hash('sha1', $signature);
 
-        $signature = base64_encode($signature);
-        $signature = $signature . env('A101_SIGNATURE');
-        $signature = hash('sha1', $signature);
-
         return $signature;
     }
 
@@ -350,7 +346,7 @@ class A101
     public function sendAccrual(Accrual $accrual)
     {
         //@debug
-        $accrual->email = 'null@vic-insurance.ru';
+        $accrual->email = 'Grigorev_al@a101comfort.ru';
 
         if ($accrual->sum > 0) {
             $plain = view('mail/plain', $accrual->toArray())->render();
