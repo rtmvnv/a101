@@ -73,6 +73,7 @@ class LogApi
             }
         }
 
+        $this->record['response_code'] = $this->response->status();
         $this->record['response_time'] = $this->responseTime->format('c');
         $this->record['elapsed'] = $this->responseTime->floatDiffInSeconds($this->requestTime);
     }
