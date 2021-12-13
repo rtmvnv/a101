@@ -80,37 +80,38 @@ class UniOne
                     'http_errors' => false
                 ]
             );
-            $responseTime = CarbonImmutable::now();
 
             /**
              * Лог ответа
              */
-            $jsonResponse = json_decode($response->getBody(), true, 512, JSON_OBJECT_AS_ARRAY);
+            $jsonResponse = json_decode($response->getBody(), true, 512);
             if (json_last_error() === JSON_ERROR_NONE) {
                 // В ответе пришел JSON
-                $record['response']['content'] = $jsonResponse;
+                $record['response_type'] = 'json';
+                $record['response'] = $jsonResponse;
             } else {
                 // Ответ неструктурирован
-                $record['response']['raw'] = $response->getBody();
+                $record['response_type'] = 'raw';
+                $record['response_raw'] = $response->getBody();
             }
         } catch (\Throwable $th) {
-            $responseTime = CarbonImmutable::now();
-            $record['response'] = [
-                'exception' => [
-                    'message' => $th->getMessage(),
-                    'code' => $th->getCode(),
-                    'file' => $th->getFile(),
-                    'line' => $th->getLine(),
-                ],
+            // В ответе пришло исключение
+            $record['response_type'] = 'exception';
+            $record['response']['exception'] = [
+                'message' => $response->exception->getMessage(),
+                'code' => $response->exception->getCode(),
+                'file' => $response->exception->getFile(),
+                'line' => $response->exception->getLine(),
             ];
         }
 
+        $responseTime = CarbonImmutable::now();
         $record['response_time'] = $responseTime->format('c');
         $record['elapsed'] = $responseTime->floatDiffInSeconds($requestTime);
 
         Log::info('outgoing-unione', $record);
 
-        return json_decode($response->getBody(), true, 10, JSON_THROW_ON_ERROR);
+        return json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
     }
 
     /**

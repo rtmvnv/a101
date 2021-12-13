@@ -22,6 +22,8 @@ class CreateAccrualsTable extends Migration
             $table->string('email')->comment('Email');
             $table->string('name')->comment('ФИО');
             $table->binary('attachment')->comment('Квитанция в формате PDF');
+            $table->string('unione_id')->nullable()->comment('Номер задания (job_id) у UniSender');
+            $table->string('unione_status')->nullable()->comment('Статус доставки письма');
             $table->text('url_bank')->nullable()->comment('Ссылка для оплаты на страницу банка');
             $table->string('transaction_id')->nullable()->comment('Номер транзакции у Mail.ru');
             $table->timestampsTz();

@@ -371,6 +371,7 @@ class A101
         $result = $message->send();
 
         if ($result['status'] === 'success') {
+            $accrual->unione_id = $result['job_id'];
             $accrual->sent_at = now();
             $accrual->save();
             return true;

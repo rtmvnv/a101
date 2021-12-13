@@ -27,6 +27,24 @@ Route::post('/a101/accruals', [A101::class, 'apiAccrualsPost'])
 Route::get('/a101/payments', [A101::class, 'apiPaymentsGet'])
     ->middleware('log.api:incoming-api-payments');
 
+Route::post('/unione', function (Request $request) {
+    /**
+     * https://docs.unione.ru/web-api-ref#callback-format
+     */
+    if ($request->event_name !== 'transactional_email_status') {
+        return;
+    }
+
+    // Найти транзакцию
+    $accrual = Accrual::where('unione_id', $request->job_id)->first();
+    if (empty($accrual)) {
+        return;
+    }
+
+    $accrual->unione_status = $request->status;
+    $accrual->save();
+})->middleware('log.api:incoming-unione');
+
 Route::post('/mailru', function (Request $request) {
     // Прочитать колбек
     try {
