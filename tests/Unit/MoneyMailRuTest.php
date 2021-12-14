@@ -13,7 +13,7 @@ class MoneyMailRuTest extends TestCase
      *
      * @return void
      */
-    public function test_callback_interface_exists()
+    public function testCallbackInterfaceExists()
     {
         $response = $this->post(
             '/api/mailru',
@@ -28,7 +28,7 @@ class MoneyMailRuTest extends TestCase
      *
      * @return void
      */
-    public function test_connects()
+    public function testConnects()
     {
         $module = new MoneyMailRu();
         $result = $module->request('merchant/info');

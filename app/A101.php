@@ -11,15 +11,40 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\UniOne\UniOne;
 use App\UniOne\Message;
+use App\MoneyMailRu\Callback;
 
 class A101
 {
+    /**
+     * Обработчик POST запросов к /api/unione
+     *
+     * @return Response
+     */
+    public function postApiUnione(Request $request)
+    {
+        /**
+         * https://docs.unione.ru/web-api-ref#callback-format
+         */
+        if ($request->event_name !== 'transactional_email_status') {
+            return;
+        }
+
+        // Найти транзакцию
+        $accrual = Accrual::where('unione_id', $request->job_id)->first();
+        if (empty($accrual)) {
+            return;
+        }
+
+        $accrual->unione_status = $request->status;
+        $accrual->save();
+    }
+
     /**
      * Обработчик POST запросов к /api/mailru
      *
      * @return Response
      */
-    public function apiMailruPost(Request $request)
+    public function postApiMailru(Request $request)
     {
         // Прочитать колбек
         try {
@@ -66,7 +91,7 @@ class A101
         return $callback->respondOk();
     }
 
-    public function apiAccrualsPostSignature(array $data)
+    public function postApiAccrualsSignature(array $data)
     {
         $signature = $data['sum']
             . $data['period']
@@ -86,7 +111,7 @@ class A101
      *
      * @return Response
      */
-    public function apiAccrualsPost(Request $request)
+    public function postApiAccruals(Request $request)
     {
         try {
             // Про формат обмена данными JSON API
@@ -123,7 +148,7 @@ class A101
             /**
              * Проверить подпись
              */
-            $signature = $this->apiAccrualsPostSignature($request->all());
+            $signature = $this->postApiAccrualsSignature($request->all());
 
             if (strcmp($request->signature, $signature) !== 0) {
                 $data = [
@@ -200,7 +225,7 @@ class A101
                 $data = [
                     'status' => 503,
                     'title' => 'Error sending email',
-                    'description' => $request,
+                    'description' => $result,
                 ];
                 return response($data, $data['status'])
                     ->header('Content-Type', 'application/problem+json');
@@ -226,7 +251,7 @@ class A101
         }
     }
 
-    public function apiPaymentsGetSignature(array $data)
+    public function getApiPaymentsSignature(array $data)
     {
         $signature = $data['from'];
         if (!empty($data['to'])) {
@@ -245,7 +270,7 @@ class A101
      *
      * @return Response
      */
-    public function apiPaymentsGet(Request $request)
+    public function getApiPayments(Request $request)
     {
         /**
          * Валидировать данные запроса
@@ -273,7 +298,7 @@ class A101
         /**
          * Проверить подпись
          */
-        $signature = $this->apiPaymentsGetSignature($request->all());
+        $signature = $this->getApiPaymentsSignature($request->all());
 
         if (strcmp($request->signature, $signature) !== 0) {
             $data = [
@@ -348,7 +373,7 @@ class A101
     public function sendAccrual(Accrual $accrual)
     {
         //@debug
-        $accrual->email = 'Grigorev_al@a101comfort.ru';
+        $accrual->email = 'a101@vic-insurance.ru';
 
         if ($accrual->sum > 0) {
             $plain = view('mail/plain', $accrual->toArray())->render();

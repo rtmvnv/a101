@@ -14,7 +14,7 @@ class UniOneTest extends TestCase
      *
      * @return void
      */
-    public function test_connects()
+    public function testConnects()
     {
         $unione = new UniOne(config('services.unione.api_key'));
         $result = $unione->systemInfo();
@@ -26,7 +26,7 @@ class UniOneTest extends TestCase
      *
      * @return void
      */
-    public function test_empty_message()
+    public function testEmptyMessage()
     {
         $message = new Message();
 
@@ -39,7 +39,7 @@ class UniOneTest extends TestCase
      *
      * @return void
      */
-    public function test_message_body()
+    public function testMessageBody()
     {
         $message = new Message();
         $message->to('null@vic-insurance.ru', 'No Name');
@@ -51,5 +51,4 @@ class UniOneTest extends TestCase
         $result = $unione->emailSend($message);
         $this->assertTrue($result['status'] === 'success');
     }
-
 }

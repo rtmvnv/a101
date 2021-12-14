@@ -1,23 +1,20 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Feature;
 
-use App\Service;
-use App\UniOne\UniOne;
-use App\UniOne\Message;
 use Tests\TestCase;
-use Illuminate\Support\Facades\Log;
-use Mockery;
-use Mockery\MockInterface;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class A101ApiTest extends TestCase
+class ApiA101Test extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * Test the /api/a101/accruals interface.
      *
      * @return void
      */
-    public function test_accruals()
+    public function testAccruals()
     {
         /*
          * Проверить, что подпись проверяется
@@ -73,7 +70,7 @@ class A101ApiTest extends TestCase
      *
      * @return void
      */
-    public function test_payments()
+    public function testPayments()
     {
         $requestData =  [];
         $response = $this->call('GET', '/api/a101/payments', $requestData);

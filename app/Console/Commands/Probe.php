@@ -44,7 +44,7 @@ class Probe extends Command
     public function handle()
     {
         $a101 = new A101();
-        echo $a101->apiAccrualsPostSignature([
+        echo $a101->postApiAccrualsSignature([
             'sum' => 100,
             'period' => '202111',
             'email' => 'test@example.com',
