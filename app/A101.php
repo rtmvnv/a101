@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\UniOne\UniOne;
+use App\UniOne\Message;
 
 class A101
 {
@@ -357,7 +359,7 @@ class A101
             $html = view('mail/' . $accrual->estate . '_zero', $accrual->toArray())->render();
         }
 
-        $message = new UniOneMessage();
+        $message = new Message();
         $message->to($accrual->email, $accrual->name)
             ->subject("Квитанция по лицевому счету {$accrual->account} за {$accrual->period_text}")
             ->plain($plain)
@@ -368,7 +370,8 @@ class A101
                 $accrual->attachment
             );
 
-        $result = $message->send();
+        $unione = new UniOne();
+        $result = $unione->emailSend($message);
 
         if ($result['status'] === 'success') {
             $accrual->unione_id = $result['job_id'];

@@ -20,6 +20,9 @@ class LogMailru extends LogApi
     {
         parent::render();
 
+        if (!isset($this->record['request']['data'])) {
+            $this->record['request']['data'] = '';
+        }
         $json = base64_decode($this->record['request']['data'], true);
         if ($json !== false) {
             $array = json_decode($json, true);

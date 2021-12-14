@@ -3,9 +3,9 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use App\UniOne;
-use App\UniOneMessage;
-use App\UniOneException;
+use App\UniOne\UniOne;
+use App\UniOne\Message;
+use App\UniOne\Exception;
 
 class UniOneTest extends TestCase
 {
@@ -22,32 +22,33 @@ class UniOneTest extends TestCase
     }
 
     /**
-     * Test that body() throws an exception on empty UniOneMessage.
+     * Test that body() throws an exception on empty Message.
      *
      * @return void
      */
     public function test_empty_message()
     {
-        $message = new UniOneMessage();
-        
-        $this->expectException(UniOneException::class);
+        $message = new Message();
+
+        $this->expectException(Exception::class);
         $message->build();
     }
 
     /**
-     * Test that UniOneMessage->body() returns correct data.
+     * Test that Message->body() returns correct data.
      *
      * @return void
      */
     public function test_message_body()
     {
-        $message = new UniOneMessage();
+        $message = new Message();
         $message->to('null@vic-insurance.ru', 'No Name');
         $message->subject('subject');
         $message->plain('body');
         $this->assertIsArray($message->build());
 
-        $result = $message->send();
+        $unione = new UniOne();
+        $result = $unione->emailSend($message);
         $this->assertTrue($result['status'] === 'success');
     }
 

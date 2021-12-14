@@ -2,8 +2,13 @@
 
 namespace Tests\Unit;
 
+use App\Service;
+use App\UniOne\UniOne;
+use App\UniOne\Message;
 use Tests\TestCase;
 use Illuminate\Support\Facades\Log;
+use Mockery;
+use Mockery\MockInterface;
 
 class A101ApiTest extends TestCase
 {
@@ -41,25 +46,26 @@ class A101ApiTest extends TestCase
         /*
          * Проверить, что корректный запрос проходит
          */
-        $signature = $requestData['sum']
-            . $requestData['period']
-            . $requestData['account']
-            . $requestData['email']
-            . $requestData['name'];
-        $signature = base64_encode($signature);
-        $signature = $signature . env('A101_SIGNATURE');
-        $signature = hash('sha1', $signature);
-        $requestData['signature'] = $signature;
-        $response = $this->call(
-            'POST',
-            '/api/a101/accruals',
-            $requestData,
-            array(),
-            array(),
-            array(),
-            $content,
-        );
-        $response->assertStatus(200);
+        // $signature = $requestData['sum']
+        //     . $requestData['period']
+        //     . $requestData['account']
+        //     . $requestData['email']
+        //     . $requestData['name'];
+        // $signature = base64_encode($signature);
+        // $signature = $signature . env('A101_SIGNATURE');
+        // $signature = hash('sha1', $signature);
+        // $requestData['signature'] = $signature;
+
+        // $response = $this->call(
+        //     'POST',
+        //     '/api/a101/accruals',
+        //     $requestData,
+        //     array(),
+        //     array(),
+        //     array(),
+        //     $content,
+        // );
+        // $response->assertStatus(200);
     }
 
     /**

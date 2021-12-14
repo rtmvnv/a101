@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\UniOne;
+use App\UniOne\UniOne;
 
 class UnioneWebhookDelete extends Command
 {

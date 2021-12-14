@@ -3,26 +3,23 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\UniOne\UniOne;
+use App\A101;
 
-/**
- * https://docs.unione.ru/web-api-ref#webhook
- */
-class UnioneWebhookGet extends Command
+class GenerateSignature extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'unione:webhook_get {url}';
+    protected $signature = 'signature';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Calculate A101 request signature';
 
     /**
      * Create a new command instance.
@@ -41,14 +38,14 @@ class UnioneWebhookGet extends Command
      */
     public function handle()
     {
-        $requestBody = [
-            'url' => $this->argument('url'),
-        ];
-        print_r($requestBody);
-        echo PHP_EOL;
-
-        $unione = app(UniOne::class);
-        print_r($unione->request('webhook/get.json', $requestBody));
+        $a101 = new A101();
+        echo $a101->apiAccrualsPostSignature([
+            'sum' => 100,
+            'period' => '202111',
+            'email' => 'test@example.com',
+            'account' => 'ИК123456',
+            'name' => 'Имя User-Name',
+        ]);
 
         return Command::SUCCESS;
     }

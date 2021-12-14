@@ -22,7 +22,6 @@ use App\A101;
 
 Route::post('/a101/accruals', [A101::class, 'apiAccrualsPost'])
     ->middleware('log.api:incoming-api-accruals');
-    // ->middleware('log.mongo:a101');
 
 Route::get('/a101/payments', [A101::class, 'apiPaymentsGet'])
     ->middleware('log.api:incoming-api-payments');

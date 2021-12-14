@@ -1,13 +1,13 @@
 <?php
 
-namespace App;
+namespace App\UniOne;
 
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Utils;
 use Carbon\CarbonImmutable;
-use App\UniOneMessage;
+use App\UniOne\Message;
 
 class UniOne
 {
@@ -118,13 +118,23 @@ class UniOne
      * Возвращает информацию о пользователе или проекте по API ключу.
      * https://docs.unione.ru/web-api-ref?php#system-info
      *
-     * @param  string  $uri
-     * @param  string  $body
-     *
      * @return array
      */
     public function systemInfo()
     {
         return $this->request('system/info.json');
+    }
+
+    /**
+     * Метод для отправки писем вашим подписчикам.
+     * https://docs.unione.ru/web-api-ref?php#email
+     *
+     * @param  \App\UniOne\Message  $message
+     *
+     * @return array
+     */
+    public function emailSend($message)
+    {
+        return $this->request('email/send.json', $message->build());
     }
 }
