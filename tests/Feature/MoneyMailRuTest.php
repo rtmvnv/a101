@@ -6,15 +6,12 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Http\Request;
 use App\A101;
 use App\Models\Accrual;
-use App\MoneyMailRu\Callback;
 
 class MoneyMailRuTest extends TestCase
 {
     use RefreshDatabase;
-
 
     /**
      * При получении нового счета старый неоплаченный счет
@@ -148,7 +145,7 @@ class MoneyMailRuTest extends TestCase
         $response->assertStatus(200);
 
         // Информация о платеже есть в базе
-        $this->assertDatabaseHas('accruals', ['transaction_id' => $transaction_id ]);
+        $this->assertDatabaseHas('accruals', ['transaction_id' => $transaction_id]);
 
         $accrual = Accrual::where('transaction_id', $transaction_id)->first();
         $this->assertNotEmpty($accrual);
