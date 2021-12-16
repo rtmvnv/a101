@@ -16,16 +16,16 @@ use App\A101;
 */
 
 Route::post('/a101/accruals', [A101::class, 'postApiAccruals'])
-    ->middleware('log.api:incoming-api-accruals');
+    ->middleware('log.api:incoming-accruals');
 
 Route::get('/a101/payments', [A101::class, 'getApiPayments'])
-    ->middleware('log.api:incoming-api-payments');
+    ->middleware('log.api:incoming-payments');
 
 Route::post('/unione', [A101::class, 'postApiUnione'])
-    ->middleware('log.api:incoming-api-unione');
+    ->middleware('log.api:incoming-unione');
 
 Route::post('/mailru', [A101::class, 'postApiMailru'])
-    ->middleware('log.mailru:incoming-api-mailru');
+    ->middleware('log.mailru:incoming-mailru');
 
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
