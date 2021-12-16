@@ -90,7 +90,7 @@ class UniOne
             } else {
                 // Ответ неструктурирован
                 $record['response_type'] = 'raw';
-                $record['response_raw'] = $response->getBody();
+                $record['response_raw'] = $response->getBody()->getContents();
             }
         } catch (\Throwable $th) {
             // В ответе пришло исключение
