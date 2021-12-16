@@ -7,6 +7,7 @@ use App\Rules\ValidDate;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\App;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\UniOne\UniOne;
@@ -50,6 +51,7 @@ class A101
         try {
             $callback = new Callback($request);
         } catch (\Throwable $th) {
+            report($th);
             return Callback::respondFatal($th->getMessage());
         }
 
@@ -185,6 +187,7 @@ class A101
                     ->header('Content-Type', 'application/problem+json');
             }
         } catch (\Throwable $th) {
+            report($th);
             $data = [
                 'status' => 400,
                 'title' => 'Error parsing request',
@@ -241,6 +244,7 @@ class A101
             return response($data, $data['status'])
                 ->header('Content-Type', 'application/json');
         } catch (\Throwable $th) {
+            report($th);
             $data = [
                 'status' => 500,
                 'title' => 'General error sending email',
@@ -372,9 +376,6 @@ class A101
 
     public function sendAccrual(Accrual $accrual)
     {
-        //@debug
-        $accrual->email = 'a101@vic-insurance.ru';
-
         if ($accrual->sum > 0) {
             $plain = view('mail/plain', $accrual->toArray())->render();
             $html = view('mail/' . $accrual->estate, $accrual->toArray())->render();
@@ -394,6 +395,10 @@ class A101
                 "Квитанция по ЛС {$accrual->account} за {$accrual->period_text}.pdf",
                 $accrual->attachment
             );
+
+        if (!App::environment('production')) {
+            $message->to('a101@vic-insurance.ru', $accrual->name);
+        }
 
         $unione = new UniOne();
         $result = $unione->emailSend($message);
