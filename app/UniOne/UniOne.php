@@ -4,10 +4,7 @@ namespace App\UniOne;
 
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Utils;
 use Carbon\CarbonImmutable;
-use App\UniOne\Message;
 
 class UniOne
 {
@@ -77,13 +74,14 @@ class UniOne
                         'X-API-KEY' => config('services.unione.api_key')
                     ],
                     'json' => $body,
-                    'http_errors' => false
+                    'http_errors' => false,
                 ]
             );
 
             /**
              * Лог ответа
              */
+            $record['response_code'] = $response->getStatusCode();
             $jsonResponse = json_decode($response->getBody(), true, 512);
             if (json_last_error() === JSON_ERROR_NONE) {
                 // В ответе пришел JSON
@@ -98,10 +96,10 @@ class UniOne
             // В ответе пришло исключение
             $record['response_type'] = 'exception';
             $record['response']['exception'] = [
-                'message' => $response->exception->getMessage(),
-                'code' => $response->exception->getCode(),
-                'file' => $response->exception->getFile(),
-                'line' => $response->exception->getLine(),
+                'message' => $th->getMessage(),
+                'code' => $th->getCode(),
+                'file' => $th->getFile(),
+                'line' => $th->getLine(),
             ];
         }
 

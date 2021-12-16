@@ -396,7 +396,13 @@ class A101
             );
 
         $unione = new UniOne();
-        $result = $unione->emailSend($message);
+
+        //@debug
+        // $result = $unione->emailSend($message);
+        $result = [
+            'status' => 'success',
+            'job_id' => 'debug',
+        ];
 
         if ($result['status'] === 'success') {
             $accrual->unione_id = $result['job_id'];
