@@ -29,6 +29,7 @@ class CreateAccrualsTable extends Migration
             $table->string('transaction_id')->nullable()->comment('Номер транзакции у Mail.ru');
             $table->timestampsTz();
             $table->timestampTz('sent_at')->nullable()->comment('Время отправки письма');
+            $table->timestampTz('opened_at')->nullable()->comment('Время первого перехода по ссылке из письма');
             $table->timestampTz('confirmed_at')->nullable()->comment('Время нажатия клиентом ссылки "Оплатить"');
             $table->timestampTz('paid_at')->nullable()->comment('Время проведения платежа');
             $table->timestampTz('archived_at')->nullable()->comment('Время когда квитанция потеряла актуальность');
