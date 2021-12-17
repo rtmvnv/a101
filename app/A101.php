@@ -37,6 +37,7 @@ class A101
         }
 
         $accrual->unione_status = $request->status;
+        $accrual->unione_at = now();
         $accrual->save();
     }
 
@@ -376,14 +377,8 @@ class A101
 
     public function sendAccrual(Accrual $accrual)
     {
-        if ($accrual->sum > 0) {
-            $plain = view('mail/plain', $accrual->toArray())->render();
-            $html = view('mail/' . $accrual->estate, $accrual->toArray())->render();
-        } else {
-            // Долга нет, оплата не требуется
-            $plain = view('mail/plain_zero', $accrual->toArray())->render();
-            $html = view('mail/' . $accrual->estate . '_zero', $accrual->toArray())->render();
-        }
+        $plain = view('mail/plain', $accrual->toArray())->render();
+        $html = view('mail/html', $accrual->toArray())->render();
 
         $message = new Message();
         $message->to($accrual->email, $accrual->name)

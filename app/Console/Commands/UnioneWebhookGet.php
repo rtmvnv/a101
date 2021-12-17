@@ -22,7 +22,7 @@ class UnioneWebhookGet extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Gets properties of a Unione webhook';
 
     /**
      * Create a new command instance.

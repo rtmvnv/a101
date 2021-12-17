@@ -24,11 +24,11 @@ class CreateAccrualsTable extends Migration
             $table->binary('attachment')->comment('Квитанция в формате PDF');
             $table->string('unione_id')->nullable()->comment('Номер задания (job_id) у UniSender');
             $table->string('unione_status')->nullable()->comment('Статус доставки письма');
+            $table->timestampTz('unione_at')->nullable()->comment('Время получения последнего статуса от Unione');
             $table->text('url_bank')->nullable()->comment('Ссылка для оплаты на страницу банка');
             $table->string('transaction_id')->nullable()->comment('Номер транзакции у Mail.ru');
             $table->timestampsTz();
             $table->timestampTz('sent_at')->nullable()->comment('Время отправки письма');
-            $table->timestampTz('opened_at')->nullable()->comment('Время открытия письма клиентом');
             $table->timestampTz('confirmed_at')->nullable()->comment('Время нажатия клиентом ссылки "Оплатить"');
             $table->timestampTz('paid_at')->nullable()->comment('Время проведения платежа');
             $table->timestampTz('archived_at')->nullable()->comment('Время когда квитанция потеряла актуальность');

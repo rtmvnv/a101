@@ -28,6 +28,7 @@ class Accrual extends Model
         'name_case',
         'status',
         'estate',
+        'estate_text',
         'balance_text',
     ];
 
@@ -57,7 +58,7 @@ class Accrual extends Model
      */
     public function getBaseUrlAttribute()
     {
-        return url('/');
+        return config('app.url');
     }
 
     /**
@@ -65,7 +66,10 @@ class Accrual extends Model
      */
     public function getLinkConfirmAttribute()
     {
-        return url('/') . '/accrual/' . $this->uuid;
+        // Функция url() не работает, потому что при запросе по IP возвращает ответ тоже с IP,
+        // а не доменным именем. А IP не работает, потому что сервер находится за VPN.
+        // https://stackoverflow.com/questions/30093449/laravel-route-returning-naked-ip-address-instead-of-domain#comment111197221_30093449
+        return config('app.url') . '/accrual/' . $this->uuid;
     }
 
     /**
@@ -73,7 +77,7 @@ class Accrual extends Model
      */
     public function getLinkPayAttribute()
     {
-        return url('/') . '/accrual/' . $this->uuid . '/pay';
+        return config('app.url') . '/accrual/' . $this->uuid . '/pay';
     }
 
     /**
@@ -81,7 +85,7 @@ class Accrual extends Model
      */
     public function getLinkBackAttribute()
     {
-        return url('/') . '/accrual/' . $this->uuid . '/back';
+        return config('app.url') . '/accrual/' . $this->uuid . '/back';
     }
 
     /**
@@ -145,6 +149,31 @@ class Accrual extends Model
             return 'spanish2';
         }
         return 'unknown';
+    }
+
+    public function getEstateTextAttribute()
+    {
+        switch ($this->getEstateAttribute()) {
+            case 'spanish':
+                return 'ЖК "Испанские кварталы"';
+                break;
+
+            case 'scandinavia':
+                return 'ЖК "Скандинавия"';
+                break;
+
+            case 'nights':
+                return 'ЖК "Белые ночи"';
+                break;
+
+            case 'spanish2':
+                return 'ЖК "Испанские кварталы 2"';
+                break;
+
+            default:
+                return 'А101';
+                break;
+        }
     }
 
     public function getBalanceTextAttribute()

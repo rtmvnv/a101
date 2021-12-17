@@ -19,7 +19,7 @@ class UnioneWebhookDelete extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Delete address from the list of Unione webhooks';
 
     /**
      * Create a new command instance.

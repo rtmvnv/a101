@@ -8,7 +8,7 @@ use Carbon\CarbonImmutable;
 
 class UniOne
 {
-    const BASE_URI = 'https://eu1.unione.io/ru/transactional/api/v1/';
+    protected const BASE_URI = 'https://eu1.unione.io/ru/transactional/api/v1/';
 
     /**
      * Perform actual request to UniSender.
@@ -18,7 +18,7 @@ class UniOne
      * [
      *   [status] => error
      *   [code] => 102
-     *   [message] => Error ID:B4B650AE-C2C2-11EB-8122-AE60B670C2AF. Can not decode key 6gsp8885z45a4eoidgqdy4c9h5uez6nmxkf7mkyea
+     *   [message] => Error ID:B4B650AE-C2C2-11EB-8122-AE60B670C2AF.
      * ]
      *
      * info request
@@ -45,7 +45,7 @@ class UniOne
          * Лог запроса
          */
         $bodyLog = (array)$body;
-        unset($bodyLog['message']['body']['html']);
+        // unset($bodyLog['message']['body']['html']);
         unset($bodyLog['message']['attachments']);
 
         $requestTime = CarbonImmutable::now();

@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Models\Accrual;
+use App\UniOne\Message;
 use App\MoneyMailRu\MoneyMailRu;
 use App\A101;
 use NumberFormatter;
@@ -43,16 +44,20 @@ class Probe extends Command
      */
     public function handle()
     {
+        // echo url('/');
+        // exit;
+
         $a101 = new A101();
         echo $a101->postApiAccrualsSignature([
-            'sum' => 100,
+            'sum' => -23,
             'period' => '202111',
             'email' => 'test@example.com',
             'account' => 'ИК123456',
             'name' => 'Имя User-Name',
         ]);
+        exit;
 
-        // $accrual = Accrual::where('uuid', '320ade49-5bd8-4e58-b748-7c8ddfecf3eb')->first();
-        // print_r($accrual->status);
+        $accrual = Accrual::where('uuid', '9d872825-3431-41ff-bfcf-97eb9b3a487f')->first();
+        print_r($accrual->toArray());
     }
 }
