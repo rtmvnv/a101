@@ -47,17 +47,21 @@ class Probe extends Command
         // echo url('/');
         // exit;
 
-        $a101 = new A101();
-        echo $a101->postApiAccrualsSignature([
-            'sum' => -23,
-            'period' => '202111',
-            'email' => 'test@example.com',
-            'account' => 'ИК123456',
-            'name' => 'Имя User-Name',
-        ]);
-        exit;
+        // $a101 = new A101();
+        // echo $a101->postApiAccrualsSignature([
+        //     'sum' => -23,
+        //     'period' => '202111',
+        //     'email' => 'test@example.com',
+        //     'account' => 'ИК123456',
+        //     'name' => 'Имя User-Name',
+        // ]);
+        // exit;
 
-        $accrual = Accrual::where('uuid', '9d872825-3431-41ff-bfcf-97eb9b3a487f')->first();
-        print_r($accrual->toArray());
+        $accrual = Accrual::where('uuid', 'abb41790-58ed-497a-b874-56e5633b7b86')->first();
+        // print_r($accrual->toArray());
+
+        print_r($accrual->attributesToArray());
+        // print_r(array_merge($this->attributesToArray(), $this->relationsToArray()))
+        // print_r(array_merge($this->attributesToArray(), $this->relationsToArray()))
     }
 }

@@ -59,6 +59,7 @@ class LogWeb
                 'code' => $this->response->exception->getCode(),
                 'file' => $this->response->exception->getFile(),
                 'line' => $this->response->exception->getLine(),
+                'trace' => $this->response->exception->getTrace(),
             ];
         } else {
             $jsonResponse = json_decode($this->response->content(), true, 512, JSON_OBJECT_AS_ARRAY);

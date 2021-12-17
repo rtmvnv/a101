@@ -113,11 +113,11 @@ class Accrual extends Model
             return 'confirmed';
         }
 
-        if (empty($this->opened_at)) {
+        if (!empty($this->opened_at)) {
             return 'opened';
         }
 
-        if (empty($this->sent_at)) {
+        if (!empty($this->sent_at)) {
             return 'sent';
         }
 

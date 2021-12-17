@@ -18,13 +18,13 @@ use Illuminate\Support\Str;
 |
 */
 
-// Route::get('/', function (Request $request) {
-// });
-
 // Найти запись по полю uuid и вернуть в переменной accrual
 Route::get('/accrual/{accrual:uuid}', function (Accrual $accrual) {
+    Log::debug('accrual', ['a' => print_r($accrual->toArray(), true)]);
+    // Log::debug('accrual');
     switch ($accrual->status) {
         case 'sent': // Клиент первый раз перешел по ссылке из письма
+            Log::debug('sent');
             $accrual->opened_at = now();
             $accrual->save();
             return view('confirm', $accrual->toArray());
@@ -32,6 +32,7 @@ Route::get('/accrual/{accrual:uuid}', function (Accrual $accrual) {
 
         case 'opened': // Клиент перезагрузил страницу
         case 'confirmed': // Клиент еще раз перешел из письма
+            Log::debug('opened');
             return view('confirm', $accrual->toArray());
             break;
 
