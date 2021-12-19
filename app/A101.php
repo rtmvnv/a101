@@ -226,6 +226,9 @@ class A101
             $result = $this->sendAccrual($accrual);
 
             if ($result !== true) {
+                $accrual->archived_at = now();
+                $accrual->comment = 'Error sending email';
+                $accrual->save();
                 $data = [
                     'status' => 503,
                     'title' => 'Error sending email',
@@ -246,6 +249,9 @@ class A101
                 ->header('Content-Type', 'application/json');
         } catch (\Throwable $th) {
             report($th);
+            $accrual->archived_at = now();
+            $accrual->comment = 'General error sending email';
+            $accrual->save();
             $data = [
                 'status' => 500,
                 'title' => 'General error sending email',
