@@ -40,9 +40,9 @@ class GenerateSignature extends Command
     {
         $a101 = new A101();
         echo $a101->postApiAccrualsSignature([
-            'sum' => 100,
+            'sum' => -23,
             'period' => '202111',
-            'email' => 'test@example.com',
+            'email' => 'a101@vic-insurance.ru',
             'account' => 'ИК123456',
             'name' => 'Имя User-Name',
         ]);

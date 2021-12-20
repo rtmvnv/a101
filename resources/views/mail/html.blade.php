@@ -1,6 +1,7 @@
 @include('mail/header')
 @include('mail/estate')
 @include('mail/table')
-@include('mail/mobile_app')
+@include('mail/a101_postpay')
+@include('mail/a101_app')
 @include('mail/button')
 @include('mail/footer')

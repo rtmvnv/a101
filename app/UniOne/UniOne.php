@@ -45,7 +45,7 @@ class UniOne
          * Лог запроса
          */
         $bodyLog = (array)$body;
-        // unset($bodyLog['message']['body']['html']);
+        unset($bodyLog['message']['body']['html']);
         unset($bodyLog['message']['attachments']);
 
         $requestTime = CarbonImmutable::now();

@@ -29,7 +29,6 @@ Route::get('/accrual/{accrual:uuid}', function (Accrual $accrual) {
 
         case 'opened': // Клиент перезагрузил страницу
         case 'confirmed': // Клиент еще раз перешел из письма
-            Log::debug('opened');
             return view('confirm', $accrual->toArray());
             break;
 
