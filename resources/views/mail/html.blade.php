@@ -1,5 +1,6 @@
 @include('mail/header')
 @include('mail/estate')
-@include('mail/body')
+@include('mail/table')
 @include('mail/mobile_app')
+@include('mail/button')
 @include('mail/footer')
