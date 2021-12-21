@@ -42,7 +42,7 @@ class GenerateSignature extends Command
         echo $a101->postApiAccrualsSignature([
             'sum' => -23,
             'period' => '202111',
-            'email' => 'a101@vic-insurance.ru',
+            'email' => ' a101@vic-insurance.ru ; null@vic-insurance.ru , aivanov@vic-insurance.ru ',
             'account' => 'ИК123456',
             'name' => 'Имя User-Name',
         ]);

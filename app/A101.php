@@ -145,7 +145,6 @@ class A101
                     'sum' => 'bail|required|numeric',
                     'period' => 'bail|required|date_format:Ym',
                     'account' => 'bail|required|alpha_num',
-                    'email' => 'bail|required|email:rfc',
                     'name' => 'bail|required|string',
                     'signature' => 'bail|required|alpha_dash',
                 ]
@@ -162,8 +161,13 @@ class A101
             }
 
             /**
+             * Распарсить email
+             */
+
+            /**
              * Проверить подпись
              */
+            Log::debug($request->all());
             $signature = $this->postApiAccrualsSignature($request->all());
 
             if (strcmp($request->signature, $signature) !== 0) {
@@ -411,7 +415,7 @@ class A101
             );
 
         if (!App::environment('production')) {
-            $message->to('a101@vic-insurance.ru', $accrual->name);
+            // $message->to('a101@vic-insurance.ru', $accrual->name);
         }
 
         $unione = new UniOne();

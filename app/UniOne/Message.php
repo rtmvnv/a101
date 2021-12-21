@@ -15,13 +15,26 @@ class Message
     public $bodyPlain;
     public $attachments = [];
 
+    /**
+     * $email
+     */
     public function to($email, $name = '')
     {
-        $recipient = ['email' => $email];
-        if (!empty($name)) {
-            $recipient['substitutions']['to_name'] = $name;
+        $email = str_replace(',', ';', $email);
+        $emails = explode(';', $email);
+        $emails = array_unique($emails);
+
+        foreach ($emails as $value) {
+            $value = trim($value);
+            if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                continue;
+            }
+            $recipient = ['email' => $value];
+            if (!empty($name)) {
+                $recipient['substitutions']['to_name'] = trim($name);
+            }
+            $this->recipients[] = $recipient;
         }
-        $this->recipients[] = $recipient;
 
         return $this;
     }
