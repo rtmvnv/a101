@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use App\UniOne\UniOne;
 use App\UniOne\Message;
 use App\MoneyMailRu\Callback;
+use phpDocumentor\Reflection\Types\Boolean;
 
 class A101
 {
@@ -94,17 +95,29 @@ class A101
         return $callback->respondOk();
     }
 
-    public function postApiAccrualsSignature(array $data)
+    public function postApiAccrualsSignature(array $data, $verbose = false)
     {
         $signature = $data['sum']
             . $data['period']
             . $data['account']
             . $data['email']
             . $data['name'];
+        if ($verbose) {
+            echo '1 concatenate: ' . $signature . PHP_EOL;
+        }
 
         $signature = base64_encode($signature);
+        if ($verbose) {
+            echo '2 base64_encode(): ' . $signature . PHP_EOL;
+        }
         $signature = $signature . env('A101_SIGNATURE');
+        if ($verbose) {
+            echo '3. add key: ' . $signature . PHP_EOL;
+        }
         $signature = hash('sha1', $signature);
+        if ($verbose) {
+            echo '4. sha1(): ' . $signature . PHP_EOL . PHP_EOL;
+        }
 
         return $signature;
     }
