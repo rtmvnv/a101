@@ -226,7 +226,7 @@ class A101
             $accrual->email = $request->email;
             $accrual->name = $request->name;
             $accrual->comment = '';
-            $accrual->attachment = $attachment;
+            $accrual->attachment = '';
 
             if ($accrual->sum <= 0) {
                 $accrual->archived_at = now();
@@ -239,7 +239,7 @@ class A101
             /**
              * Отправить письмо
              */
-            $result = $this->sendAccrual($accrual);
+            $result = $this->sendAccrual($accrual, $attachment);
 
             if ($result !== true) {
                 $accrual->archived_at = now();
@@ -397,7 +397,7 @@ class A101
         }
     }
 
-    public function sendAccrual(Accrual $accrual)
+    public function sendAccrual(Accrual $accrual, $attachment)
     {
         $plain = view('mail/plain', $accrual->toArray())->render();
         $html = view('mail/html', $accrual->toArray())->render();
@@ -410,7 +410,7 @@ class A101
             ->addAttachment(
                 'application/pdf',
                 "Квитанция по ЛС {$accrual->account} за {$accrual->period_text}.pdf",
-                $accrual->attachment
+                $attachment
             );
 
         if (!App::environment('production')) {

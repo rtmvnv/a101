@@ -34,7 +34,7 @@ class AccrualFactory extends Factory
             'url_bank' => '',
             'created_at' => $this->faker->dateTimeBetween('-1 week'),
             'updated_at' => now(),
-            'attachment' => 'sample pdf file',
+            'attachment' => '',
             // 'sent_at' => null,
             // 'opened_at' => null,
             // 'confirmed_at' => null,
