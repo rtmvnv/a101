@@ -85,10 +85,10 @@ class Reconciliation extends Command
              * Download the message
              */
             $message = $mailbox->getMail($mailId);
-            $attachements = $message->getAttachments();
-            if (!$attachements) {
+            $attachments = $message->getAttachments();
+            if (!$attachments) {
                 throw new \Exception(
-                    "Mail message '{$message->subject}' has no attachements",
+                    "Mail message '{$message->subject}' has no attachments",
                     15908295
                 );
             }
@@ -96,15 +96,15 @@ class Reconciliation extends Command
             echo $message->subject . PHP_EOL;
 
             /**
-             * Save attachement to disk
+             * Save attachment to disk
              */
-            $attachement = reset($attachements); // Get the first attachement
-            $filePath = storage_path('reconciliation' . DIRECTORY_SEPARATOR . $attachement->name);
-            $attachement->setFilePath($filePath);
-            $attachement->saveToDisk();
+            $attachment = reset($attachments); // Get the first attachment
+            $filePath = storage_path('reconciliation' . DIRECTORY_SEPARATOR . $attachment->name);
+            $attachment->setFilePath($filePath);
+            $attachment->saveToDisk();
 
             /**
-             * Process attachement
+             * Process attachment
              */
             $handle = fopen($filePath, 'r');
             if (!$handle) {
@@ -127,7 +127,7 @@ class Reconciliation extends Command
             //     [11] => "Номер карты"            555555..5599
             //     [12] => "Дата АБС"
             // ]
-            $line = mb_convert_encoding(fgets($handle), 'utf-8', $attachement->charset);
+            $line = mb_convert_encoding(fgets($handle), 'utf-8', $attachment->charset);
             $header = array_map('trim', explode(';', $line));
 
             $result = []; // Итоговый список расхождений
@@ -137,7 +137,7 @@ class Reconciliation extends Command
             //
             $transactions = []; // Копия реестра
             while (($line = fgets($handle)) !== false) {
-                $line = mb_convert_encoding($line, 'utf-8', $attachement->charset);
+                $line = mb_convert_encoding($line, 'utf-8', $attachment->charset);
                 $transaction = array_map('trim', explode(';', $line));
                 $transactions[$transaction[4]] = $transaction;
 
