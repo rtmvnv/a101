@@ -167,7 +167,6 @@ class A101
             /**
              * Проверить подпись
              */
-            Log::debug($request->all());
             $signature = $this->postApiAccrualsSignature($request->all());
 
             if (strcmp($request->signature, $signature) !== 0) {
