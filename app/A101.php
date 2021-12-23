@@ -411,6 +411,16 @@ class A101
                 'application/pdf',
                 "Квитанция по ЛС {$accrual->account} за {$accrual->period_text}.pdf",
                 $attachment
+            )
+            ->addInlineAttachment(
+                'image/png',
+                "a101-comfort.png",
+                base64_encode(file_get_contents(public_path('images/a101-comfort.png')))
+            )
+            ->addInlineAttachment(
+                'image/jpg',
+                "estate",
+                base64_encode(file_get_contents(public_path('images/' . $accrual->estate . '.jpg')))
             );
 
         if (!App::environment('production')) {

@@ -14,6 +14,7 @@ class Message
     public $bodyHtml;
     public $bodyPlain;
     public $attachments = [];
+    public $inline_attachments = [];
 
     /**
      * $email
@@ -82,6 +83,17 @@ class Message
     }
 
     /**
+     *
+     * $content должен быть закодирован в base64
+     */
+    public function addInlineAttachment($type, $name, $content)
+    {
+        $this->inline_attachments[] = ['type' => $type, 'name' => $name, 'content' => $content];
+
+        return $this;
+    }
+
+    /**
      * Returns message body to be used by the UniOne->request function.
      *
      * @return array
@@ -130,6 +142,11 @@ class Message
         // attachments
         if (!empty($this->attachments)) {
             $body['message']['attachments'] = $this->attachments;
+        }
+
+        // inlineAttachments
+        if (!empty($this->inline_attachments)) {
+            $body['message']['inline_attachments'] = $this->inline_attachments;
         }
 
         return $body;

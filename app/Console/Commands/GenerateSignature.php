@@ -40,12 +40,12 @@ class GenerateSignature extends Command
     {
         $a101 = new A101();
         echo $a101->postApiAccrualsSignature([
-            'sum' => -23,
+            'sum' => 100,
             'period' => '202111',
-            'email' => ' a101@vic-insurance.ru ; null@vic-insurance.ru , aivanov@vic-insurance.ru ',
+            'email' => 'aivanov@vic-insurance.ru',
             'account' => 'ИК123456',
             'name' => 'Имя User-Name',
-        ]);
+        ]) . PHP_EOL;
 
         return Command::SUCCESS;
     }
