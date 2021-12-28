@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        Accrual::truncate();
+        // Accrual::truncate();
         Accrual::factory(5)->create();
     }
 }

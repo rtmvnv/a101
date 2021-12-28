@@ -6,6 +6,8 @@
     "license": "MIT",
     "require": {
         "php": "^8.0",
+        "doctrine/dbal": "~3.1.5",
+        "doctrine/dbal_comment" : "https://programmierfrage.com/items/symfony-doctrine-functional-tests-using-sqlite-leads-to-sqlstatehy000-general",
         "facade/ignition": "^2.8",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
