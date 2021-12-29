@@ -226,7 +226,6 @@ class A101
             $accrual->email = $request->email;
             $accrual->name = $request->name;
             $accrual->comment = '';
-            $accrual->attachment = '';
 
             if ($accrual->sum <= 0) {
                 $accrual->archived_at = now();
@@ -438,5 +437,9 @@ class A101
         } else {
             return $result['message'];
         }
+    }
+
+    public function getReport($date = 'yesterday') {
+
     }
 }
