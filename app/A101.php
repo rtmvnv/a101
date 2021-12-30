@@ -422,10 +422,6 @@ class A101
                 base64_encode(file_get_contents(public_path('images/' . $accrual->estate . '.jpg')))
             );
 
-        if (!App::environment('production')) {
-            // $message->to('a101@vic-insurance.ru', $accrual->name);
-        }
-
         $unione = new UniOne();
         $result = $unione->emailSend($message);
 
@@ -437,9 +433,5 @@ class A101
         } else {
             return $result['message'];
         }
-    }
-
-    public function getReport($date = 'yesterday') {
-
     }
 }

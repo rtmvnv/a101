@@ -1,5 +1,6 @@
 <?php
 
+use App\Exports\PaidAccrualsExport;
 use Illuminate\Http\Request;
 use App\Models\Accrual;
 use App\MoneyMailRu\MoneyMailRu;
@@ -17,6 +18,12 @@ use Illuminate\Support\Str;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::get('/dev', function () {
+    if (App::environment('production')) {
+        abort(404);
+    }
+});
 
 // Найти запись по полю uuid и вернуть в переменной accrual
 Route::get('/accrual/{accrual:uuid}', function (Accrual $accrual) {

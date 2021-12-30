@@ -102,6 +102,14 @@ class UniOne
                 'file' => $th->getFile(),
                 'line' => $th->getLine(),
             ];
+
+            $responseTime = CarbonImmutable::now();
+            $record['response_time'] = $responseTime->format('c');
+            $record['elapsed'] = $responseTime->floatDiffInSeconds($requestTime);
+
+            Log::info('outgoing-unione', $record);
+
+            throw($th);
         }
 
         $responseTime = CarbonImmutable::now();
