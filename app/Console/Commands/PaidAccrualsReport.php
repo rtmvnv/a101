@@ -9,8 +9,9 @@ use Excel;
 use App\Exports\PaidAccrualsExport;
 use App\UniOne\UniOne;
 use App\UniOne\Message;
+use App\Models\Accrual;
 
-class SendPaidAccrualsReport extends Command
+class PaidAccrualsReport extends Command
 {
     /**
      * The name and signature of the console command.
@@ -45,7 +46,25 @@ class SendPaidAccrualsReport extends Command
     {
         $dateString = (new Carbon($this->argument('date')))->translatedFormat('d F Y');
 
-        $plain = view('paid_accruals_report', ['date_string' => $dateString])->render();
+        $from = (new Carbon($this->argument('date')))->startOfDay();
+        $to = (new Carbon($this->argument('date')))->endOfDay();
+
+        $total = Accrual::where('paid_at', '>=', $from)
+            ->where('paid_at', '<=', $to)
+            ->sum('sum');
+
+        $count = Accrual::where('paid_at', '>=', $from)
+            ->where('paid_at', '<=', $to)
+            ->count();
+
+        $plain = view(
+            'paid_accruals_report',
+            [
+                'date_string' => $dateString,
+                'count' => $count,
+                'total' => $total,
+            ],
+        )->render();
 
         $message = new Message();
         $message->to(env('A101_EMAIL'))
