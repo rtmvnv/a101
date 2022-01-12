@@ -127,7 +127,7 @@ class A101
      *
      * @return Response
      */
-    public function postApiAccruals(Request $request)
+    public function postApiAccruals(Request $request, $payee)
     {
         try {
             // Про формат обмена данными JSON API
@@ -159,10 +159,6 @@ class A101
                 return response($data, $data['status'])
                     ->header('Content-Type', 'application/problem+json');
             }
-
-            /**
-             * Распарсить email
-             */
 
             /**
              * Проверить подпись
@@ -230,6 +226,12 @@ class A101
             if ($accrual->sum <= 0) {
                 $accrual->archived_at = now();
                 $accrual->comment = 'Баланс положительный, оплата не требуется';
+            }
+
+            $accrual->payee = $payee;
+            if ($accrual->payee == 'etk2') {
+                $accrual->archived_at = now();
+                $accrual->comment = 'Счет ЭТК2, оплата не принимается';
             }
 
             $this->cancelOtherAccruals($accrual);
@@ -398,10 +400,31 @@ class A101
 
     public function sendAccrual(Accrual $accrual, $attachment)
     {
-        $plain = view('mail/plain', $accrual->toArray())->render();
-        $html = view('mail/html', $accrual->toArray())->render();
 
         $message = new Message();
+
+        if ($accrual->payee == 'a101') {
+            $plain = view('mail_a101/plain', $accrual->toArray())->render();
+            $html = view('mail_a101/html', $accrual->toArray())->render();
+
+            $message->addInlineAttachment(
+                'image/png',
+                "a101-comfort.png",
+                base64_encode(file_get_contents(public_path('images/a101-comfort.png')))
+            );
+        } elseif ($accrual->payee == 'etk2') {
+            $plain = view('mail_etk2/plain', $accrual->toArray())->render();
+            $html = view('mail_etk2/html', $accrual->toArray())->render();
+
+            $message->addInlineAttachment(
+                'image/png',
+                "etk2.png",
+                base64_encode(file_get_contents(public_path('images/etk2.png')))
+            );
+        } else {
+            throw new \Exception("Unknown payee: '{$accrual->payee}'", 44814051);
+        }
+
         $message->to($accrual->email, $accrual->name)
             ->subject("Квитанция по лицевому счету {$accrual->account} за {$accrual->period_text}")
             ->plain($plain)
@@ -410,11 +433,6 @@ class A101
                 'application/pdf',
                 "Квитанция по ЛС {$accrual->account} за {$accrual->period_text}.pdf",
                 $attachment
-            )
-            ->addInlineAttachment(
-                'image/png',
-                "a101-comfort.png",
-                base64_encode(file_get_contents(public_path('images/a101-comfort.png')))
             )
             ->addInlineAttachment(
                 'image/jpg',

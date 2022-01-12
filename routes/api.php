@@ -16,8 +16,18 @@ use App\A101;
 */
 
 Route::middleware('throttle:600,1')
-    ->post('/a101/accruals', [A101::class, 'postApiAccruals'])
+    ->post('/a101/accruals', function (Request $request) {
+        $a101 = new A101();
+        return $a101->postApiAccruals($request, 'a101');
+    })
     ->middleware('log.api:incoming-api-accruals');
+
+Route::middleware('throttle:600,1')
+    ->post('/a101/etk2', function (Request $request) {
+        $a101 = new A101();
+        return $a101->postApiAccruals($request, 'etk2');
+    })
+    ->middleware('log.api:incoming-api-etk2');
 
 Route::middleware('throttle:60,1')
     ->get('/a101/payments', [A101::class, 'getApiPayments'])

@@ -34,6 +34,7 @@ class AccrualFactory extends Factory
             'url_bank' => '',
             'created_at' => $this->faker->dateTimeBetween('-1 week'),
             'updated_at' => now(),
+            'payee' => 'a101',
             // 'sent_at' => null,
             // 'opened_at' => null,
             // 'confirmed_at' => null,
