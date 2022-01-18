@@ -410,6 +410,8 @@ class A101
                 "a101-comfort.png",
                 base64_encode(file_get_contents(public_path('images/a101-comfort.png')))
             );
+
+            $message->from(config('services.from.a101.email'), config('services.from.a101.name'));
         } elseif ($accrual->payee == 'etk2') {
             $plain = view('mail_etk2/plain', $accrual->toArray())->render();
             $html = view('mail_etk2/html', $accrual->toArray())->render();
@@ -419,6 +421,8 @@ class A101
                 "etk2.png",
                 base64_encode(file_get_contents(public_path('images/etk2.png')))
             );
+
+            $message->from(config('services.from.etk2.email'), config('services.from.etk2.name'));
         } else {
             throw new \Exception("Unknown payee: '{$accrual->payee}'", 44814051);
         }

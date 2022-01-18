@@ -16,8 +16,17 @@ return [
 
     'unione' => [
         'api_key' => env('UNIONE_API_KEY'),
-        'from_email' => env('UNIONE_FROM_EMAIL', ''),
-        'from_name' => env('UNIONE_FROM_NAME', ''),
+    ],
+
+    'from' => [
+        'a101' => [
+            'email' => env('FROM_A101_EMAIL'),
+            'name' => env('FROM_A101_NAME'),
+        ],
+        'etk2' => [
+            'email' => env('FROM_ETK2_EMAIL'),
+            'name' => env('FROM_ETK2_NAME'),
+        ],
     ],
 
     'money_mail_ru' => [

@@ -42,7 +42,7 @@ class Message
 
     public function from($email, $name = '')
     {
-        $this->fromEmail[] = $email;
+        $this->fromEmail = $email;
         if (!empty($name)) {
             $this->toName = $name;
         }
