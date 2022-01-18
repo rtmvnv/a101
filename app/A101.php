@@ -243,9 +243,6 @@ class A101
             $result = $this->sendAccrual($accrual, $attachment);
 
             if ($result !== true) {
-                $accrual->archived_at = now();
-                $accrual->comment = 'Error sending email';
-                $accrual->save();
                 $data = [
                     'status' => 503,
                     'title' => 'Error sending email',
@@ -370,6 +367,7 @@ class A101
                 'accrual_id' => $accrual->uuid,
                 'account' => $accrual->account,
                 'sum' => $accrual->sum * 100,
+                'payee' => $accrual->payee,
             ];
         }
 
@@ -449,6 +447,9 @@ class A101
             $accrual->save();
             return true;
         } else {
+            $accrual->archived_at = now();
+            $accrual->comment = 'Error sending email';
+            $accrual->save();
             return $result['message'];
         }
     }
