@@ -6,9 +6,6 @@
 @if ($sum > 0)
 Сумма: {{ $sum }}
 Срок оплаты до: {{ $valid_till_etk2 }}
-
-Для оплаты счета перейдите по ссылке
-{{ $link_confirm }}
 @else
 Баланс: {{ $balance_text }}
 
