@@ -187,7 +187,7 @@
                                             <div style="color:#555555;font-family:Arial, Helvetica Neue, Helvetica, sans-serif;line-height:1.2;padding-top:5px;padding-right:10px;padding-bottom:5px;padding-left:10px;">
                                                 <div class="txtTinyMce-wrapper" style="line-height: 1.2; font-size: 12px; color: #555555; font-family: Arial, Helvetica Neue, Helvetica, sans-serif; mso-line-height-alt: 14px;">
                                                     <p style="margin: 0; font-size: 15px; line-height: 1.2; word-break: break-word; text-align: left; mso-line-height-alt: 18px; margin-top: 0; margin-bottom: 0;">
-                                                        <span style="font-size: 15px;">{{ $valid_till }}<br></span>
+                                                        <span style="font-size: 15px;">{{ $valid_till_etk2 }}<br></span>
                                                     </p>
                                                 </div>
                                             </div>
