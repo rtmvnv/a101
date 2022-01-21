@@ -411,6 +411,12 @@ class A101
             );
 
             $message->from(config('services.from.a101.email'), config('services.from.a101.name'));
+
+            $message->addAttachment(
+                'application/pdf',
+                "Оплачивайте ЖКУ в мобильном приложении А101.pdf",
+                base64_encode(file_get_contents(storage_path('a101_second_attachment.pdf'))),
+            );
         } elseif ($accrual->payee == 'etk2') {
             $plain = view('mail_etk2/plain', $accrual->toArray())->render();
             $html = view('mail_etk2/html', $accrual->toArray())->render();
