@@ -44,7 +44,7 @@ class Message
     {
         $this->fromEmail = $email;
         if (!empty($name)) {
-            $this->toName = $name;
+            $this->fromName = $name;
         }
 
         return $this;
