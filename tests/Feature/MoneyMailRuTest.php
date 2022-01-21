@@ -26,29 +26,46 @@ class MoneyMailRuTest extends TestCase
         /**
          * Первое начисление за предыдущий месяц в статусе "отправлено"
          */
-        $accrualNotCompleted = Accrual::factory()->create();
-        $accrualNotCompleted->sent_at = now();
-        $accrualNotCompleted->period = date('Ym', strtotime('previous month'));
-        $accrualNotCompleted->save();
+        $accrualNotCompleted = Accrual::factory()->create([
+            'payee' => 'a101',
+            'sum' => 100,
+            'period' => date('Ym', strtotime('previous month')),
+            'sent_at' => now(),
+            'opened_at' => null,
+            'confirmed_at' => null,
+            'paid_at' => null,
+            'archived_at' => null,
+        ]);
 
         /**
          * Второе начисление за текущий месяц в статусе "оплачено"
          */
-        $accrualCompleted = Accrual::factory()->create();
-        $accrualCompleted->account = $accrualNotCompleted->account;
-        $accrualCompleted->sent_at = now();
-        $accrualCompleted->opened_at = now();
-        $accrualCompleted->confirmed_at = now();
-        $accrualCompleted->paid_at = now();
-        $accrualCompleted->save();
+        $accrualCompleted = Accrual::factory()->create([
+            'account' => $accrualNotCompleted->account,
+            'payee' => 'a101',
+            'sum' => 100,
+            'period' => date('Ym', strtotime('this month')),
+            'sent_at' => now(),
+            'opened_at' => now(),
+            'confirmed_at' => now(),
+            'paid_at' => now(),
+            'archived_at' => now(),
+        ]);
 
         /**
          * Третье начисление за следующий месяц в статусе "создано"
          */
-        $accrualNew = Accrual::factory()->create();
-        $accrualNew->account = $accrualNotCompleted->account;
-        $accrualNew->period = date('Ym', strtotime('next month'));
-        $accrualNew->save();
+        $accrualNew = Accrual::factory()->create([
+            'account' => $accrualNotCompleted->account,
+            'payee' => 'a101',
+            'sum' => 100,
+            'period' => date('Ym', strtotime('next month')),
+            'sent_at' => now(),
+            'opened_at' => null,
+            'confirmed_at' => null,
+            'paid_at' => null,
+            'archived_at' => null,
+        ]);
 
         $a101 = new A101();
         $a101->cancelOtherAccruals($accrualNew);
@@ -62,8 +79,8 @@ class MoneyMailRuTest extends TestCase
             ]
         );
 
-        // Второе начисление не отмечено archived
-        $this->assertDatabaseHas(
+        // Второе начисление отмечено archived
+        $this->assertDatabaseMissing(
             'accruals',
             [
                 'period' => $accrualCompleted->period,
@@ -93,8 +110,15 @@ class MoneyMailRuTest extends TestCase
         /**
          * Создать счет и отметить отправленным
          */
-        $accrual = Accrual::factory()->create();
-        $accrual->sent_at = now();
+        $accrual = Accrual::factory()->create([
+            'payee' => 'a101',
+            'sum' => 100,
+            'sent_at' => now(),
+            'opened_at' => null,
+            'confirmed_at' => null,
+            'paid_at' => null,
+            'archived_at' => null,
+        ]);
         $accrual->save();
 
         /**
