@@ -387,7 +387,6 @@ class A101
         $oldAccruals = Accrual::where('account', $Accrual->account)
             ->where('uuid', '<>', $Accrual->uuid)
             ->where('archived_at', null)
-            ->where('paid_at', null)
             ->get();
         foreach ($oldAccruals as $oldAccrual) {
             $oldAccrual->archived_at = now();
