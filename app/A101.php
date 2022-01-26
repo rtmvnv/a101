@@ -406,7 +406,7 @@ class A101
 
             $message->addInlineAttachment(
                 'image/png',
-                "a101-comfort.png",
+                'a101-comfort.png',
                 base64_encode(file_get_contents(public_path('images/a101-comfort.png')))
             );
 
@@ -414,7 +414,7 @@ class A101
 
             $message->addAttachment(
                 'application/pdf',
-                "Оплачивайте ЖКУ в мобильном приложении А101.pdf",
+                'Оплачивайте ЖКУ в мобильном приложении А101.pdf',
                 base64_encode(file_get_contents(storage_path('a101_second_attachment.pdf'))),
             );
         } elseif ($accrual->payee == 'etk2') {
@@ -423,7 +423,7 @@ class A101
 
             $message->addInlineAttachment(
                 'image/png',
-                "etk2.png",
+                'etk2.png',
                 base64_encode(file_get_contents(public_path('images/etk2.png')))
             );
 
@@ -443,7 +443,7 @@ class A101
             )
             ->addInlineAttachment(
                 'image/jpg',
-                "estate",
+                'estate',
                 base64_encode(file_get_contents(public_path('images/' . $accrual->estate . '.jpg')))
             );
 
