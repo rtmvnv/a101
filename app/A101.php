@@ -86,6 +86,9 @@ class A101
             $accrual->paid_at = now();
             $accrual->archived_at = now();
             $accrual->save();
+
+            // Отправить абоненту письмо с подтверждением
+            $this->sendConfirmation($accrual);
         } else {
             // Транзакция отменена
             $accrual->comment = 'Оплата не прошла. ' . ($callback->body['decline_reason']) ?? 'unknown';
@@ -397,8 +400,7 @@ class A101
 
     public function sendAccrual(Accrual $accrual, $attachment)
     {
-
-        $message = new Message();
+        $message = app(Message::class);
 
         if ($accrual->payee == 'a101') {
             $plain = view('mail_a101/plain', $accrual->toArray())->render();
@@ -447,7 +449,63 @@ class A101
                 base64_encode(file_get_contents(public_path('images/' . $accrual->estate . '.jpg')))
             );
 
-        $unione = new UniOne();
+        $unione = app(UniOne::class);
+        $result = $unione->emailSend($message);
+
+        if ($result['status'] === 'success') {
+            $accrual->unione_id = $result['job_id'];
+            $accrual->sent_at = now();
+            $accrual->save();
+            return true;
+        } else {
+            $accrual->archived_at = now();
+            $accrual->comment = 'Error sending email';
+            $accrual->save();
+            return $result['message'];
+        }
+    }
+
+    public function sendConfirmation(Accrual $accrual)
+    {
+        $message = new Message();
+
+        if ($accrual->payee == 'a101') {
+            $plain = view('mail_a101/plain_confirmation', $accrual->toArray())->render();
+            $html = view('mail_a101/html_confirmation', $accrual->toArray())->render();
+
+            $message->addInlineAttachment(
+                'image/png',
+                'a101-comfort.png',
+                base64_encode(file_get_contents(public_path('images/a101-comfort.png')))
+            );
+
+            $message->from(config('services.from.a101.email'), config('services.from.a101.name'));
+        } elseif ($accrual->payee == 'etk2') {
+            $plain = view('mail_etk2/plain_confirmation', $accrual->toArray())->render();
+            $html = view('mail_etk2/html_confirmmation', $accrual->toArray())->render();
+
+            $message->addInlineAttachment(
+                'image/png',
+                'etk2.png',
+                base64_encode(file_get_contents(public_path('images/etk2.png')))
+            );
+
+            $message->from(config('services.from.etk2.email'), config('services.from.etk2.name'));
+        } else {
+            throw new \Exception("Unknown payee: '{$accrual->payee}'", 44814051);
+        }
+
+        $message->to($accrual->email, $accrual->name)
+            ->subject("Квитанция по лицевому счету {$accrual->account} за {$accrual->period_text}")
+            ->plain($plain)
+            ->html($html)
+            ->addInlineAttachment(
+                'image/jpg',
+                'estate',
+                base64_encode(file_get_contents(public_path('images/' . $accrual->estate . '.jpg')))
+            );
+
+        $unione = app(UniOne::class);
         $result = $unione->emailSend($message);
 
         if ($result['status'] === 'success') {

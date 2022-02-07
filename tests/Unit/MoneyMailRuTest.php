@@ -30,7 +30,7 @@ class MoneyMailRuTest extends TestCase
      */
     public function testConnects()
     {
-        $module = new MoneyMailRu();
+        $module = app(MoneyMailRu::class);
         $result = $module->request('merchant/info');
         $this->assertTrue($result['result_code'] === 0);
     }

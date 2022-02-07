@@ -76,7 +76,7 @@ class PaidAccrualsReport extends Command
                 base64_encode(Excel::raw(new PaidAccrualsExport($this->argument('date')), \Maatwebsite\Excel\Excel::XLSX))
             );
 
-        $unione = new UniOne();
+        $unione = app(UniOne::class);
         $result = $unione->emailSend($message);
         if ($result['status'] !== 'success') {
             Log::error('Failed sending paid accruals report' . (isset($result['message']) ? '. ' . $result['message'] : ''));

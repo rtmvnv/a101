@@ -156,7 +156,7 @@
                                         <div style="border-top:0px solid transparent; border-left:0px solid transparent; border-bottom:0px solid transparent; border-right:0px solid transparent; padding-top:5px; padding-bottom:5px; padding-right: 0px; padding-left: 0px;">
                                             <!--<![endif]-->
                                             <div class="img-container center fixedwidth" align="center" style="padding-right: 0px;padding-left: 0px;">
-                                                <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr style="line-height:0px"><td style="padding-right: 0px;padding-left: 0px;" align="center"><![endif]--><a href="https://etk2.ru" target="_blank" style="outline:none" tabindex="-1"><img class="center fixedwidth" align="center" border="0" src="cid:etk2.png" style="text-decoration: none; -ms-interpolation-mode: bicubic; height: auto; border: 0; width: 100%; max-width: 192px; display: block;" width="192"></a>
+                                                <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr style="line-height:0px"><td style="padding-right: 0px;padding-left: 0px;" align="center"><![endif]--><a href="https://etk2.ru" target="_blank" style="outline:none" tabindex="-1"><img class="center fixedwidth" align="center" border="0" src="cid:etk2.png" style="text-decoration: none; -ms-interpolation-mode: bicubic; height: auto; border: 0; width: 192px; max-width: 192px; display: block;" width="192"></a>
                                                 <!--[if mso]></td></tr></table><![endif]-->
                                             </div>
                                             <!--[if (!mso)&(!IE)]><!-->
