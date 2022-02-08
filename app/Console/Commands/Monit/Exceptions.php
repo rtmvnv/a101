@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Monit;
 
 use Illuminate\Console\Command;
+use MongoDB\BSON\UTCDateTime;
 
 class Exceptions extends Command
 {
@@ -38,22 +39,11 @@ class Exceptions extends Command
     public function handle()
     {
         try {
-            $events = (new \MongoDB\Client(
-                'mongodb://'
-                    . env('MONGODB_USERNAME')
-                    . ':'
-                    . env('MONGODB_PASSWORD')
-                    . '@'
-                    . env('MONGODB_SERVER')
-                    . ':'
-                    . env('MONGODB_PORT')
-                    . '/?authSource='
-                    . env('MONGODB_AUTH_SOURCE'),
-            ))->a101->events;
+            $events = app('mongo_events');
 
             $query = [
                 'context.response.exception.message' => [ '$exists' => true ],
-                'datetime' => array('$gte' => new \MongoDB\BSON\UTCDateTime(1000 * strtotime('-1 minutes'))),
+                'datetime' => array('$gte' => new UTCDateTime(1000 * strtotime('-1 minutes'))),
             ];
 
             $count = $events->count($query);

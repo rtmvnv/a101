@@ -4,7 +4,6 @@ namespace App\Reports;
 
 use App\UniOne\UniOne;
 use App\Models\Accrual;
-use MongoDB\Client;
 use MongoDB\BSON\UTCDateTime;
 
 /**
@@ -21,11 +20,7 @@ class FailedEmails
 
     public function __invoke()
     {
-        $events = (new Client(
-            'mongodb://' . env('MONGODB_USERNAME') . ':' . env('MONGODB_PASSWORD')
-                . '@' . env('MONGODB_SERVER') . ':' . env('MONGODB_PORT')
-                . '/?authSource=' . env('MONGODB_AUTH_SOURCE'),
-        ))->a101->events;
+        $events = app('mongo_events');
 
         $pipeline = [
             [
@@ -62,12 +57,12 @@ class FailedEmails
             }
 
             $result[] = [
-                'email' => $record->_id,
+                'email' => $record['_id'],
                 'account' => $accrual->account,
-                'explanation' => UniOne::explainError($record->status, $record->delivery_status, $record->destination_response),
-                'status' => $record->status,
-                'delivery_status' => $record->delivery_status,
-                'destination_response' => $record->destination_response,
+                'explanation' => UniOne::explainError($record['status'], $record['delivery_status'], $record['destination_response']),
+                'status' => $record['status'],
+                'delivery_status' => $record['delivery_status'],
+                'destination_response' => $record['destination_response'],
             ];
         }
 

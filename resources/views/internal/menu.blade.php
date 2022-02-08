@@ -7,8 +7,8 @@
         </a>
 
         <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-            <li><span class="nav-link px-2 link-secondary"> </span></li>
-            <li><a href="#" class="nav-link px-2 link-dark"> </a></li>
+            <li><a href="/internal/accounts" class="nav-link px-2 link-secondary">Лицевые счета</a></li>
+            <li><a href="/internal/failed-emails" class="nav-link px-2 link-dark">Ошибки e-mail</a></li>
         </ul>
 
         <div class="col-md-2 text-end">

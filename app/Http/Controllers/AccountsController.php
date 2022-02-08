@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Reports\AccrualsOverviewDay;
 use App\Reports\AccrualsOverviewPeriod;
 
-class Dashboard extends Controller
+class AccountsController extends Controller
 {
 
     public function show(Request $request)
@@ -29,6 +29,6 @@ class Dashboard extends Controller
             ['id' => 111, 'status' => 'failed', 'account' => 'АБ1234']
 
         ];
-        return view('internal/dashboard', $data);
+        return view('internal/accounts', $data);
     }
 }

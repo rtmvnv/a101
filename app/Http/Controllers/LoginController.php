@@ -25,7 +25,7 @@ class LoginController extends Controller
         ]);
 
         if (auth()->attempt($attributes, true)) {
-            return redirect('/internal/dashboard');
+            return redirect('/internal');
         }
 
         return back()

@@ -216,5 +216,7 @@ class UniOne
 
             return 'Письмо не удалось доставить';
         }
+
+        return $status;
     }
 }
