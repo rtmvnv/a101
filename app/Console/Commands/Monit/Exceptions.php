@@ -51,10 +51,10 @@ class Exceptions extends Command
                     . env('MONGODB_AUTH_SOURCE'),
             ))->a101->events;
 
-            $query = array(
+            $query = [
                 'context.response.exception.message' => [ '$exists' => true ],
-                'datetime' => array('$gte' => new \MongoDB\BSON\UTCDateTime(1000 * strtotime('-1 minutes')))
-            );
+                'datetime' => array('$gte' => new \MongoDB\BSON\UTCDateTime(1000 * strtotime('-1 minutes'))),
+            ];
 
             $count = $events->count($query);
             if ($count > 0) {
@@ -62,7 +62,7 @@ class Exceptions extends Command
             } else {
                 echo 'No exceptions';
             }
-            
+
             return $count;
         } catch (\Throwable $th) {
             echo $th->getMessage() . ' [' . $th->getFile() . ':' . $th->getLine() . ']';

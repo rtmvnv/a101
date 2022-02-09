@@ -16,6 +16,7 @@ return [
 
     'unione' => [
         'api_key' => env('UNIONE_API_KEY'),
+        'from_email' => env('REPORTS_FROM_EMAIL'),
     ],
 
     'from' => [
