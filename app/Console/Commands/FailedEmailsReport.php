@@ -87,6 +87,10 @@ class FailedEmailsReport extends Command
                 ->orderBy('id', 'desc')
                 ->first();
 
+            if (empty($accrual)) {
+                continue;
+            }
+
             $plain .= $value->_id . ' ' . $accrual->account
                 . PHP_EOL . UniOne::explainError($value->status, $value->delivery_status, $value->destination_response)
                 . PHP_EOL . $value->status
@@ -96,7 +100,7 @@ class FailedEmailsReport extends Command
         }
 
         $message = new Message();
-        $message->to(env('A101_EMAIL'))
+        $message->to(env('REPORTS_FAILED_EMAILS'))
             ->subject('Отчет об ошибках доставки писем за неделю')
             ->plain($plain);
 
