@@ -147,7 +147,7 @@ class A101
                 [
                     'sum' => 'bail|required|numeric',
                     'period' => 'bail|required|date_format:Ym',
-                    'account' => 'bail|required|alpha_num',
+                    'account' => 'bail|required|alpha_dash',
                     'name' => 'bail|required|string',
                     'signature' => 'bail|required|alpha_dash',
                 ]
