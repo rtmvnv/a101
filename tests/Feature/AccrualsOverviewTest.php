@@ -2,12 +2,12 @@
 
 namespace Tests\Feature;
 
+use Carbon\Carbon;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\Accrual;
-use App\Http\Controllers\Dashboard;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
+use App\Reports\AccrualsOverviewDay;
+use App\Reports\AccrualsOverviewPeriod;
 
 class AccrualsOverviewTest extends TestCase
 {
@@ -119,22 +119,18 @@ class AccrualsOverviewTest extends TestCase
             'archived_at' => new Carbon('previous month'),
         ]);
 
-        $dashboard = new Dashboard();
-        $thisMonth = $dashboard->getAccrualsOverviewPeriod('this month');
-        $previousMonth = $dashboard->getAccrualsOverviewPeriod('previous month');
+        $accrualsOverviewPeriod = new AccrualsOverviewPeriod();
+        $thisMonth = $accrualsOverviewPeriod('this month');
+        $previousMonth = $accrualsOverviewPeriod('previous month');
 
         $this->assertEquals(3, $thisMonth['total']);
-        $this->assertEquals(3, $thisMonth['sent']);
-        $this->assertEquals(0, $thisMonth['not_sent']);
         $this->assertEquals(3, $thisMonth['delivered']);
         $this->assertEquals(0, $thisMonth['not_delivered']);
         $this->assertEquals(2, $thisMonth['paid']);
 
         $this->assertEquals(3, $previousMonth['total']);
-        $this->assertEquals(2, $previousMonth['sent']);
-        $this->assertEquals(1, $previousMonth['not_sent']);
         $this->assertEquals(1, $previousMonth['delivered']);
-        $this->assertEquals(1, $previousMonth['not_delivered']);
+        $this->assertEquals(2, $previousMonth['not_delivered']);
         $this->assertEquals(1, $previousMonth['paid']);
     }
 
@@ -244,20 +240,16 @@ class AccrualsOverviewTest extends TestCase
             'archived_at' => now(),
         ]);
 
-        $dashboard = new Dashboard();
-        $today = $dashboard->getAccrualsOverviewDay('today');
-        $yesterday = $dashboard->getAccrualsOverviewDay('yesterday');
+        $accrualsOverviewDay = new AccrualsOverviewDay();
+        $today = $accrualsOverviewDay('today');
+        $yesterday = $accrualsOverviewDay('yesterday');
 
         $this->assertEquals(2, $today['total']);
-        $this->assertEquals(2, $today['sent']);
-        $this->assertEquals(1, $today['not_sent']);
         $this->assertEquals(1, $today['delivered']);
         $this->assertEquals(1, $today['not_delivered']);
         $this->assertEquals(1, $today['paid']);
 
         $this->assertEquals(4, $yesterday['total']);
-        $this->assertEquals(4, $yesterday['sent']);
-        $this->assertEquals(0, $yesterday['not_sent']);
         $this->assertEquals(3, $yesterday['delivered']);
         $this->assertEquals(1, $yesterday['not_delivered']);
         $this->assertEquals(2, $yesterday['paid']);
