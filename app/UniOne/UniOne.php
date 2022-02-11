@@ -144,4 +144,77 @@ class UniOne
     {
         return $this->request('email/send.json', $message->build());
     }
+
+    /**
+     * Возвращает текстовое пояснение статуса доставки письма
+     * https://docs.unione.io/web-api-ref#callback-format
+     */
+    public static function explainError($status, $deliveryStatus, $destinationResponce)
+    {
+        if ($status == 'delivered') {
+            return 'Письмо доставлено получателю';
+        }
+
+        if ($status == 'opened') {
+            return 'Письмо доставлено и прочитано получателем';
+        }
+
+        if ($status == 'clicked') {
+            return 'Письмо доставлено. Получатель перешел по ссылке из письма';
+        }
+
+        if ($status == 'soft_bounced') {
+            return 'Продолжаются попытки доставки письма';
+        }
+
+        if ($status == 'spam') {
+            return 'Письмо отмечено как spam на сервере получателя';
+        }
+
+        if ($status == 'unsubscribed') {
+            return 'Письмо доставлено, получатель отписался от рассылки';
+        }
+
+        if ($status == 'hard_bounced') {
+            $response = 'Письмо не удалось доставить. ';
+
+            if ($deliveryStatus == 'err_user_unknown') {
+                return $response . 'Несуществующий адрес.';
+            }
+
+            if ($deliveryStatus == 'err_mailbox_full') {
+                return $response . 'Ящик получателя переполнен.';
+            }
+
+            if ($deliveryStatus == 'err_domain_inactive') {
+                return $response . 'Несуществующий адрес, неизвестное доменное имя.';
+            }
+
+            if ($deliveryStatus == 'err_user_inactive') {
+                return $response . 'Ящик пользователя выключен.';
+            }
+
+            if ($deliveryStatus == 'err_user_inactive') {
+                return $response . 'Ящик пользователя выключен.';
+            }
+
+            if ($deliveryStatus == 'err_blacklisted') {
+                return $response . 'Отклонено из-за черного списка.';
+            }
+
+            if ($deliveryStatus == 'err_spam_rejected') {
+                return $response . 'Отклонено spam-фильтром.';
+            }
+
+            if ($deliveryStatus == 'err_destination_misconfigured') {
+                return $response . 'Ошибка на сервере получателя.';
+            }
+
+            if ($deliveryStatus == 'err_delivery_failed') {
+                return 'Письмо не удалось доставить';
+            }
+
+            return 'Письмо не удалось доставить';
+        }
+    }
 }

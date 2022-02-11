@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use NumberFormatter;
 
@@ -31,6 +32,7 @@ class Accrual extends Model
         'estate',
         'estate_text',
         'balance_text',
+        'email_array',
     ];
 
     /**
@@ -192,5 +194,29 @@ class Accrual extends Model
     public function getBalanceTextAttribute()
     {
         return number_format(-$this->sum, 2, ',', '.') . ' руб.';
+    }
+
+    public function getEmailArrayAttribute()
+    {
+        return self::parseEmail($this->email);
+    }
+
+    /**
+     * Парсит строку на отдельные email.
+     * Проверяет email на валидность.
+     * Возвращает массив из email.
+     * Если хотя бы один email невалиден - создает исключение.
+     */
+    public static function parseEmail($email)
+    {
+        $emails = preg_split('/( |,|;)/', $email, -1, PREG_SPLIT_NO_EMPTY);
+
+        foreach ($emails as $email) {
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                throw new \Exception('Incorrect email');
+            }
+        }
+
+        return $emails;
     }
 }

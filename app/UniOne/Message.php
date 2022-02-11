@@ -21,8 +21,7 @@ class Message
      */
     public function to($email, $name = '')
     {
-        $email = str_replace(',', ';', $email);
-        $emails = explode(';', $email);
+        $emails = preg_split('/( |,|;)/', $email, -1, PREG_SPLIT_NO_EMPTY);
         $emails = array_unique($emails);
 
         foreach ($emails as $value) {
@@ -119,6 +118,9 @@ class Message
         // from_name
         if (empty($this->fromName)) {
             $this->fromName = config('services.unione.from_name');
+        }
+        if (empty($this->fromName)) {
+            $this->fromName = $this->fromEmail;
         }
         $body['message']['from_name'] = $this->fromName;
 
