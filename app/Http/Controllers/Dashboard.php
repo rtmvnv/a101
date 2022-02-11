@@ -15,9 +15,14 @@ class Dashboard extends Controller
         $data['day0'] = $this->getAccrualsOverviewDay('today');
         $data['day1'] = $this->getAccrualsOverviewDay('yesterday');
         $data['day2'] = $this->getAccrualsOverviewDay('-2 days');
+        $data['day3'] = $this->getAccrualsOverviewDay('-3 days');
+        $data['day4'] = $this->getAccrualsOverviewDay('-4 days');
+        $data['day5'] = $this->getAccrualsOverviewDay('-5 days');
+        $data['day6'] = $this->getAccrualsOverviewDay('-6 days');
 
         $data['current_month'] = $this->getAccrualsOverviewPeriod('this month');
         $data['previous_month'] = $this->getAccrualsOverviewPeriod('previous month');
+        $data['preprevious_month'] = $this->getAccrualsOverviewPeriod('-2 months');
 
         $data['emails'] = [
             ['id' => 111, 'status' => 'failed', 'account' => 'АБ1234']
@@ -37,18 +42,6 @@ class Dashboard extends Controller
                 ->where('created_at', '<', $finish)
                 ->distinct()
                 ->get()),
-            'sent' => count(Accrual::select('account', 'period')
-                ->where('created_at', '>=', $start)
-                ->where('created_at', '<', $finish)
-                ->where('sent_at', '<>', null)
-                ->distinct()
-                ->get()),
-            'not_sent' => count(Accrual::select('account', 'period')
-                ->where('created_at', '>=', $start)
-                ->where('created_at', '<', $finish)
-                ->where('sent_at', null)
-                ->distinct()
-                ->get()),
             'delivered' => count(Accrual::select('account', 'period')
                 ->where('created_at', '>=', $start)
                 ->where('created_at', '<', $finish)
@@ -62,7 +55,7 @@ class Dashboard extends Controller
                 ->distinct()
                 ->get()),
         ];
-        $result['not_delivered'] = $result['sent'] - $result['delivered'];
+        $result['not_delivered'] = $result['total'] - $result['delivered'];
         $result['title'] = $start->translatedFormat('d F Y');
         return $result;
     }
@@ -76,16 +69,6 @@ class Dashboard extends Controller
                 ->where('period', $periodString)
                 ->distinct()
                 ->get()),
-            'sent' => count(Accrual::select('account', 'period')
-                ->where('period', $periodString)
-                ->where('sent_at', '<>', null)
-                ->distinct()
-                ->get()),
-            'not_sent' => count(Accrual::select('account', 'period')
-                ->where('period', $periodString)
-                ->where('sent_at', null)
-                ->distinct()
-                ->get()),
             'delivered' => count(Accrual::select('account', 'period')
                 ->where('period', $periodString)
                 ->whereIn('unione_status', ['delivered', 'opened', 'clicked'])
@@ -97,7 +80,7 @@ class Dashboard extends Controller
                 ->distinct()
                 ->get()),
         ];
-        $result['not_delivered'] = $result['sent'] - $result['delivered'];
+        $result['not_delivered'] = $result['total'] - $result['delivered'];
         $result['title'] = (new Carbon($period))->translatedFormat('F Y');
         return $result;
     }
