@@ -147,8 +147,9 @@ class A101
                 [
                     'sum' => 'bail|required|numeric',
                     'period' => 'bail|required|date_format:Ym',
-                    'account' => 'bail|required|alpha_num',
+                    'account' => 'bail|required|alpha_dash',
                     'name' => 'bail|required|string',
+                    'email' => 'bail|required|string',
                     'signature' => 'bail|required|alpha_dash',
                 ]
             );
@@ -162,6 +163,11 @@ class A101
                 return response($data, $data['status'])
                     ->header('Content-Type', 'application/problem+json');
             }
+
+            /**
+             * Проверить корректность email
+             */
+            Accrual::parseEmail($request->email);
 
             /**
              * Проверить подпись

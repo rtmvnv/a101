@@ -1,13 +1,11 @@
 <?php
 
-use App\Exports\PaidAccrualsExport;
 use Illuminate\Http\Request;
 use App\Models\Accrual;
 use App\MoneyMailRu\MoneyMailRu;
 use App\Http\Controllers\Dashboard;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Str;
 
 /*
 |--------------------------------------------------------------------------
