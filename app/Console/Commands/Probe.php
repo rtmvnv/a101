@@ -10,6 +10,7 @@ use App\UniOne\Message;
 use App\MoneyMailRu\MoneyMailRu;
 use App\A101;
 use NumberFormatter;
+use Illuminate\Support\Facades\Validator;
 
 class Probe extends Command
 {
@@ -44,24 +45,25 @@ class Probe extends Command
      */
     public function handle()
     {
-        // echo url('/');
-        // exit;
+        try {
+            //code...
+            $email = 'test@test.com1';
+            $result = Validator::make(['email' => $email], [
+                'email' => 'bail|required|email:rfc',
+            ])->errors();
+            if ($result->isNotEmpty()) {
+                throw new \Exception('Некорректный формат email');
+            }
 
-        // $a101 = new A101();
-        // echo $a101->postApiAccrualsSignature([
-        //     'sum' => -23,
-        //     'period' => '202111',
-        //     'email' => 'test@example.com',
-        //     'account' => 'ИК123456',
-        //     'name' => 'Имя User-Name',
-        // ]);
-        // exit;
-
-        $accrual = Accrual::where('uuid', 'abb41790-58ed-497a-b874-56e5633b7b86')->first();
-        // print_r($accrual->toArray());
-
-        print_r($accrual->attributesToArray());
-        // print_r(array_merge($this->attributesToArray(), $this->relationsToArray()))
-        // print_r(array_merge($this->attributesToArray(), $this->relationsToArray()))
+            $result = Validator::make(['email' => $email], [
+                'email' => 'bail|required|email:rfc,dns',
+            ])->errors();
+            if ($result->isNotEmpty()) {
+                $domainName = substr(strrchr($email, "@"), 1);
+                throw new \Exception('Несуществующий домен ' . $domainName);
+            }
+        } catch (\Throwable $th) {
+            echo 'exception:' . $th->getMessage();
+        }
     }
 }

@@ -21,13 +21,28 @@ class ApiA101Test extends TestCase
     public function testAccruals()
     {
         /*
+         * Mock email sender not to send real messages
+         */
+        $mock = $this->mock(UniOne::class, function (MockInterface $mock) {
+            $mock->shouldReceive('emailSend')
+                ->andReturn([
+                    'status' => 'success',
+                    'job_id' => '101',
+                ], [
+                    'status' => 'success',
+                    'job_id' => '102',
+                ]);
+        });
+        app()->instance(UniOne::class, $mock);
+
+        /*
          * Проверить, что подпись проверяется
          */
         $requestData =  [
             'sum' => '100',
-            'period' => '202111',
+            'period' => '202202',
             'account' => 'ИК123456',
-            'email' => 'test@example.com',
+            'email' => 'null@vic-insurance.ru',
             'name' => 'Имя User-Name',
         ];
         $content = 'c2FtcGxlIHBkZiBmaWxl';
@@ -47,26 +62,26 @@ class ApiA101Test extends TestCase
         /*
          * Проверить, что корректный запрос проходит
          */
-        // $signature = $requestData['sum']
-        //     . $requestData['period']
-        //     . $requestData['account']
-        //     . $requestData['email']
-        //     . $requestData['name'];
-        // $signature = base64_encode($signature);
-        // $signature = $signature . env('A101_SIGNATURE');
-        // $signature = hash('sha1', $signature);
-        // $requestData['signature'] = $signature;
+        $signature = $requestData['sum']
+            . $requestData['period']
+            . $requestData['account']
+            . $requestData['email']
+            . $requestData['name'];
+        $signature = base64_encode($signature);
+        $signature = $signature . env('A101_SIGNATURE');
+        $signature = hash('sha1', $signature);
+        $requestData['signature'] = $signature;
 
-        // $response = $this->call(
-        //     'POST',
-        //     '/api/a101/accruals',
-        //     $requestData,
-        //     array(),
-        //     array(),
-        //     array(),
-        //     $content,
-        // );
-        // $response->assertStatus(200);
+        $response = $this->call(
+            'POST',
+            '/api/a101/accruals',
+            $requestData,
+            array(),
+            array(),
+            array(),
+            $content,
+        );
+        $response->assertStatus(200);
     }
 
     /**
@@ -138,7 +153,7 @@ class ApiA101Test extends TestCase
             'period' => date('Ym', strtotime('previous month')),
             'account' => 'БВ' . $faker->randomNumber(6, true),
             'name' => $faker->name(),
-            'email' => 'test@example.com',
+            'email' => 'null@vic-insurance.ru',
         ];
 
         $a101 = app(A101::class);

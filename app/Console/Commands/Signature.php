@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\A101;
 
-class GenerateSignature extends Command
+class Signature extends Command
 {
     /**
      * The name and signature of the console command.
@@ -41,8 +41,8 @@ class GenerateSignature extends Command
         $a101 = new A101();
         echo $a101->postApiAccrualsSignature([
             'sum' => 100,
-            'period' => '202111',
-            'email' => 'aivanov@vic-insurance.ru',
+            'period' => '202202',
+            'email' => 'null@vic-insurance.ru',
             'account' => 'ИК123456',
             'name' => 'Имя User-Name',
         ]) . PHP_EOL;

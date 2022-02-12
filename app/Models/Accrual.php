@@ -2,13 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
-use NumberFormatter;
 
 class Accrual extends Model
 {
@@ -207,13 +204,24 @@ class Accrual extends Model
      * Возвращает массив из email.
      * Если хотя бы один email невалиден - создает исключение.
      */
-    public static function parseEmail($email)
+    public static function parseEmail($string)
     {
-        $emails = preg_split('/( |,|;)/', $email, -1, PREG_SPLIT_NO_EMPTY);
+        $emails = preg_split('/( |,|;)/', $string, -1, PREG_SPLIT_NO_EMPTY);
 
         foreach ($emails as $email) {
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                throw new \Exception('Incorrect email');
+            $result = Validator::make(['email' => $email], [
+                'email' => 'bail|required|email:rfc',
+            ])->errors();
+            if ($result->isNotEmpty()) {
+                throw new \Exception('Некорректный формат email');
+            }
+
+            $result = Validator::make(['email' => $email], [
+                'email' => 'bail|required|email:rfc,dns',
+            ])->errors();
+            if ($result->isNotEmpty()) {
+                $domainName = substr(strrchr($email, "@"), 1);
+                throw new \Exception('Несуществующий домен ' . $domainName);
             }
         }
 

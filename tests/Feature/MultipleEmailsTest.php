@@ -3,12 +3,10 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Mockery\MockInterface;
 use Faker\Generator as Faker;
 use App\A101;
-use App\Models\Accrual;
 use App\UniOne\UniOne;
 
 class MultipleEmailsTest extends TestCase
@@ -75,7 +73,7 @@ class MultipleEmailsTest extends TestCase
             'period' => date('Ym', strtotime('previous month')),
             'account' => 'БВ' . $faker->randomNumber(6, true),
             'name' => $faker->name(),
-            'email' => '1@example.com 2@example.com',
+            'email' => 'null1@vic-insurance.ru null2@vic-insurance.ru',
         ];
         $a101 = app(A101::class);
         $data['signature'] = $a101->postApiAccrualsSignature($data);
