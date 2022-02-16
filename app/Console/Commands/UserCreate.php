@@ -3,31 +3,23 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
-use App\Models\Accrual;
 use App\Models\User;
-use App\UniOne\Message;
-use App\MoneyMailRu\MoneyMailRu;
-use App\A101;
-use NumberFormatter;
-use Illuminate\Support\Facades\Validator;
 
-class Probe extends Command
+class UserCreate extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'probe';
+    protected $signature = 'user:create {username?}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Try some code during development';
+    protected $description = 'Add the "a101" user';
 
     /**
      * Create a new command instance.
@@ -46,6 +38,16 @@ class Probe extends Command
      */
     public function handle()
     {
-        User::create(['username' => 'a101', 'password' => 'test']);
+        if (empty($this->argument('username'))) {
+            $username = $this->ask('username');
+        } else {
+            $username = $this->argument('username');
+        }
+
+        $password = $this->secret('password');
+
+        User::create(['username' => $username, 'password' => $password]);
+
+        return 0;
     }
 }

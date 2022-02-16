@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use App\Models\Accrual;
 use App\MoneyMailRu\MoneyMailRu;
 use App\Http\Controllers\Dashboard;
+use App\Http\Controllers\LoginController;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Route;
 
@@ -24,7 +25,11 @@ Route::get('/dev', function () {
     }
 });
 
-Route::get('/internal/dashboard', [Dashboard::class, 'show']);
+Route::get('/internal/login', [LoginController::class, 'create'])->middleware('guest')->name('login');
+Route::post('/internal/login', [LoginController::class, 'store'])->middleware('guest');
+Route::post('/internal/logout', [LoginController::class, 'destroy'])->middleware('auth');
+
+Route::get('/internal/dashboard', [Dashboard::class, 'show'])->middleware('auth');
 
 // Найти запись по полю uuid и вернуть в переменной accrual
 Route::get('/accrual/{accrual:uuid}', function (Accrual $accrual) {
