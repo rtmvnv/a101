@@ -25,10 +25,15 @@ Route::get('/dev', function () {
     }
 });
 
+Route::get('/internal', function () {
+    return redirect('/internal/dashboard');
+});
+
 Route::get('/internal/login', [LoginController::class, 'create'])->middleware('guest')->name('login');
 Route::post('/internal/login', [LoginController::class, 'store'])->middleware('guest');
 Route::match(['GET', 'POST'], '/internal/logout', [LoginController::class, 'destroy'])->middleware('auth');
 
+Route::get('/internal/dashboard', [Dashboard::class, 'show'])->middleware('auth');
 Route::get('/internal/dashboard', [Dashboard::class, 'show'])->middleware('auth');
 
 // Найти запись по полю uuid и вернуть в переменной accrual
