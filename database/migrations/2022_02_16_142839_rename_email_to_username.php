@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class EditUserTable3 extends Migration
+class RenameEmailToUsername extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class EditUserTable3 extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('email_verified_at');
+            $table->renameColumn('email', 'username');
         });
     }
 
@@ -26,7 +26,7 @@ class EditUserTable3 extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->timestamp('email_verified_at')->nullable();
+            $table->renameColumn('username', 'email');
         });
     }
 }

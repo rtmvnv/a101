@@ -32,7 +32,7 @@ class AccrualsOverviewDay
                 ->get()),
         ];
         $result['not_delivered'] = $result['total'] - $result['delivered'];
-        $result['title'] = $start->translatedFormat('d F Y');
+        $result['title'] = $start->translatedFormat('D d.m.Y');
         return $result;
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class EditUserTable1 extends Migration
+class RemoveName extends Migration
 {
     /**
      * Run the migrations.
@@ -19,7 +19,6 @@ class EditUserTable1 extends Migration
         // migration while using a SQLite database is not supported."
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('name');
-            $table->string('username')->unique();
         });
     }
 
@@ -31,8 +30,7 @@ class EditUserTable1 extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('name');
-            $table->dropColumn('username');
+            $table->string('name')->default('');
         });
     }
 }
