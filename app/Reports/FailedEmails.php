@@ -32,6 +32,8 @@ class FailedEmails
                     'context.request.status' => ['$in' => ['hard_bounced', 'soft_bounced', 'spam', 'unsubscribed']],
                 ]
             ], [
+                '$limit' => 100
+            ], [
                 '$group' =>
                 [
                     '_id' => '$context.request.email',

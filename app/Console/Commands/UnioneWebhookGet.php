@@ -15,7 +15,7 @@ class UnioneWebhookGet extends Command
      *
      * @var string
      */
-    protected $signature = 'unione:webhook_get {url}';
+    protected $signature = 'unione:webhook_get {url?}';
 
     /**
      * The console command description.
@@ -41,8 +41,14 @@ class UnioneWebhookGet extends Command
      */
     public function handle()
     {
+        if (empty($this->argument('url'))) {
+            $url = route('unione');
+        } else {
+            $url = $this->argument('url');
+        }
+
         $requestBody = [
-            'url' => $this->argument('url'),
+            'url' => $url,
         ];
         print_r($requestBody);
         echo PHP_EOL;

@@ -12,7 +12,7 @@ class UnioneWebhookSet extends Command
      *
      * @var string
      */
-    protected $signature = 'unione:webhook_set {url}';
+    protected $signature = 'unione:webhook_set {url?}';
 
     /**
      * The console command description.
@@ -38,8 +38,14 @@ class UnioneWebhookSet extends Command
      */
     public function handle()
     {
+        if (empty($this->argument('url'))) {
+            $url = route('unione');
+        } else {
+            $url = $this->argument('url');
+        }
+
         $requestBody = [
-            'url' => $this->argument('url'),
+            'url' => $url,
             'status' => 'active',
             'event_format' => 'json_post',
             'delivery_info' => 1,

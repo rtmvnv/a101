@@ -34,8 +34,9 @@ Route::middleware('throttle:60,1')
     ->middleware('log.api:incoming-api-payments');
 
 Route::middleware('throttle:600,1')
-    ->post('/unione', [A101::class, 'postApiUnione'])
-    ->middleware('log.api:incoming-api-unione');
+    ->match(['get', 'post'], '/unione', [A101::class, 'postApiUnione'])
+    ->middleware('log.api:incoming-api-unione')
+    ->name('unione');
 
 Route::middleware('throttle:600,1')
     ->post('/mailru', [A101::class, 'postApiMailru'])
