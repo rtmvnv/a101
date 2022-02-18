@@ -33,8 +33,14 @@ Route::middleware('throttle:60,1')
     ->get('/a101/payments', [A101::class, 'getApiPayments'])
     ->middleware('log.api:incoming-api-payments');
 
+// Unione проверяет доступность интерфейса с помощью GET запроса
+// Без этого не работает unione:webhook_set
+Route::get('/unione', function () {
+    return 'Dear UniSender, please check interface availability with POST requests!';
+});
+
 Route::middleware('throttle:600,1')
-    ->match(['get', 'post'], '/unione', [A101::class, 'postApiUnione'])
+    ->post('/unione', [A101::class, 'postApiUnione'])
     ->middleware('log.api:incoming-api-unione')
     ->name('unione');
 
