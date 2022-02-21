@@ -501,7 +501,7 @@ class A101
         }
 
         $message->to($accrual->email, $accrual->name)
-            ->subject("Квитанция по лицевому счету {$accrual->account} за {$accrual->period_text}")
+            ->subject("Оплачена квитанция по лицевому счету {$accrual->account} за {$accrual->period_text}")
             ->plain($plain)
             ->html($html)
             ->addInlineAttachment(
@@ -511,18 +511,6 @@ class A101
             );
 
         $unione = app(UniOne::class);
-        $result = $unione->emailSend($message);
-
-        if ($result['status'] === 'success') {
-            $accrual->unione_id = $result['job_id'];
-            $accrual->sent_at = now();
-            $accrual->save();
-            return true;
-        } else {
-            $accrual->archived_at = now();
-            $accrual->comment = 'Error sending email';
-            $accrual->save();
-            return $result['message'];
-        }
+        $unione->emailSend($message);
     }
 }
