@@ -3,15 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
-use App\Models\Accrual;
-use App\Models\User;
-use App\UniOne\Message;
-use App\MoneyMailRu\MoneyMailRu;
-use App\A101;
-use NumberFormatter;
-use Illuminate\Support\Facades\Validator;
+use App\Reports\OverviewDay;
 
 class Probe extends Command
 {
@@ -46,6 +38,10 @@ class Probe extends Command
      */
     public function handle()
     {
-        User::create(['username' => 'a101', 'password' => 'test']);
+        $report = new OverviewDay();
+        print_r($report('19.02.2022'));
+
+        // $accrual = Accrual::find("7cbccba5-afda-4fa4-b845-c6644a5d5a0e");
+        // print_r($accrual->toArray());
     }
 }

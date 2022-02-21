@@ -18,7 +18,7 @@ class OverviewTest extends TestCase
      *
      * @return void
      */
-    public function testSometing()
+    public function testOverviewPeriod()
     {
         $this->withoutExceptionHandling();
 
@@ -71,6 +71,7 @@ class OverviewTest extends TestCase
             'period' => date('Ym', strtotime('previous month')),
             'created_at' => new Carbon('previous month'),
             'sent_at' => null,
+            'unione_status' => null,
             'opened_at' => null,
             'confirmed_at' => null,
             'paid_at' => null,

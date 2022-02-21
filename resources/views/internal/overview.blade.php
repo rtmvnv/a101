@@ -19,49 +19,49 @@
                 <th scope="row">{{ $day0['title'] }}</th>
                 <td>{{ $day0['total'] }}</td>
                 <td>{{ $day0['delivered'] }}</td>
-                <td>{{ $day0['not_delivered'] }}</td>
+                <td title="{{ $day0['statistics'] }}">{{ $day0['not_delivered'] }}</td>
                 <td>{{ $day0['paid'] }}</td>
             </tr>
             <tr>
                 <th scope="row">{{ $day1['title'] }}</th>
                 <td>{{ $day1['total'] }}</td>
                 <td>{{ $day1['delivered'] }}</td>
-                <td>{{ $day1['not_delivered'] }}</td>
+                <td title="{{ $day1['statistics'] }}">{{ $day1['not_delivered'] }}</td>
                 <td>{{ $day1['paid'] }}</td>
             </tr>
             <tr>
                 <th scope="row">{{ $day2['title'] }}</th>
                 <td>{{ $day2['total'] }}</td>
                 <td>{{ $day2['delivered'] }}</td>
-                <td>{{ $day2['not_delivered'] }}</td>
+                <td title="{{ $day2['statistics'] }}">{{ $day2['not_delivered'] }}</td>
                 <td>{{ $day2['paid'] }}</td>
             </tr>
             <tr>
                 <th scope="row">{{ $day3['title'] }}</th>
                 <td>{{ $day3['total'] }}</td>
                 <td>{{ $day3['delivered'] }}</td>
-                <td>{{ $day3['not_delivered'] }}</td>
+                <td title="{{ $day3['statistics'] }}">{{ $day3['not_delivered'] }}</td>
                 <td>{{ $day3['paid'] }}</td>
             </tr>
             <tr>
                 <th scope="row">{{ $day4['title'] }}</th>
                 <td>{{ $day4['total'] }}</td>
                 <td>{{ $day4['delivered'] }}</td>
-                <td>{{ $day4['not_delivered'] }}</td>
+                <td title="{{ $day4['statistics'] }}">{{ $day4['not_delivered'] }}</td>
                 <td>{{ $day4['paid'] }}</td>
             </tr>
             <tr>
                 <th scope="row">{{ $day5['title'] }}</th>
                 <td>{{ $day5['total'] }}</td>
                 <td>{{ $day5['delivered'] }}</td>
-                <td>{{ $day5['not_delivered'] }}</td>
+                <td title="{{ $day5['statistics'] }}">{{ $day5['not_delivered'] }}</td>
                 <td>{{ $day5['paid'] }}</td>
             </tr>
             <tr>
                 <th scope="row">{{ $day6['title'] }}</th>
                 <td>{{ $day6['total'] }}</td>
                 <td>{{ $day6['delivered'] }}</td>
-                <td>{{ $day6['not_delivered'] }}</td>
+                <td title="{{ $day6['statistics'] }}">{{ $day6['not_delivered'] }}</td>
                 <td>{{ $day6['paid'] }}</td>
             </tr>
             <tr>
