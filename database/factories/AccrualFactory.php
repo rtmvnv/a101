@@ -54,7 +54,7 @@ class AccrualFactory extends Factory
             'paid',
         ];
 
-        $status = $this->faker->biasedNumberBetween(0, 5);
+        $status = $this->faker->biasedNumberBetween(0, 7);
         switch ($status) {
             case 0:
                 # positive sum
@@ -69,22 +69,49 @@ class AccrualFactory extends Factory
                 break;
 
             case 2:
-                # opened
+                # spam
                 $accrual['sent_at'] = $this->faker->dateTimeBetween($accrual['created_at']);
-                $accrual['opened_at'] = $this->faker->dateTimeBetween($accrual['sent_at']);
+                $accrual['unione_id'] = $this->faker->word();
+                $accrual['unione_status'] = 'spam';
+                $accrual['unione_at'] = $this->faker->dateTimeBetween($accrual['sent_at']);
+                $accrual['comment'] = 'Ошибка отправки письма';
                 break;
 
             case 3:
-                # confirmed
+                # invalid address
                 $accrual['sent_at'] = $this->faker->dateTimeBetween($accrual['created_at']);
-                $accrual['opened_at'] = $this->faker->dateTimeBetween($accrual['sent_at']);
-                $accrual['confirmed_at'] = $this->faker->dateTimeBetween($accrual['opened_at']);
+                $accrual['unione_id'] = $this->faker->word();
+                $accrual['unione_status'] = 'hard_bounced';
+                $accrual['unione_at'] = $this->faker->dateTimeBetween($accrual['sent_at']);
+                $accrual['comment'] = 'Ошибка отправки письма';
                 break;
 
             case 4:
+                # opened
+                $accrual['sent_at'] = $this->faker->dateTimeBetween($accrual['created_at']);
+                $accrual['unione_id'] = $this->faker->word();
+                $accrual['unione_status'] = 'opened';
+                $accrual['unione_at'] = $this->faker->dateTimeBetween($accrual['sent_at']);
+                $accrual['opened_at'] = $accrual['unione_at'];
+                break;
+
+            case 5:
+                # confirmed
+                $accrual['sent_at'] = $this->faker->dateTimeBetween($accrual['created_at']);
+                $accrual['unione_id'] = $this->faker->word();
+                $accrual['unione_status'] = 'clicked';
+                $accrual['unione_at'] = $this->faker->dateTimeBetween($accrual['sent_at']);
+                $accrual['opened_at'] = $accrual['unione_at'];
+                $accrual['confirmed_at'] = $this->faker->dateTimeBetween($accrual['opened_at']);
+                break;
+
+            case 6:
                 # paid
                 $accrual['sent_at'] = $this->faker->dateTimeBetween($accrual['created_at']);
-                $accrual['opened_at'] = $this->faker->dateTimeBetween($accrual['sent_at']);
+                $accrual['unione_id'] = $this->faker->word();
+                $accrual['unione_status'] = 'clicked';
+                $accrual['unione_at'] = $this->faker->dateTimeBetween($accrual['sent_at']);
+                $accrual['opened_at'] = $accrual['unione_at'];
                 $accrual['confirmed_at'] = $this->faker->dateTimeBetween($accrual['opened_at']);
                 $accrual['paid_at'] = $this->faker->dateTimeBetween($accrual['opened_at']);
                 break;
