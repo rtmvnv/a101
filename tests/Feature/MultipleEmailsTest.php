@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery\MockInterface;
 use Faker\Generator as Faker;
 use App\A101;
@@ -80,6 +80,5 @@ class MultipleEmailsTest extends TestCase
 
         $response = $this->call('POST', '/api/a101/accruals', $data, [], [], [], 'test');
         $response->assertStatus(200);
-
     }
 }

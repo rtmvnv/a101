@@ -2,14 +2,14 @@
 
 namespace Tests\Feature;
 
-use Carbon\Carbon;
 use Tests\TestCase;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\Accrual;
-use App\Reports\AccrualsOverviewDay;
-use App\Reports\AccrualsOverviewPeriod;
+use App\Reports\OverviewDay;
+use App\Reports\OverviewPeriod;
 
-class AccrualsOverviewTest extends TestCase
+class OverviewTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -18,7 +18,7 @@ class AccrualsOverviewTest extends TestCase
      *
      * @return void
      */
-    public function testAccrualsOverviewPeriod()
+    public function testSometing()
     {
         $this->withoutExceptionHandling();
 
@@ -119,9 +119,9 @@ class AccrualsOverviewTest extends TestCase
             'archived_at' => new Carbon('previous month'),
         ]);
 
-        $accrualsOverviewPeriod = new AccrualsOverviewPeriod();
-        $thisMonth = $accrualsOverviewPeriod('this month');
-        $previousMonth = $accrualsOverviewPeriod('previous month');
+        $overviewPeriod = new OverviewPeriod();
+        $thisMonth = $overviewPeriod('this month');
+        $previousMonth = $overviewPeriod('previous month');
 
         $this->assertEquals(3, $thisMonth['total']);
         $this->assertEquals(3, $thisMonth['delivered']);
@@ -139,7 +139,7 @@ class AccrualsOverviewTest extends TestCase
      *
      * @return void
      */
-    public function testAccrualsOverviewDay()
+    public function testOverviewDay()
     {
         $this->withoutExceptionHandling();
 
@@ -240,9 +240,9 @@ class AccrualsOverviewTest extends TestCase
             'archived_at' => now(),
         ]);
 
-        $accrualsOverviewDay = new AccrualsOverviewDay();
-        $today = $accrualsOverviewDay('today');
-        $yesterday = $accrualsOverviewDay('yesterday');
+        $overviewDay = new OverviewDay();
+        $today = $overviewDay('today');
+        $yesterday = $overviewDay('yesterday');
 
         $this->assertEquals(2, $today['total']);
         $this->assertEquals(1, $today['delivered']);

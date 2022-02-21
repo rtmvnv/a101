@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class Accrual extends Model
 {

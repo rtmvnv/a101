@@ -5,7 +5,7 @@ namespace App\Reports;
 use Carbon\Carbon;
 use App\Models\Accrual;
 
-class AccrualsOverviewDay
+class OverviewDay
 {
     public function __invoke($day)
     {

@@ -2,7 +2,7 @@
 @include('internal/menu')
 
 <div class="container">
-    <h1>Лицевые счета</h1>
+    <h1>Рассылка</h1>
 
     <table class="table table-hover">
         <thead>

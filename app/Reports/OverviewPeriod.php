@@ -5,7 +5,7 @@ namespace App\Reports;
 use Carbon\Carbon;
 use App\Models\Accrual;
 
-class AccrualsOverviewPeriod
+class OverviewPeriod
 {
     public function __invoke($period)
     {

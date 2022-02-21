@@ -7,7 +7,7 @@
         </a>
 
         <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-            <li><a href="/internal/accounts" class="nav-link px-2 link-secondary">Лицевые счета</a></li>
+            <li><a href="/internal/overview" class="nav-link px-2 link-secondary">Рассылка</a></li>
             <li><a href="/internal/failed-emails" class="nav-link px-2 link-dark">Ошибки e-mail</a></li>
         </ul>
 

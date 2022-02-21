@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 use App\Models\Accrual;
 
 class ParseEmailTest extends TestCase

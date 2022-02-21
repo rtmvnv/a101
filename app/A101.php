@@ -7,13 +7,11 @@ use App\Rules\ValidDate;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\App;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\UniOne\UniOne;
 use App\UniOne\Message;
 use App\MoneyMailRu\Callback;
-use phpDocumentor\Reflection\Types\Boolean;
 
 class A101
 {
@@ -167,6 +165,7 @@ class A101
             /**
              * Проверить корректность email
              */
+            $request->email = mb_strtolower($request->email);
             Accrual::parseEmail($request->email);
 
             /**

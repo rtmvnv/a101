@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use App\Models\Accrual;
 use App\MoneyMailRu\MoneyMailRu;
-use App\Http\Controllers\AccountsController;
+use App\Http\Controllers\OverviewController;
 use App\Http\Controllers\FailedEmailsController;
 use App\Http\Controllers\LoginController;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -27,14 +27,14 @@ Route::get('/dev', function () {
 });
 
 Route::get('/internal', function () {
-    return redirect('/internal/accounts');
+    return redirect('/internal/overview');
 });
 
 Route::get('/internal/login', [LoginController::class, 'create'])->middleware('guest')->name('login');
 Route::post('/internal/login', [LoginController::class, 'store'])->middleware('guest');
 Route::match(['GET', 'POST'], '/internal/logout', [LoginController::class, 'destroy'])->middleware('auth');
 
-Route::get('/internal/accounts', [AccountsController::class, 'show'])->middleware('auth');
+Route::get('/internal/overview', [OverviewController::class, 'show'])->middleware('auth');
 Route::get('/internal/failed-emails', [FailedEmailsController::class, 'show'])->middleware('auth');
 
 // Найти запись по полю uuid и вернуть в переменной accrual
