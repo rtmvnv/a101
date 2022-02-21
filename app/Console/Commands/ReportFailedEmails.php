@@ -3,13 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
-use Excel;
-use App\Exports\PaidAccrualsExport;
-use App\UniOne\UniOne;
 use App\UniOne\Message;
-use App\Models\Accrual;
 use App\Reports\FailedEmails;
 
 class ReportFailedEmails extends Command
@@ -19,7 +13,7 @@ class ReportFailedEmails extends Command
      *
      * @var string
      */
-    protected $signature = 'report:failed_emails';
+    protected $signature = 'report:failed_emails {--send}';
 
     /**
      * The console command description.
@@ -56,18 +50,26 @@ class ReportFailedEmails extends Command
                 . ' ' . $record['destination_response']
                 . PHP_EOL . PHP_EOL;
         }
+        if (empty($plain)) {
+            $plain = 'Нет ошибок доставки';
+        }
 
         $message = new Message();
         $message->to(env('REPORTS_FAILED_EMAILS'))
             ->subject('Отчет об ошибках доставки писем за неделю')
             ->plain($plain);
 
-        $unione = app(UniOne::class);
-        $result = $unione->emailSend($message);
-        if ($result['status'] !== 'success') {
-            Log::error('Failed sending failed emails report' . (isset($result['message']) ? '. ' . $result['message'] : ''));
-            print_r($result);
-            return 1;
+
+        if ($this->option('send')) {
+            $unione = app(UniOne::class);
+            $result = $unione->emailSend($message);
+            if ($result['status'] !== 'success') {
+                Log::error('Failed sending failed emails report' . (isset($result['message']) ? '. ' . $result['message'] : ''));
+                print_r($result);
+                return 1;
+            }
+        } else {
+            $this->line($plain);
         }
 
         return 0;

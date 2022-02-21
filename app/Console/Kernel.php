@@ -24,7 +24,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('report:failed_emails')->weeklyOn(1, '8:00');
+        $schedule->command('report:failed_emails --send')->weeklyOn(1, '8:00');
     }
 
     /**
