@@ -9,7 +9,7 @@ use App\Reports\OverviewPeriod;
 class OverviewController extends Controller
 {
 
-    public function show(Request $request)
+    public function __invoke(Request $request)
     {
         $overviewDay = new OverviewDay();
         $data['day0'] = $overviewDay('today');

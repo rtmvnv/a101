@@ -9,7 +9,7 @@ use App\Reports\NotDeliveredPeriod;
 
 class DeliveryController extends Controller
 {
-    public function index(Request $request)
+    public function __invoke(Request $request)
     {
         $start = $request->input('start', 'yesterday');
         $startDate = (new Carbon($start, 'Europe/Moscow'))->setTime(0, 0, 0, 0);

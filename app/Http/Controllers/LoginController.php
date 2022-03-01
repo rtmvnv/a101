@@ -9,7 +9,7 @@ class LoginController extends Controller
     /**
      * Отобразить форму ввода пароля
      */
-    public function create()
+    public function show()
     {
         return view('internal.login');
     }

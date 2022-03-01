@@ -30,18 +30,18 @@ Route::get('/dev', function () {
     return view('dev', []);
 });
 
-Route::get('/internal/login', [LoginController::class, 'create'])->middleware('guest')->name('login');
+Route::get('/internal/login', [LoginController::class, 'show'])->middleware('guest');
 Route::post('/internal/login', [LoginController::class, 'store'])->middleware('guest');
 Route::match(['GET', 'POST'], '/internal/logout', [LoginController::class, 'destroy'])->middleware('auth');
 
 Route::redirect('/internal', '/internal/overview');
 
-Route::get('/internal/overview', [OverviewController::class, 'show'])->middleware('auth')->name('overview');
+Route::get('/internal/overview', OverviewController::class)->middleware('auth')->name('overview');
 
-Route::get('/internal/delivery', [DeliveryController::class, 'index'])->middleware('auth')->name('delivery');
+Route::get('/internal/delivery', DeliveryController::class)->middleware('auth')->name('delivery');
 
 Route::get('/internal/account/{account?}', [AccountController::class, 'show'])->middleware('auth')->name('account');
-Route::post('/internal/account', [AccountController::class, 'get'])->middleware('auth');
+Route::post('/internal/account', [AccountController::class, 'store'])->middleware('auth');
 
 Route::get('/internal/email', [EmailController::class, 'show'])->middleware('auth')->name('emails');
 

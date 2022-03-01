@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class AccountController extends Controller
 {
-    public function get(Request $request)
+    public function store(Request $request)
     {
         return redirect()->route('account', $request->get('account', ''));
     }
