@@ -36,6 +36,19 @@
     </form>
 </div>
 
+<div class="container px-3 mb-3">
+    <div class="card">
+        <div class="card-body">
+            <strong class="card-title">Статистика</strong>
+            <p class="card-text">
+                @foreach ($status as $key => $value)
+                {{ $key }} {{ $value }};
+                @endforeach
+            </p>
+        </div>
+    </div>
+</div>
+
 <div class="container">
     <table class="table table-hover">
         <thead>

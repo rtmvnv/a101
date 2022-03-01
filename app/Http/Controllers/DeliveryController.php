@@ -23,7 +23,7 @@ class DeliveryController extends Controller
 
             case 'month':
                 $interval = 'month';
-                $accounts = (new NotDeliveredPeriod())($start);
+                $accounts = (new NotDeliveredPeriod())($startDate->format('Ym'));
                 break;
 
             default:
@@ -33,9 +33,14 @@ class DeliveryController extends Controller
         }
 
         /**
-         * Дописать в результаты ссылки на страницы интерфейса
+         * Дописать в результаты ссылки на страницы интерфейса и статистику
          */
+        $status = [];
         foreach ($accounts as $account) {
+            if (empty($account->unione_status)) {
+                $account->unione_status = 'not_sent';
+            }
+            (isset($status[$account->unione_status])) ? $status[$account->unione_status] += 1 : $status[$account->unione_status] = 1;
             $account->account_link = route('account', ['account' => $account->account]);
             $emails = preg_split('/( |,|;)/', mb_strtolower($account->email), -1, PREG_SPLIT_NO_EMPTY);
             foreach ($emails as $email) {
@@ -50,6 +55,7 @@ class DeliveryController extends Controller
             'start' => $startDate->format('Y-m-d'),
             'interval' => $interval,
             'accounts' => $accounts,
+            'status' => $status,
         ]);
     }
 }
