@@ -66,6 +66,13 @@ class AccrualFactory extends Factory
                 # failed
                 $accrual['archived_at'] = $this->faker->dateTimeBetween($accrual['created_at']);
                 $accrual['comment'] = 'Ошибка отправки письма';
+                $accrual['sent_at'] = null;
+                $accrual['unione_id'] = null;
+                $accrual['unione_status'] = null;
+                $accrual['unione_at'] = null;
+                $accrual['opened_at'] = null;
+                $accrual['confirmed_at'] = null;
+                $accrual['paid_at'] = null;
                 break;
 
             case 2:

@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Reports\OverviewDay;
 
 class Probe extends Command
 {
@@ -38,10 +37,6 @@ class Probe extends Command
      */
     public function handle()
     {
-        $report = new OverviewDay();
-        print_r($report('19.02.2022'));
-
-        // $accrual = Accrual::find("7cbccba5-afda-4fa4-b845-c6644a5d5a0e");
-        // print_r($accrual->toArray());
+        // echo route('failed-accruals', ['test1' => '1']);
     }
 }

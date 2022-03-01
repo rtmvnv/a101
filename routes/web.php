@@ -4,7 +4,9 @@ use Illuminate\Http\Request;
 use App\Models\Accrual;
 use App\MoneyMailRu\MoneyMailRu;
 use App\Http\Controllers\OverviewController;
-use App\Http\Controllers\FailedEmailsController;
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\DeliveryController;
+use App\Http\Controllers\EmailController;
 use App\Http\Controllers\LoginController;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Route;
@@ -24,18 +26,24 @@ Route::get('/dev', function () {
     if (App::environment('production')) {
         abort(404);
     }
-});
 
-Route::get('/internal', function () {
-    return redirect('/internal/overview');
+    return view('dev', []);
 });
 
 Route::get('/internal/login', [LoginController::class, 'create'])->middleware('guest')->name('login');
 Route::post('/internal/login', [LoginController::class, 'store'])->middleware('guest');
 Route::match(['GET', 'POST'], '/internal/logout', [LoginController::class, 'destroy'])->middleware('auth');
 
-Route::get('/internal/overview', [OverviewController::class, 'show'])->middleware('auth');
-Route::get('/internal/failed-emails', [FailedEmailsController::class, 'show'])->middleware('auth');
+Route::redirect('/internal', '/internal/overview');
+
+Route::get('/internal/overview', [OverviewController::class, 'show'])->middleware('auth')->name('overview');
+
+Route::get('/internal/delivery', [DeliveryController::class, 'index'])->middleware('auth')->name('delivery');
+
+Route::get('/internal/account/{account?}', [AccountController::class, 'show'])->middleware('auth')->name('account');
+Route::post('/internal/account', [AccountController::class, 'get'])->middleware('auth');
+
+Route::get('/internal/email', [EmailController::class, 'show'])->middleware('auth')->name('emails');
 
 // Найти запись по полю uuid и вернуть в переменной accrual
 Route::get('/accrual/{accrual:uuid}', function (Accrual $accrual) {

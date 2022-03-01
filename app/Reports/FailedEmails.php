@@ -29,7 +29,7 @@ class FailedEmails
                     'datetime' => array('$gte' => new UTCDateTime(1000 * strtotime($this->since))),
                     'message' => 'incoming-api-unione',
                     'context.request.event_name' => 'transactional_email_status',
-                    'context.request.status' => ['$in' => ['hard_bounced', 'soft_bounced', 'spam', 'unsubscribed']],
+                    'context.request.status' => ['$in' => ['hard_bounced', 'spam', 'unsubscribed']],
                 ]
             ], [
                 '$limit' => 100

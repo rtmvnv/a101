@@ -9,9 +9,12 @@ class OverviewPeriod
 {
     public function __invoke($period)
     {
-        $periodString = (new Carbon($period))->format('Ym');
+        $start = new Carbon($period);
+        $start->startOfMonth();
+        $periodString = $start->format('Ym');
 
         $result = [
+            'title' => (new Carbon($period))->translatedFormat('F Y'),
             'total' => count(Accrual::select('account', 'period')
                 ->where('period', $periodString)
                 ->distinct()
@@ -28,7 +31,11 @@ class OverviewPeriod
                 ->get()),
         ];
         $result['not_delivered'] = $result['total'] - $result['delivered'];
-        $result['title'] = (new Carbon($period))->translatedFormat('F Y');
+        $result['not_delivered_link'] = route(
+            'delivery',
+            ['start' => $start->format('Y-m-d'), 'interval' => 'month']
+        );
+        // ddd(Accrual::select('account', 'period')->where('period', $periodString)->distinct()->get()->toArray());
         return $result;
     }
 }

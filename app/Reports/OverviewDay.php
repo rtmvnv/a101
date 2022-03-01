@@ -12,58 +12,60 @@ class OverviewDay
         $start = (new Carbon($day))->startOfDay();
         $finish = (new Carbon($day))->startOfDay()->addHours(24);
 
-        $result = [];
-        $result['title'] = $start->translatedFormat('D d.m.Y');
-
         /**
-         * Статистика по статусам недоставленных писем
+         * Детализация числа недоставленных
          */
-        $totalList = Accrual::select('account', 'period')
+        $accounts = Accrual::select('account', 'period')
             ->where('created_at', '>=', $start)
             ->where('created_at', '<', $finish)
             ->distinct()
             ->get();
 
         $statistics = [];
-        foreach ($totalList as $account) {
-            $accrual = Accrual::where('account', $account['account'])
+        foreach ($accounts as $account) {
+            $successfulCount = Accrual::where('account', $account['account'])
+                ->where('period', $account['period'])
+                ->whereIn('unione_status', ['delivered', 'opened', 'clicked'])
+                ->count();
+
+            if ($successfulCount > 0) {
+                continue;
+            }
+
+            $notDeliveredAccount = Accrual::where('account', $account['account'])
                 ->where('period', $account['period'])
                 ->orderBy('created_at', 'desc')
                 ->first();
 
-            if (
-                $accrual['unione_status'] == 'delivered'
-                or  $accrual['unione_status'] == 'opened'
-                or  $accrual['unione_status'] == 'clicked'
-            ) {
-                continue;
-            }
-
-            if (empty($accrual['unione_status'])) {
+            if (empty($notDeliveredAccount['unione_status'])) {
                 $unioneStatus = 'not_sent';
             } else {
-                $unioneStatus = $accrual['unione_status'];
+                $unioneStatus = $notDeliveredAccount['unione_status'];
             }
 
-            if (!isset($statistics[$unioneStatus])) {
-                $statistics[$unioneStatus] = 1;
-            } else {
-                $statistics[$unioneStatus] += 1;
-            }
+            (isset($statistics[$unioneStatus])) ? $statistics[$unioneStatus] += 1 : $statistics[$unioneStatus] = 1;
         }
+
+        // Детализация числа недоставленных
+        $result = [];
         $result['statistics'] = '';
         foreach ($statistics as $key => $value) {
             $result['statistics'] .= $key . ': ' . $value . PHP_EOL;
         }
         trim($result['statistics']);
 
-        $result['total'] = count($totalList);
-        $result['delivered'] = count(Accrual::select('account', 'period')
+        $result['title'] = $start->translatedFormat('d.m.Y');
+        $result['total'] = count(Accrual::select('account', 'period')
+            ->where('created_at', '>=', $start)
+            ->where('created_at', '<', $finish)
+            ->distinct()
+            ->get());
+        $result['delivered'] = Accrual::select('account', 'period')
             ->where('created_at', '>=', $start)
             ->where('created_at', '<', $finish)
             ->whereIn('unione_status', ['delivered', 'opened', 'clicked'])
             ->distinct()
-            ->get());
+            ->count();
         $result['paid'] = count(Accrual::select('account', 'period')
             ->where('created_at', '>=', $start)
             ->where('created_at', '<', $finish)
@@ -71,7 +73,12 @@ class OverviewDay
             ->distinct()
             ->get());
         $result['not_delivered'] = $result['total'] - $result['delivered'];
-        $result['title'] = $start->translatedFormat('D d.m.Y');
+
+        $result['not_delivered_link'] = route(
+            'delivery',
+            ['start' => $start->format('Y-m-d'), 'interval' => 'day']
+        );
+
         return $result;
     }
 }
