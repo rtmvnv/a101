@@ -35,7 +35,8 @@ class OverviewDay
 
         $result['not_delivered_link'] = route(
             'delivery',
-            ['start' => $start->format('Y-m-d'), 'interval' => 'day']
+            ['start' => $start->format('Y-m-d'), 'interval' => 'day'],
+            false,
         );
 
         return $result;

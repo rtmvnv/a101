@@ -46,7 +46,7 @@ class DeliveryController extends Controller
             foreach ($emails as $email) {
                 $account->emails[] = (object)[
                     'address' => $email,
-                    'link' => route('emails', ['email' => $email]),
+                    'link' => route('emails', ['email' => $email], false),
                 ];
             }
         }

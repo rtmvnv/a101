@@ -33,7 +33,8 @@ class OverviewPeriod
         $result['not_delivered'] = $result['total'] - $result['delivered'];
         $result['not_delivered_link'] = route(
             'delivery',
-            ['start' => $start->format('Y-m-d'), 'interval' => 'month']
+            ['start' => $start->format('Y-m-d'), 'interval' => 'month'],
+            false
         );
         // ddd(Accrual::select('account', 'period')->where('period', $periodString)->distinct()->get()->toArray());
         return $result;
