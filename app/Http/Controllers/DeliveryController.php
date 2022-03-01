@@ -41,7 +41,7 @@ class DeliveryController extends Controller
                 $account->unione_status = 'not_sent';
             }
             (isset($status[$account->unione_status])) ? $status[$account->unione_status] += 1 : $status[$account->unione_status] = 1;
-            $account->account_link = route('account', ['account' => $account->account]);
+            $account->account_link = route('account', ['account' => $account->account], false);
             $emails = preg_split('/( |,|;)/', mb_strtolower($account->email), -1, PREG_SPLIT_NO_EMPTY);
             foreach ($emails as $email) {
                 $account->emails[] = (object)[
