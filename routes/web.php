@@ -30,7 +30,7 @@ Route::get('/dev', function () {
     return view('dev', []);
 });
 
-Route::get('/internal/login', [LoginController::class, 'show'])->middleware('guest');
+Route::get('/internal/login', [LoginController::class, 'show'])->middleware('guest')->name('login');
 Route::post('/internal/login', [LoginController::class, 'store'])->middleware('guest');
 Route::match(['GET', 'POST'], '/internal/logout', [LoginController::class, 'destroy'])->middleware('auth');
 

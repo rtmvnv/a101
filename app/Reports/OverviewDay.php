@@ -9,6 +9,7 @@ class OverviewDay
 {
     public function __invoke($day)
     {
+        $result = [];
         $start = (new Carbon($day))->startOfDay();
         $finish = (new Carbon($day))->startOfDay()->addHours(24);
 
@@ -47,7 +48,6 @@ class OverviewDay
         }
 
         // Детализация числа недоставленных
-        $result = [];
         $result['statistics'] = '';
         foreach ($statistics as $key => $value) {
             $result['statistics'] .= $key . ': ' . $value . PHP_EOL;
