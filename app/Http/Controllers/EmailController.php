@@ -139,7 +139,7 @@ class EmailController extends Controller
         /**
          * Список ошибок отправки
          */
-        $failedEmails = (new FailedEmails('-1 year'))();
+        $data['failed_emails'] = (new FailedEmails('-1 month'))();
 
         return view('internal/email', $data);
     }

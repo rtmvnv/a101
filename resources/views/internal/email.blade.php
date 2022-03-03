@@ -1,7 +1,7 @@
 @include('internal/header', ['menu' => 'email', 'title' => 'Информация об адресе e-mail'])
 
 <div class="container px-3 pb-3 mb-3 bg-light">
-    <form method="GET" action="/internal/emails" class="row">
+    <form method="GET" action="/internal/email" class="row">
         <div class="col-auto">
             <label for="account" class="col-form-label">E-mail</label>
         </div>
@@ -33,7 +33,7 @@
             <p class="card-text">{{ $suppression['message'] }}</p>
             @if ( $suppression['show_button'])
             <div class="card-footer">
-                <form method="GET" action="/internal/emails" class="row">
+                <form method="GET" action="/internal/email" class="row">
                     <input type="hidden" id="email" name="email" value="{{ $email }}">
                     <input type="hidden" id="unblock" name="unblock" value="true">
                     <div class="col-auto">
