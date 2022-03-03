@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Reports\EmailEvents;
 
 class Probe extends Command
 {
@@ -37,6 +38,7 @@ class Probe extends Command
      */
     public function handle()
     {
+        print_r((new EmailEvents())('vladimir.glavnov@iss.ru'));
         // echo route('failed-accruals', ['test1' => '1']);
     }
 }

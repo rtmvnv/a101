@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Reports\FailedEmails;
+use App\Reports\EmailEvents;
 use Illuminate\Support\Facades\DB;
 use App\UniOne\UniOne;
 
@@ -14,9 +14,9 @@ class EmailController extends Controller
         $data = [
             'email' => $request->get('email', null),
             'suppression' => ['message' => '', 'show_button' => false],
-            'failed_emails' => [],
-            'accounts' => [],
             'alert' => ['message' => '', 'type' => 'info'], // info|success|warning|danger
+            'accounts' => [],
+            'events' => [],
         ];
 
         if (empty($data['email'])) {
@@ -34,7 +34,7 @@ class EmailController extends Controller
         foreach ($accountsList as $item) {
             $data['accounts'][] = [
                 'value' => $item->account,
-                'link' => route('account', ['account' => $item->account]),
+                'link' => route('account', ['account' => $item->account], false),
             ];
         }
 
@@ -139,7 +139,7 @@ class EmailController extends Controller
         /**
          * Список ошибок отправки
          */
-        $data['failed_emails'] = (new FailedEmails('-1 month'))();
+        $data['events'] = (new EmailEvents())($data['email']);
 
         return view('internal/email', $data);
     }

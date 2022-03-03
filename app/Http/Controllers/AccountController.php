@@ -51,7 +51,7 @@ class AccountController extends Controller
             foreach ($emails as $email) {
                 $item->emails[] = (object)[
                     'address' => $email,
-                    'link' => route('email', ['email' => $email]),
+                    'link' => route('email', ['email' => $email], false),
                 ];
             }
             $accruals[] = $item;

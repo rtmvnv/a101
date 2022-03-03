@@ -66,19 +66,17 @@
     <table class="table table-hover">
         <thead>
             <tr>
-                <th scope="col">Лицевой счет</th>
-                <th scope="col">e-mail</th>
-                <th scope="col">Ошибка</th>
+                <th scope="col">Дата</th>
+                <th scope="col">Статус</th>
                 <th scope="col">Подробности</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($failed_emails as $failed_email)
+            @foreach ($events as $event)
             <tr>
-                <th scope="row">{{ $failed_email['account'] }}</th>
-                <td>{{ $failed_email['email'] }}</td>
-                <td>{{ $failed_email['explanation'] }}</td>
-                <td>{{ $failed_email['status'] }} {{ $failed_email['delivery_status'] }} {{ $failed_email['destination_response'] }}</td>
+                <td>{{ $event['datetime'] }}</td>
+                <td>{{ $event['explanation'] }}</td>
+                <td>{{ $event['status'] }} {{ $event['delivery_status'] }} {{ $event['destination_response'] }}</td>
             </tr>
             @endforeach
         </tbody>

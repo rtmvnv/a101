@@ -43,7 +43,7 @@ Route::get('/internal/delivery', DeliveryController::class)->middleware('auth')-
 Route::get('/internal/account/{account?}', [AccountController::class, 'show'])->middleware('auth')->name('account');
 Route::post('/internal/account', [AccountController::class, 'store'])->middleware('auth');
 
-Route::get('/internal/email', [EmailController::class, 'show'])->middleware('auth')->name('emails');
+Route::get('/internal/email', [EmailController::class, 'show'])->middleware('auth')->name('email');
 
 // Найти запись по полю uuid и вернуть в переменной accrual
 Route::get('/accrual/{accrual:uuid}', function (Accrual $accrual) {
