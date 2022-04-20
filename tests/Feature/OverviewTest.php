@@ -165,6 +165,7 @@ class OverviewTest extends TestCase
             'period' => date('Ym'),
             'created_at' => now(),
             'sent_at' => null,
+            'unione_status' => null,
             'opened_at' => null,
             'confirmed_at' => null,
             'paid_at' => null,
