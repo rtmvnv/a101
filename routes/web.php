@@ -63,8 +63,8 @@ Route::get('/accrual/{accrual:uuid}', function (Accrual $accrual) {
             return view('paid', $accrual->toArray());
             break;
 
-        case 'failed':
-            return view('failed', $accrual->toArray());
+        case 'archived':
+            return view('archived', $accrual->toArray());
             break;
 
         default:
