@@ -16,6 +16,15 @@ use App\MoneyMailRu\Callback;
 class A101
 {
     /**
+     * Обработчик POST запросов к /api/orangedata
+     *
+     * @return Response
+     */
+    public function postApiOrangedata(Request $request)
+    {
+    }
+
+    /**
      * Обработчик POST запросов к /api/unione
      *
      * @return Response

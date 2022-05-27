@@ -2,6 +2,7 @@
 /vendor/
 docker-compose.override.yml
 .DS_Store
+*.log
 
 node_modules/
 npm-debug.log

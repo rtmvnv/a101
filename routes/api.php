@@ -48,6 +48,11 @@ Route::middleware('throttle:600,1')
     ->post('/mailru', [A101::class, 'postApiMailru'])
     ->middleware('log.mailru:incoming-api-mailru');
 
+Route::middleware('throttle:600,1')
+    ->any('/orangedata', [A101::class, 'postApiOrangedata']) //@ DEBUG should be POST only
+    ->middleware('log.api:incoming-api-orangedata')
+    ->name('orangedata');
+
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
