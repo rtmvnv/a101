@@ -7,6 +7,12 @@
         "laravel"
     ],
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/rtmvnv/PHP-OrangeData-official"
+        }
+    ],
     "require": {
         "php": "^8.0",
         "doctrine/dbal": "~3.1.5",
@@ -19,7 +25,8 @@
         "maatwebsite/excel": "^3.1",
         "mongodb/mongodb": "^1.9",
         "php-imap/php-imap": "^3.1",
-        "phpoffice/phpspreadsheet": "^1.23"
+        "phpoffice/phpspreadsheet": "^1.23",
+        "orangedata/orangedata-client": "dev-rtmvnv"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
