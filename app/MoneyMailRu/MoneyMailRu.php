@@ -165,6 +165,9 @@ class MoneyMailRu
             ];
         } finally {
             $record['response'] = $response;
+            if (!isset($responseTime)) {
+                $responseTime = CarbonImmutable::now();
+            }
             $record['response_time'] = $responseTime->format('c');
             $record['elapsed'] = $responseTime->floatDiffInSeconds($requestTime);
             Log::info('outgoing-mailru', $record);
