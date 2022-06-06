@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use Carbon\CarbonImmutable;
 use orangedata\orangedata_client;
 
@@ -54,13 +55,14 @@ class Probe extends Command
 
             $orangeData = new orangedata_client(
                 [
-                    'inn' => env('ORANGEDATA_INN'),
-                    'api_url' => env('ORANGEDATA_URL'),
+                    // 'inn' => config('services.orangedata.inn'),
+                    'inn' => '1234567890',
+                    'api_url' => config('services.orangedata.url'),
                     'sign_pkey' => storage_path('app/orangedata/private_key.pem'),
                     'ssl_client_key' => storage_path('app/orangedata/client.key'),
                     'ssl_client_crt' => storage_path('app/orangedata/client.crt'),
                     'ssl_ca_cert' => storage_path('app/orangedata/cacert.pem'),
-                    'ssl_client_crt_pass' => env('ORANGEDATA_PASS'),
+                    'ssl_client_crt_pass' => config('services.orangedata.pass'),
                 ]
             );
 
@@ -69,11 +71,12 @@ class Probe extends Command
             }
 
             $orangeData->create_order([
-                'id' => random_int(1, PHP_INT_MAX),
+                // 'id' => random_int(1, PHP_INT_MAX),
+                'id' => 6640319152023171367,
                 'type' => 1,
                 'customerContact' => $accrual['email'],
                 'taxationSystem' => 0,
-                'key' => env('ORANGEDATA_INN'),
+                'key' => config('services.orangedata.inn'),
                 'callbackUrl' => route('orangedata'),
             ])
                 ->add_position_to_order([
@@ -87,33 +90,36 @@ class Probe extends Command
                         'phoneNumbers' => ['+74956486777'],
                         'name' => 'А101-Комфорт',
                     ],
-                    'supplierINN' => env('ORANGEDATA_INN'),
+                    'supplierINN' => config('services.orangedata.inn'),
                 ])
                 ->add_payment_to_order([
                     'type' => 16,
                     'amount' => $accrual['sum'],
                 ]);
 
-            $record['request'] = $orangeData->get_order();
-            $result = $orangeData->send_order();
+            $record['request'] = arrayCastRecursive($orangeData->get_order());
+            $response = $orangeData->send_order();
             $responseTime = CarbonImmutable::now();
-
-            echo 'SEND ORDER' . PHP_EOL;
-            var_dump($result);
         } catch (\Throwable $th) {
-            $response['result_code'] = 23625490;
-            $response['result_message'] = $th->getMessage();
-            $response['exception'] = [
-                'message' => $th->getMessage(),
-                'code' => $th->getCode(),
-                'file' => $th->getFile(),
-                'line' => $th->getLine(),
-            ];
+            $response['errors'][] = "Exception. {$th->getMessage()} ({$th->getCode()} {$th->getFile()}:{$th->getLine()}";
         } finally {
-            $record['response'] = $response;
+            if (is_string($response)) {
+                $record['response'] = json_decode($response, true, 512, JSON_OBJECT_AS_ARRAY);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    $record['response'] = $response;
+                }
+            } else {
+                $record['response'] = $response;
+            }
+
+            if (!isset($responseTime)) {
+                $responseTime = CarbonImmutable::now();
+            }
             $record['response_time'] = $responseTime->format('c');
             $record['elapsed'] = $responseTime->floatDiffInSeconds($requestTime);
+
             Log::info('outgoing-orangedata', $record);
         }
+        var_dump($response);
     }
 }
