@@ -49,4 +49,10 @@ return [
         'from' => env('RECONCILIATION_FROM'),
         'subject' => env('RECONCILIATION_SUBJECT'),
     ],
+
+    'orangedata' => [
+        'inn' => env('ORANGEDATA_INN'), // ИНН организации
+        'pass' => env('ORANGEDATA_PASS'), // Пароль к клиентскому сертификату
+        'url' => env('ORANGEDATA_URL', 'https://api.orangedata.ru:12003'),
+    ],
 ];
