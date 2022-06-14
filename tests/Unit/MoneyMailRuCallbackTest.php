@@ -10,7 +10,8 @@ use Illuminate\Http\Request;
 class MoneyMailRuCallbackTest extends TestCase
 {
     /**
-     * Test
+     * Проверяет, что успешно обрабатывается входящий запрос
+     * и создается объект MoneyMailRu\Callback
      *
      * @return void
      */
