@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Support\Facades\App;
 use App\Models\Accrual;
 use App\Rules\ValidDate;
 use Illuminate\Support\Str;
@@ -14,7 +15,6 @@ use App\UniOne\UniOne;
 use App\UniOne\Message;
 use App\MoneyMailRu\Callback;
 use orangedata\orangedata_client;
-
 
 class A101
 {
@@ -96,6 +96,16 @@ class A101
             $accrual->paid_at = now();
             $accrual->archived_at = now();
             $accrual->save();
+
+            // Сформировать и отправить абоненту чек
+            $result = $this->sendCheque($accrual);
+            if ($result === true) {
+                $accrual->fiscalized_at = now();
+                $accrual->save();
+            } else {
+                $accrual->comment = 'Orange Data error: ' . $result;
+                $accrual->save();
+            }
 
             // Отправить абоненту письмо с подтверждением
             $this->sendConfirmation($accrual);
@@ -499,7 +509,7 @@ class A101
             $message->from(config('services.from.a101.email'), config('services.from.a101.name'));
         } elseif ($accrual->payee == 'etk2') {
             $plain = view('mail_etk2/plain_confirmation', $accrual->toArray())->render();
-            $html = view('mail_etk2/html_confirmmation', $accrual->toArray())->render();
+            $html = view('mail_etk2/html_confirmation', $accrual->toArray())->render();
 
             $message->addInlineAttachment(
                 'image/png',
@@ -526,40 +536,30 @@ class A101
         $unione->emailSend($message);
     }
 
+    /**
+     * Сформировать и отправить клиенту чек об оплате
+     * 
+     * @return boolean true if cheque was succesfully created
+     */
     public function sendCheque(Accrual $accrual)
     {
         $record = [];
+
         try {
             $requestTime = CarbonImmutable::now();
             $record['request_time'] = $requestTime->format('c');
 
-            $orangeData = new orangedata_client(
-                [
-                    // 'inn' => config('services.orangedata.inn'),
-                    'inn' => '1234567890',
-                    'api_url' => config('services.orangedata.url'),
-                    'sign_pkey' => storage_path('app/orangedata/private_key.pem'),
-                    'ssl_client_key' => storage_path('app/orangedata/client.key'),
-                    'ssl_client_crt' => storage_path('app/orangedata/client.crt'),
-                    'ssl_ca_cert' => storage_path('app/orangedata/cacert.pem'),
-                    'ssl_client_crt_pass' => config('services.orangedata.pass'),
-                ]
-            );
+            $orangeData = app(orangedata_client::class);
 
-            if (App::environment('local')) {
-                $orangeData->is_debug();
-            }
-
-            $orangeData->create_order([
-                // 'id' => random_int(1, PHP_INT_MAX),
-                'id' => 6640319152023171367,
+            $orangeData = $orangeData->create_order([
+                'id' => $accrual->uuid,
                 'type' => 1,
                 'customerContact' => $accrual['email'],
                 'taxationSystem' => 0,
                 'key' => config('services.orangedata.inn'),
                 'callbackUrl' => route('orangedata'),
-            ])
-                ->add_position_to_order([
+            ]);
+                $orangeData = $orangeData->add_position_to_order([
                     'quantity' => '1',
                     'price' => $accrual['sum'],
                     'tax' => 1,
@@ -571,8 +571,8 @@ class A101
                         'name' => 'А101-Комфорт',
                     ],
                     'supplierINN' => config('services.orangedata.inn'),
-                ])
-                ->add_payment_to_order([
+                ]);
+                $orangeData = $orangeData->add_payment_to_order([
                     'type' => 16,
                     'amount' => $accrual['sum'],
                 ]);
@@ -586,7 +586,7 @@ class A101
             if (is_string($response)) {
                 $record['response'] = json_decode($response, true, 512, JSON_OBJECT_AS_ARRAY);
                 if (json_last_error() !== JSON_ERROR_NONE) {
-                    $record['response'] = $response;
+                    $record['response']['errors'][] = $response;
                 }
             } else {
                 $record['response'] = $response;
@@ -599,6 +599,12 @@ class A101
             $record['elapsed'] = $responseTime->floatDiffInSeconds($requestTime);
 
             Log::info('outgoing-orangedata', $record);
+        }
+
+        if (empty($record['response']['errors'])) {
+            return true;
+        } else {
+            return $record['response']['errors'][key($record['response']['errors'])];
         }
     }
 
