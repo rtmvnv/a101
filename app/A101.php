@@ -533,7 +533,10 @@ class A101
             );
 
         $unione = app(UniOne::class);
-        $unione->emailSend($message);
+        $result = $unione->emailSend($message);
+        if ($result['status'] !== 'success') {
+            Log::warning('sendConfirmation() failed. ' . ((isset($result['message'])) ? $result['message'] : 'Unknown error 65303800'));
+        }
     }
 
     /**
