@@ -568,7 +568,7 @@ class A101
                     'tax' => 1,
                     'text' => "Квитанция по лицевому счету {$accrual['account']} за {$accrual['period_text']}",
                     'paymentMethodType' => 4,
-                    'paymentSubjectType' => 13,
+                    'paymentSubjectType' => 4,
                     'supplierInfo' => [
                         'phoneNumbers' => ['+74956486777'],
                         'name' => 'А101-Комфорт',
@@ -576,7 +576,7 @@ class A101
                     'supplierINN' => config('services.orangedata.inn'),
                 ]);
                 $orangeData = $orangeData->add_payment_to_order([
-                    'type' => 16,
+                    'type' => 2,
                     'amount' => $accrual['sum'],
                 ]);
 
