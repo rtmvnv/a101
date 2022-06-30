@@ -13,6 +13,10 @@ class SendChequeTest extends TestCase
 {
     use RefreshDatabase;
 
+    /*
+     * Проверка метода $a101->sendCheque().
+     * Метод получает $accrual и должен сформировать правильный запрос к Orange Data
+     */
     public function test_send_cheque()
     {
         /*
