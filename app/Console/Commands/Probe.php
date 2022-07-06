@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\XlsxToPdf;
 use Illuminate\Console\Command;
-use App\Reports\EmailEvents;
 
 class Probe extends Command
 {
@@ -38,7 +38,7 @@ class Probe extends Command
      */
     public function handle()
     {
-        print_r((new EmailEvents())('vladimir.glavnov@iss.ru'));
-        // echo route('failed-accruals', ['test1' => '1']);
+        // echo new XlsxToPdf()(file_get_contents('tests/Feature/XlsxToPdf.pdf'));
+        app(XlsxToPdf::class)('test');
     }
 }
