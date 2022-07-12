@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use App\UniOne\UniOne;
 use App\UniOne\Message;
 use App\MoneyMailRu\Callback;
+use App\XlsxToPdf;
 
 class A101
 {
@@ -198,8 +199,9 @@ class A101
 
             // Убрать лишние переносы строк для дальнейшего сравнения
             $attachment = str_replace(array("\r", "\n"), '', $attachment);
+            $attachment = base64_decode($attachment, true);
 
-            if (base64_encode(base64_decode($attachment, true)) !== $attachment) {
+            if ($attachment === false) {
                 $data = [
                     'status' => 401,
                     'title' => 'Attachment is not encoded in base64',
@@ -207,6 +209,11 @@ class A101
                 return response($data, $data['status'])
                     ->header('Content-Type', 'application/problem+json');
             }
+
+            // Сконвертировать в PDF, если прислали XLSX
+            $attachment = app(XlsxToPdf::class)($attachment);
+            $attachment = base64_encode($attachment);
+
         } catch (\Throwable $th) {
             report($th);
             $data = [

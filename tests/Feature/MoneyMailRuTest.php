@@ -141,7 +141,15 @@ class MoneyMailRuTest extends TestCase
         $a101 = app(A101::class);
         $data['signature'] = $a101->postApiAccrualsSignature($data);
 
-        $response = $this->call('POST', '/api/a101/accruals', $data, [], [], [], 'test');
+        $response = $this->call(
+            'POST',
+            '/api/a101/accruals',
+            $data,
+            [],
+            [],
+            [],
+            base64_encode(file_get_contents('tests/Feature/XlsxToPdf.pdf'))
+        );
 
         // Интерфейс API доступен
         $response->assertStatus(200);

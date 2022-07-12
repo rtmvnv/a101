@@ -45,7 +45,7 @@ class ApiA101Test extends TestCase
             'email' => 'null@vic-insurance.ru',
             'name' => 'Имя User-Name',
         ];
-        $content = 'c2FtcGxlIHBkZiBmaWxl';
+        $content = base64_encode(file_get_contents('tests/Feature/XlsxToPdf.pdf'));
 
         $requestData['signature'] = 'test';
         $response = $this->call(
