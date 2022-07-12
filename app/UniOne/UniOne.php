@@ -175,6 +175,14 @@ class UniOne
             return 'Письмо доставлено, получатель отписался от рассылки';
         }
 
+        if ($status == 'complained') {
+            return 'Адресат ранее жаловался на письма';
+        }
+
+        if ($status == 'blocked') {
+            return 'Адресат заблокирован администрацией Unisender Go';
+        }
+
         if ($status == 'hard_bounced') {
             $response = 'Письмо не удалось доставить. ';
 
