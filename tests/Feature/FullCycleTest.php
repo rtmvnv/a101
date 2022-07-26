@@ -4,16 +4,17 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use Mockery\MockInterface;
+use Mockery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Config;
 use Faker\Generator as Faker;
-use App;
 use App\A101;
 use App\Models\Accrual;
 use App\UniOne\UniOne;
+use orangedata\orangedata_client;
 
-class MoneyMailRuTest extends TestCase
+class FullCycleTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -103,6 +104,7 @@ class MoneyMailRuTest extends TestCase
     }
 
     /**
+     * Осуществляется запрос к Orange Data.
      * Колбек от Mailru корректно обрабатывается для существующего счета.
      *
      * @return void
@@ -112,19 +114,41 @@ class MoneyMailRuTest extends TestCase
         $this->withoutExceptionHandling();
 
         /*
-         * Mock email sender not to send real messages
+         * Mock UniOne not to send real messages
          */
-        $mock = $this->mock(UniOne::class, function (MockInterface $mock) {
-            $mock->shouldReceive('emailSend')
-            ->andReturn([
-                'status' => 'success',
-                'job_id' => '101',
-            ], [
-                'status' => 'success',
-                'job_id' => '102',
-            ]);
+        $mockUniOne = $this->mock(UniOne::class, function (MockInterface $mockUniOne) {
+            $mockUniOne->shouldReceive('emailSend')
+                ->times(2)
+                ->andReturn([
+                    'status' => 'success',
+                    'job_id' => '101',
+                ], [
+                    'status' => 'success',
+                    'job_id' => '102',
+                ]);
         });
-        app()->instance(UniOne::class, $mock);
+
+        /*
+         * Mock OrangeData not to send real requests.
+         * Normally orangedata_client() constructor parameters
+         * are set in AppServiceProvider, but that doesn't work for mocks.
+         */
+        $mockOrangeData = Mockery::mock(orangedata_client::class, [[
+            // 'inn' => config('services.orangedata.inn'),
+            'inn' => '1234567890',
+            'api_url' => config('services.orangedata.url'),
+            'sign_pkey' => storage_path('app/orangedata/private_key.pem'),
+            'ssl_client_key' => storage_path('app/orangedata/client.key'),
+            'ssl_client_crt' => storage_path('app/orangedata/client.crt'),
+            'ssl_ca_cert' => storage_path('app/orangedata/cacert.pem'),
+            'ssl_client_crt_pass' => config('services.orangedata.pass'),
+        ]])->makePartial();
+
+        $mockOrangeData->shouldReceive('send_order')
+            ->times(1)
+            ->andReturn(['errors' => []]);
+
+        $this->instance(orangedata_client::class, $mockOrangeData);
 
         /*
          * Create an accrual

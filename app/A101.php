@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Support\Facades\App;
 use App\Models\Accrual;
 use App\Rules\ValidDate;
 use Illuminate\Support\Str;
@@ -9,13 +10,24 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use App\UniOne\UniOne;
 use App\UniOne\Message;
 use App\MoneyMailRu\Callback;
 use App\XlsxToPdf;
+use orangedata\orangedata_client;
 
 class A101
 {
+    /**
+     * Обработчик POST запросов к /api/orangedata
+     *
+     * @return Response
+     */
+    public function postApiOrangedata(Request $request)
+    {
+    }
+
     /**
      * Обработчик POST запросов к /api/unione
      *
@@ -85,6 +97,16 @@ class A101
             $accrual->paid_at = now();
             $accrual->archived_at = now();
             $accrual->save();
+
+            // Сформировать и отправить абоненту чек
+            $result = $this->sendCheque($accrual);
+            if ($result === true) {
+                $accrual->fiscalized_at = now();
+                $accrual->save();
+            } else {
+                $accrual->comment = 'Orange Data error: ' . $result;
+                $accrual->save();
+            }
 
             // Отправить абоненту письмо с подтверждением
             $this->sendConfirmation($accrual);
@@ -494,7 +516,7 @@ class A101
             $message->from(config('services.from.a101.email'), config('services.from.a101.name'));
         } elseif ($accrual->payee == 'etk2') {
             $plain = view('mail_etk2/plain_confirmation', $accrual->toArray())->render();
-            $html = view('mail_etk2/html_confirmmation', $accrual->toArray())->render();
+            $html = view('mail_etk2/html_confirmation', $accrual->toArray())->render();
 
             $message->addInlineAttachment(
                 'image/png',
@@ -518,6 +540,82 @@ class A101
             );
 
         $unione = app(UniOne::class);
-        $unione->emailSend($message);
+        $result = $unione->emailSend($message);
+        if ($result['status'] !== 'success') {
+            Log::warning('sendConfirmation() failed. ' . ((isset($result['message'])) ? $result['message'] : 'Unknown error 65303800'));
+        }
     }
+
+    /**
+     * Сформировать и отправить клиенту чек об оплате
+     * 
+     * @return boolean true if cheque was succesfully created
+     */
+    public function sendCheque(Accrual $accrual)
+    {
+        $record = [];
+
+        try {
+            $requestTime = CarbonImmutable::now();
+            $record['request_time'] = $requestTime->format('c');
+
+            $orangeData = app(orangedata_client::class);
+
+            $orangeData = $orangeData->create_order([
+                'id' => $accrual->uuid,
+                'type' => 1,
+                'customerContact' => $accrual['email'],
+                'taxationSystem' => 0,
+                'key' => config('services.orangedata.inn'),
+                'callbackUrl' => route('orangedata'),
+            ]);
+                $orangeData = $orangeData->add_position_to_order([
+                    'quantity' => '1',
+                    'price' => $accrual['sum'],
+                    'tax' => 1,
+                    'text' => "Квитанция по лицевому счету {$accrual['account']} за {$accrual['period_text']}",
+                    'paymentMethodType' => 4,
+                    'paymentSubjectType' => 4,
+                    'supplierInfo' => [
+                        'phoneNumbers' => ['+74956486777'],
+                        'name' => 'А101-Комфорт',
+                    ],
+                    'supplierINN' => config('services.orangedata.inn'),
+                ]);
+                $orangeData = $orangeData->add_payment_to_order([
+                    'type' => 2,
+                    'amount' => $accrual['sum'],
+                ]);
+
+            $record['request'] = arrayCastRecursive($orangeData->get_order());
+            $response = $orangeData->send_order();
+            $responseTime = CarbonImmutable::now();
+        } catch (\Throwable $th) {
+            $response['errors'][] = "Exception. {$th->getMessage()} ({$th->getCode()} {$th->getFile()}:{$th->getLine()}";
+        } finally {
+            if (is_string($response)) {
+                $record['response'] = json_decode($response, true, 512, JSON_OBJECT_AS_ARRAY);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    $record['response']['errors'][] = $response;
+                }
+            } else {
+                $record['response'] = $response;
+            }
+
+            if (!isset($responseTime)) {
+                $responseTime = CarbonImmutable::now();
+            }
+            $record['response_time'] = $responseTime->format('c');
+            $record['elapsed'] = $responseTime->floatDiffInSeconds($requestTime);
+
+            Log::info('outgoing-orangedata', $record);
+        }
+
+        if (empty($record['response']['errors'])) {
+            return true;
+        } else {
+            return $record['response']['errors'][key($record['response']['errors'])];
+        }
+    }
+
 }

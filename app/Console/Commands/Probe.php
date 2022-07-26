@@ -4,6 +4,15 @@ namespace App\Console\Commands;
 
 use App\XlsxToPdf;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
+use Carbon\CarbonImmutable;
+use orangedata\orangedata_client;
+use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Mockery;
+use App\A101;
+use App\Models\Accrual;
 
 class Probe extends Command
 {
@@ -38,7 +47,28 @@ class Probe extends Command
      */
     public function handle()
     {
-        // echo new XlsxToPdf()(file_get_contents('tests/Feature/XlsxToPdf.pdf'));
-        app(XlsxToPdf::class)('test');
+
+        $some = new Some();
+        var_dump($some);
+
+        var_dump($some->func());
+
+        return;
+
+        $mockOrangeData = Mockery::mock(\DateTime::class)->makePartial();
+        var_dump(get_class($mockOrangeData));
+
+        $mockOrangeData->shouldReceive('send_order');
+        var_dump(get_class($mockOrangeData));
+
+        $mockOrangeData = Mockery::mock(\DateTime::class)->makePartial()->shouldReceive('send_order');
+        var_dump(get_class($mockOrangeData));
+    }
+}
+
+class Some
+{
+    function func() {
+        return $this;
     }
 }
