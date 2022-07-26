@@ -71,7 +71,7 @@ Route::get('/accrual/{accrual:uuid}', function (Accrual $accrual) {
             throw new ModelNotFoundException('Expected accrual status "sent"');
             break;
     }
-})->whereUuid('accrual')->middleware('log.web:incoming-web-accrual');
+})->whereUuid('accrual')->middleware('log.web:incoming-web-accrual')->name('accrual');
 
 Route::get('/accrual/{accrual:uuid}/pay', function (Accrual $accrual) {
     switch ($accrual->status) {
