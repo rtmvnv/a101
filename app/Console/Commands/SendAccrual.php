@@ -14,7 +14,7 @@ class SendAccrual extends Command
      *
      * @var string
      */
-    protected $signature = 'accrual
+    protected $signature = 'send_accrual
         {email?}
         {sum?}
         {period?}
@@ -51,7 +51,7 @@ class SendAccrual extends Command
 
         $this->info('REQUEST');
         $this->info('     email: ' . $arguments['email']);
-        $this->info('       sum: ' . $arguments['sum']/100);
+        $this->info('       sum: ' . $arguments['sum'] / 100);
         $this->info('    period: ' . $arguments['periodDatetime']->translatedFormat('F Y'));
         $this->info('   account: ' . $arguments['account']);
         $this->info('      name: ' . $arguments['name']);
@@ -61,38 +61,72 @@ class SendAccrual extends Command
         $a101 = app(A101::class);
         $arguments['signature'] = $a101->postApiAccrualsSignature($arguments);
 
-        $request = new \Illuminate\Http\Request(
-            [],
+        $client = new \GuzzleHttp\Client();
+        $response = $client->request(
+            'POST',
+            route('a101_accruals'),
             [
-                'sum' => $arguments['sum'],
-                'period' => $arguments['periodDatetime']->translatedFormat('Ym'),
-                'account' => $arguments['account'],
-                'name' => $arguments['name'],
-                'email' => $arguments['email'],
-                'signature' => $arguments['signature'],
-            ],
-            [],
-            [],
-            [],
-            [],
-            base64_encode(file_get_contents($arguments['attachment'])),
+                'query' => [
+                    'sum' => $arguments['sum'],
+                    'period' => $arguments['periodDatetime']->translatedFormat('Ym'),
+                    'account' => $arguments['account'],
+                    'name' => $arguments['name'],
+                    'email' => $arguments['email'],
+                    'signature' => $arguments['signature'],
+                ],
+                'body' => base64_encode(file_get_contents($arguments['attachment'])),
+                'http_errors' => false,
+            ]
         );
-        $request->setMethod('POST');
-        $response = $a101->postApiAccruals($request, 'a101');
 
         $this->info('RESPONSE');
-        $this->info('HTTP code: ' . $response->status());
+        $this->info('HTTP code: ' . $response->getStatusCode());
 
-        $jsonResponse = json_decode($response->content(), true, 512, JSON_OBJECT_AS_ARRAY);
+        $jsonResponse = json_decode($response->getBody(), true, 512, JSON_OBJECT_AS_ARRAY);
         if (json_last_error() === JSON_ERROR_NONE) {
             // В ответе пришел JSON
             $this->info(json_encode($jsonResponse, JSON_PRETTY_PRINT));
             $this->line(route('accrual', $jsonResponse['data']['accrual_id']));
         } else {
             // Ответ неструктурирован
-            $this->info($response->content());
+            $this->info($response->getBody());
         }
 
+        // /*
+        //  * Use internal call
+        //  */
+        // $request = new \Illuminate\Http\Request(
+        //     [],
+        //     [
+        //         'sum' => $arguments['sum'],
+        //         'period' => $arguments['periodDatetime']->translatedFormat('Ym'),
+        //         'account' => $arguments['account'],
+        //         'name' => $arguments['name'],
+        //         'email' => $arguments['email'],
+        //         'signature' => $arguments['signature'],
+        //     ],
+        //     [],
+        //     [],
+        //     [],
+        //     [],
+        //     base64_encode(file_get_contents($arguments['attachment'])),
+        // );
+        // $request->setMethod('POST');
+
+        // $response = $a101->postApiAccruals($request, 'a101');
+
+        // $this->info('RESPONSE');
+        // $this->info('HTTP code: ' . $response->code());
+
+        // $jsonResponse = json_decode($response->content(), true, 512, JSON_OBJECT_AS_ARRAY);
+        // if (json_last_error() === JSON_ERROR_NONE) {
+        //     // В ответе пришел JSON
+        //     $this->info(json_encode($jsonResponse, JSON_PRETTY_PRINT));
+        //     $this->line(route('accrual', $jsonResponse['data']['accrual_id']));
+        // } else {
+        //     // Ответ неструктурирован
+        //     $this->info($response->content());
+        // }
     }
 
     protected function validateInput()

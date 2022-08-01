@@ -69,7 +69,8 @@ class XlsxToPdf
              */
             $process = new Process(
                 ['libreoffice', '--headless', '--convert-to', 'pdf', $filename . '.xlsx'],
-                $this->temp_directory
+                $this->temp_directory,
+                [ 'HOME' => $this->temp_directory ],
             );
             $process->run();
 

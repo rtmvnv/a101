@@ -20,7 +20,8 @@ Route::middleware('throttle:600,1')
         $a101 = new A101();
         return $a101->postApiAccruals($request, 'a101');
     })
-    ->middleware('log.api:incoming-api-accruals');
+    ->middleware('log.api:incoming-api-accruals')
+    ->name('a101_accruals');
 
 Route::middleware('throttle:600,1')
     ->post('/a101/etk2', function (Request $request) {
