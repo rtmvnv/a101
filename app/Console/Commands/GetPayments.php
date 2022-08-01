@@ -20,7 +20,7 @@ class GetPayments extends Command
      *
      * @var string
      */
-    protected $description = 'Get payments';
+    protected $description = 'Get payments.' . PHP_EOL . 'example: artisan payments -- "-1 week"';
 
     /**
      * Create a new command instance.
@@ -59,13 +59,21 @@ class GetPayments extends Command
             ->where('paid_at', '<', $to)
             ->get();
 
+        $result = [];
         foreach ($accruals as $accrual) {
-            echo 'date;uuid;account;sum' . PHP_EOL;
-            echo (new Carbon($accrual->paid_at))->format('c') . ';';
-            echo $accrual->uuid . ';';
-            echo $accrual->account . ';';
-            echo $accrual->sum * 100 . PHP_EOL;
+            $result[] = [
+                (new Carbon($accrual->paid_at))->format('c'),
+                $accrual->uuid,
+                $accrual->account,
+                $accrual->sum * 100,
+            ];
         }
+
+        $this->table(
+            ['date', 'uuid', 'account', 'sum'],
+            $result
+        );
+
         return Command::SUCCESS;
     }
 }
