@@ -102,6 +102,7 @@ class A101
             $result = $this->sendCheque($accrual);
             if ($result === true) {
                 $accrual->fiscalized_at = now();
+                $accrual->comment = '';
                 $accrual->save();
             } else {
                 $accrual->comment = 'Orange Data error: ' . $result;
@@ -489,6 +490,7 @@ class A101
         if ($result['status'] === 'success') {
             $accrual->unione_id = $result['job_id'];
             $accrual->sent_at = now();
+            $accrual->comment = '';
             $accrual->save();
             return true;
         } else {
@@ -587,7 +589,7 @@ class A101
                     'amount' => $accrual['sum'],
                 ]);
 
-            $record['request'] = arrayCastRecursive($orangeData->get_order());
+            $record['request'] = objectToArray($orangeData->get_order());
             $response = $orangeData->send_order();
             $responseTime = CarbonImmutable::now();
         } catch (\Throwable $th) {

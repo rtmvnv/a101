@@ -63,14 +63,16 @@ class GetPayments extends Command
         foreach ($accruals as $accrual) {
             $result[] = [
                 (new Carbon($accrual->paid_at))->format('c'),
+                $accrual->status,
+                $accrual->id,
                 $accrual->uuid,
                 $accrual->account,
-                $accrual->sum * 100,
+                $accrual->sum,
             ];
         }
 
         $this->table(
-            ['date', 'uuid', 'account', 'sum'],
+            ['date', 'status', 'id', 'uuid', 'account', 'sum'],
             $result
         );
 

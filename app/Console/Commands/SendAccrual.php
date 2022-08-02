@@ -14,7 +14,7 @@ class SendAccrual extends Command
      *
      * @var string
      */
-    protected $signature = 'send_accrual
+    protected $signature = 'accrual:send
         {email?}
         {sum?}
         {period?}
