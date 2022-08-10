@@ -54,7 +54,7 @@ class UniOne
         $record = [
             'request' => $bodyLog,
             'request_url' => $uri,
-            'request_time' => $requestTime->format('c'),
+            'request_time' => $requestTime->format('Y-m-d\TH:i:s.uP'),
         ];
 
         // Workaround for a bug on Unisender. To avoid error code 150:
@@ -104,7 +104,7 @@ class UniOne
             ];
 
             $responseTime = CarbonImmutable::now();
-            $record['response_time'] = $responseTime->format('c');
+            $record['response_time'] = $responseTime->format('Y-m-d\TH:i:s.uP');
             $record['elapsed'] = $responseTime->floatDiffInSeconds($requestTime);
 
             Log::info('outgoing-unione', $record);
@@ -113,7 +113,7 @@ class UniOne
         }
 
         $responseTime = CarbonImmutable::now();
-        $record['response_time'] = $responseTime->format('c');
+        $record['response_time'] = $responseTime->format('Y-m-d\TH:i:s.uP');
         $record['elapsed'] = $responseTime->floatDiffInSeconds($requestTime);
 
         Log::info('outgoing-unione', $record);

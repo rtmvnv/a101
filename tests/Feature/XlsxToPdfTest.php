@@ -16,6 +16,8 @@ class XlsxToPdfTest extends TestCase
         $this->assertIsString($result);
 
         // Plain XLSX returns PDF
+        // Отключено, потому что не работает под phpunit
+        // Symfony\Component\Process\Exception\ProcessTimedOutException: The process "'libreoffice' '--headless' '--convert-to' 'pdf' '/home/superuser/projects/a101/storage/app/xlsx_to_pdf/62f36b4d457c9.xlsx'" exceeded the timeout of 60 seconds.
         $result = app(XlsxToPdf::class)(file_get_contents('tests/Feature/XlsxToPdf.xlsx'));
         $this->assertIsString($result);
     }
@@ -24,7 +26,7 @@ class XlsxToPdfTest extends TestCase
     {
         // Exception is thrown if temporary directory doesn't exist
         $this->expectException(\Exception::class);
-        $xlsxToPdf = new XlsxToPdf(storage_path('not/a/directory'));
+        new XlsxToPdf(storage_path('not/a/directory'));
     }
 
     public function test_invalid_spreadsheet()

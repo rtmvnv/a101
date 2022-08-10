@@ -48,7 +48,7 @@ class LogApi
             'path' => $this->request->path(),
             'request_method' => $this->request->method(),
             'request' => $this->request->all(),
-            'request_time' => $this->requestTime->format('c'),
+            'request_time' => $this->requestTime->format('Y-m-d\TH:i:s.uP'),
         ];
 
         if (!empty($this->response->exception)) {
@@ -75,7 +75,7 @@ class LogApi
         }
 
         $this->record['response_code'] = $this->response->status();
-        $this->record['response_time'] = $this->responseTime->format('c');
+        $this->record['response_time'] = $this->responseTime->format('Y-m-d\TH:i:s.uP');
         $this->record['elapsed'] = $this->responseTime->floatDiffInSeconds($this->requestTime);
     }
 }

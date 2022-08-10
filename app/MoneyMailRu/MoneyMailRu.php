@@ -70,7 +70,7 @@ class MoneyMailRu
 
         $record['request_url'] = $curlopt[CURLOPT_URL];
         $requestTime = CarbonImmutable::now();
-        $record['request_time'] = $requestTime->format('c');
+        $record['request_time'] = $requestTime->format('Y-m-d\TH:i:s.uP');
 
         /*
          * Выполнить запрос
@@ -168,7 +168,7 @@ class MoneyMailRu
             if (!isset($responseTime)) {
                 $responseTime = CarbonImmutable::now();
             }
-            $record['response_time'] = $responseTime->format('c');
+            $record['response_time'] = $responseTime->format('Y-m-d\TH:i:s.uP');
             $record['elapsed'] = $responseTime->floatDiffInSeconds($requestTime);
             Log::info('outgoing-mailru', $record);
         }

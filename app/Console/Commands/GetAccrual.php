@@ -134,6 +134,7 @@ class GetAccrual extends Command
             }
         }
 
+        ksort($this->events);
         foreach ($this->events as $event) {
             if (in_array($event['message'], $includedTypes)) {
                 $this->newLine();
@@ -248,6 +249,10 @@ class GetAccrual extends Command
      */
     protected function findIncomingMailru($transactionId)
     {
+        if (empty($transactionId)) {
+            return;
+        }
+
         $query = [
             'message' => 'incoming-api-mailru',
             'context.request_decoded.body.transaction_id' => $transactionId,
