@@ -234,12 +234,16 @@ class A101
             }
 
             // Сохранить пример полученной квитанции.
-            $randomFileName = 'sample_0' . mt_rand(0, 9);
+            if (!is_dir(storage_path('logs/samples'))) {
+                mkdir(storage_path('logs/samples'));
+            }
+            $randomFileName = 'logs/samples/sample_0' . mt_rand(0, 9);
             file_put_contents(storage_path($randomFileName . '.xls'), $attachment);
 
             // Сконвертировать в PDF, если прислали XLSX
             $attachment = app(XlsxToPdf::class)($attachment);
 
+            // Сохранить пример сконвертированной квитанции.
             file_put_contents(storage_path($randomFileName . '.pdf'), $attachment);
 
             $attachment = base64_encode($attachment);
