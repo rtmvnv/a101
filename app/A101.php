@@ -233,8 +233,15 @@ class A101
                     ->header('Content-Type', 'application/problem+json');
             }
 
+            // Сохранить пример полученной квитанции.
+            $randomFileName = 'sample_0' . mt_rand(0, 9);
+            file_put_contents(storage_path($randomFileName . '.xls'), $attachment);
+
             // Сконвертировать в PDF, если прислали XLSX
             $attachment = app(XlsxToPdf::class)($attachment);
+
+            file_put_contents(storage_path($randomFileName . '.pdf'), $attachment);
+
             $attachment = base64_encode($attachment);
 
         } catch (\Throwable $th) {
