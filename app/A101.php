@@ -75,7 +75,7 @@ class A101
         }
 
         // Найти транзакцию
-        $accrual = Accrual::where('transaction_id', $callback->body['transaction_id'])->first();
+        $accrual = Accrual::where('uuid', $callback->body['issuer_id'])->first();
         if (empty($accrual)) {
             return $callback->respondError('Transaction not found: ' . $callback->body['transaction_id']);
         }
@@ -92,7 +92,12 @@ class A101
                     'MoneyMailRu прислал колбек OK для уже завершенной транзакции',
                     ['header' => $callback->header, 'body' => $callback->body]
                 );
-                return $callback->respondError('Transaction already completed: ' . $callback->body['transaction_id'], 'ERR_DUPLICATE');
+                return $callback->respondError(
+                    'Transaction already completed.'
+                    . ' transaction_id:' . $callback->body['transaction_id']
+                    . '; issuer_id(uuid):' . $callback->body['issuer_id'],
+                    'ERR_DUPLICATE'
+                );
             }
             $accrual->paid_at = now();
             $accrual->archived_at = now();
