@@ -8,8 +8,9 @@ use Carbon\CarbonImmutable;
 
 class UniOne
 {
-    protected const BASE_URI = 'https://eu1.unione.io/ru/transactional/api/v1/';
-
+    // protected const BASE_URI = 'https://eu1.unione.io/ru/transactional/api/v1/';
+    protected const BASE_URI = 'https://go2.unisender.ru/ru/transactional/api/v1/';
+    
     /**
      * Perform actual request to UniSender.
      *
