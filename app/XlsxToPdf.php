@@ -68,7 +68,7 @@ class XlsxToPdf
              * Perform conversion
              */
             $process = new Process(
-                ['libreoffice', '--headless', '--convert-to', 'pdf', $filename . '.xlsx'],
+                ['/usr/bin/nice', '-20', 'libreoffice', '--headless', '--convert-to', 'pdf', $filename . '.xlsx'],
                 $this->temp_directory,
                 [ 'HOME' => $this->temp_directory ],
             );
@@ -76,6 +76,7 @@ class XlsxToPdf
 
             $errorOutput = $process->getErrorOutput();
             if (!empty($errorOutput)) {
+                posix_kill($process->getPid(), SIGTERM);
                 throw new \Exception($errorOutput, 22557476);
             }
 
