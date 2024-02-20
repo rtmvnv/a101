@@ -13,3 +13,23 @@ XtBXpxv2NyO2Qdh0kjhB+qa3mmln
 XwIDAQAB
 -----END PUBLIC KEY-----
 ```
+
+
+Установить Libreoffice
+```
+brew install --cask libreoffice
+```
+
+Прописать путь к libreoffice в .env
+```
+LIBREOFFICE_PATH=/usr/local/bin/
+```
+
+## Использование системы
+
+Для отправки квитанции в командной строке
+```
+php artisan accrual:send example@example.com --fake
+```
+
+`--fake` - заполнить недостающие данные случайными.

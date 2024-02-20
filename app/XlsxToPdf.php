@@ -67,8 +67,9 @@ class XlsxToPdf
             /*
              * Perform conversion
              */
+            $libreoffice_path = env('LIBREOFFICE_PATH', 'libreoffice');
             $process = new Process(
-                ['libreoffice', '--headless', '--convert-to', 'pdf', $filename . '.xlsx'],
+                [$libreoffice_path, '--headless', '--convert-to', 'pdf', $filename . '.xlsx'],
                 $this->temp_directory,
                 [ 'HOME' => $this->temp_directory ],
             );
@@ -76,6 +77,7 @@ class XlsxToPdf
 
             $errorOutput = $process->getErrorOutput();
             if (!empty($errorOutput)) {
+                print_r($errorOutput);
                 posix_kill($process->getPid(), SIGTERM);
                 throw new \Exception($errorOutput, 22557476);
             }
@@ -85,7 +87,7 @@ class XlsxToPdf
              */
             $result = file_get_contents($filename . '.pdf');
             if ($result === false) {
-                throw new \Exception('Result file no found', 71402828);
+                throw new \Exception('Result file not found', 71402828);
             }
 
             return $result;
