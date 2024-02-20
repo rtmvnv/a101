@@ -13,17 +13,16 @@
                                                 <div class="txtTinyMce-wrapper" style="line-height: 1.2; font-size: 13px; font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #555555; mso-line-height-alt: 14px;">
                                                     <p>&nbsp;</p>
                                                     <p style="margin: 0; font-size: 13px; line-height: 1.2; word-break: break-word; text-align: center; mso-line-height-alt: 18px; margin-top: 0; margin-bottom: 0;">
-                                                        <strong><span style="font-size: 13px;">Большинство сервисов доступно в нашем новом мобильном приложении. Скачайте его прямо сейчас!</span></strong>
+                                                        <strong><span style="font-size: 13px;">Большинство сервисов доступно в нашем мобильном приложении. Скачайте его прямо сейчас!</span></strong>
                                                     </p>
                                                     <ul>
                                                         <li>Оставляйте заявки в управляющую компанию</li>
                                                         <li>Передавайте показания счетчиков</li>
                                                         <li>Решайте любые вопросы в онлайн чате</li>
+                                                        <li>Просматривайте квитанции</li>
                                                         <li>Оплачивайте ЖКУ</li>
+                                                        <li>Получайте актуальные новости и объявления</li>
                                                     </ul>
-                                                    <p style="margin: 0; font-size: 13px; line-height: 1.2; word-break: break-word; text-align: left; mso-line-height-alt: 18px; margin-top: 0; margin-bottom: 0;">
-                                                        <span style="font-size: 13px;">Мы запустили абсолютно новое мобильное приложение. C помощью него вы можете оплачивать счета без комиссии*, просматривать квитанции в удобном и понятном формате, подавать заявки и отслеживать их статус, подавать показания счетчиков, получать актуальные новости и объявления. И всё это с помощью своего телефона.</span>
-                                                    </p>
                                                     <p>&nbsp;</p>
                                                     <p style="margin: 0; font-size: 13px; line-height: 1.2; word-break: break-word; text-align: center; mso-line-height-alt: 18px; margin-top: 0; margin-bottom: 0;">
                                                         <strong><span style="font-size: 13px;">Как войти/зарегистрироваться в приложении?</span></strong>
