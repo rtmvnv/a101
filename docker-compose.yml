@@ -1,42 +1,60 @@
-# For more information: https://laravel.com/docs/sail
 version: '3'
 services:
-    laravel.test:
-        build:
-            context: ./vendor/laravel/sail/runtimes/8.0
-            dockerfile: Dockerfile
-            args:
-                WWWGROUP: '${WWWGROUP}'
-        image: sail-8.0/app
-        ports:
-            - '${APP_PORT:-80}:80'
-        environment:
-            WWWUSER: '${WWWUSER}'
-            LARAVEL_SAIL: 1
-        volumes:
-            - '.:/var/www/html'
-        networks:
-            - sail
-        depends_on:
-            - pgsql
     pgsql:
         image: 'postgres:13'
         ports:
-            - '${FORWARD_DB_PORT:-5432}:5432'
+            - '5432:5432'
         environment:
-            PGPASSWORD: '${DB_PASSWORD:-secret}'
+            PGPASSWORD: '${DB_PASSWORD}'
             POSTGRES_DB: '${DB_DATABASE}'
             POSTGRES_USER: '${DB_USERNAME}'
-            POSTGRES_PASSWORD: '${DB_PASSWORD:-secret}'
+            POSTGRES_PASSWORD: '${DB_PASSWORD}'
         volumes:
-            - 'sailpgsql:/var/lib/postgresql/data'
+            - 'pgsql_volume:/var/lib/postgresql/data'
         networks:
-            - sail
+            - a101
         healthcheck:
           test: ["CMD", "pg_isready", "-q", "-d", "${DB_DATABASE}", "-U", "${DB_USERNAME}"]
+
+    mongodb:
+        image: bitnami/mongodb:4.4
+        ports:
+            - '${MONGODB_PORT}:27017'
+        environment:
+            MONGODB_ROOT_USER: ${MONGODB_ROOT_USERNAME}
+            MONGODB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
+            MONGODB_USERNAME: ${MONGODB_USERNAME}
+            MONGODB_PASSWORD: ${MONGODB_PASSWORD}
+            MONGODB_DATABASE: a101
+        volumes:
+            - 'mongodb_volume:/data/db'
+        networks:
+            - a101
+
 networks:
-    sail:
+    a101:
         driver: bridge
 volumes:
-    sailpgsql:
-        driver: local
+    pgsql_volume:
+    mongodb_volume:
+
+
+# For more information: https://laravel.com/docs/sail
+    # laravel.test:
+    #     build:
+    #         context: ./vendor/laravel/sail/runtimes/8.0
+    #         dockerfile: Dockerfile
+    #         args:
+    #             WWWGROUP: '${WWWGROUP}'
+    #     image: sail-8.0/app
+    #     ports:
+    #         - '${APP_PORT:-80}:80'
+    #     environment:
+    #         WWWUSER: '${WWWUSER}'
+    #         LARAVEL_SAIL: 1
+    #     volumes:
+    #         - '.:/var/www/html'
+    #     networks:
+    #         - sail
+    #     depends_on:
+    #         - pgsql
