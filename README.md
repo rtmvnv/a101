@@ -29,7 +29,7 @@ LIBREOFFICE_PATH=/usr/local/bin/
 
 Для отправки квитанции в командной строке
 ```
-php artisan accrual:send example@example.com --fake
+php artisan accrual example@example.com --fake
 ```
 
 `--fake` - заполнить недостающие данные случайными.

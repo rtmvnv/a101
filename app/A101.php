@@ -275,17 +275,12 @@ class A101
             $accrual->account = $request->account;
             $accrual->email = $request->email;
             $accrual->name = $request->name;
+            $accrual->payee = $payee;
             $accrual->comment = '';
 
             if ($accrual->sum <= 0) {
                 $accrual->archived_at = now();
                 $accrual->comment = 'Баланс положительный, оплата не требуется';
-            }
-
-            $accrual->payee = $payee;
-            if ($accrual->payee == 'etk2') {
-                $accrual->archived_at = now();
-                $accrual->comment = 'Счет ЭТК2, оплата не принимается';
             }
 
             $this->cancelOtherAccruals($accrual);
@@ -458,7 +453,7 @@ class A101
             $html = view('mail_a101/html', $accrual->toArray())->render();
 
             $message->addInlineAttachment(
-                'image/png',
+                'image.png',
                 'a101-comfort.png',
                 base64_encode(file_get_contents(public_path('images/a101-comfort.png')))
             );
@@ -470,17 +465,17 @@ class A101
             //     'Оплачивайте ЖКУ в мобильном приложении А101.pdf',
             //     base64_encode(file_get_contents(storage_path('a101_second_attachment.pdf'))),
             // );
-        } elseif ($accrual->payee == 'etk2') {
-            $plain = view('mail_etk2/plain', $accrual->toArray())->render();
-            $html = view('mail_etk2/html', $accrual->toArray())->render();
+        } elseif ($accrual->payee == 'overhaul') {
+            $plain = view('mail_overhaul/plain', $accrual->toArray())->render();
+            $html = view('mail_overhaul/html', $accrual->toArray())->render();
 
             $message->addInlineAttachment(
-                'image/png',
-                'etk2.png',
-                base64_encode(file_get_contents(public_path('images/etk2.png')))
+                'image.png',
+                'a101-comfort.png',
+                base64_encode(file_get_contents(public_path('images/a101-comfort.png')))
             );
 
-            $message->from(config('services.from.etk2.email'), config('services.from.etk2.name'));
+            $message->from(config('services.from.overhaul.email'), config('services.from.overhaul.name'));
         } else {
             throw new \Exception("Unknown payee: '{$accrual->payee}'", 44814051);
         }
@@ -532,19 +527,19 @@ class A101
             );
 
             $message->from(config('services.from.a101.email'), config('services.from.a101.name'));
-        } elseif ($accrual->payee == 'etk2') {
-            $plain = view('mail_etk2/plain_confirmation', $accrual->toArray())->render();
-            $html = view('mail_etk2/html_confirmation', $accrual->toArray())->render();
+        } elseif ($accrual->payee == 'overhaul') {
+            $plain = view('mail_overhaul/plain_confirmation', $accrual->toArray())->render();
+            $html = view('mail_overhaul/html_confirmation', $accrual->toArray())->render();
 
             $message->addInlineAttachment(
                 'image/png',
-                'etk2.png',
-                base64_encode(file_get_contents(public_path('images/etk2.png')))
+                'a101-comfort.png',
+                base64_encode(file_get_contents(public_path('images/a101-comfort.png')))
             );
 
-            $message->from(config('services.from.etk2.email'), config('services.from.etk2.name'));
+            $message->from(config('services.from.overhaul.email'), config('services.from.overhaul.name'));
         } else {
-            throw new \Exception("Unknown payee: '{$accrual->payee}'", 44814051);
+            throw new \Exception("Unknown payee: '{$accrual->payee}'", 76663426);
         }
 
         $message->to($accrual->email, $accrual->name)

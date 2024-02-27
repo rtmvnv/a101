@@ -23,12 +23,13 @@ Route::middleware('throttle:600,1')
     ->middleware('log.api:incoming-api-accruals')
     ->name('a101_accruals');
 
+
 Route::middleware('throttle:600,1')
-    ->post('/a101/etk2', function (Request $request) {
+    ->post('/a101/overhauls', function (Request $request) {
         $a101 = new A101();
-        return $a101->postApiAccruals($request, 'etk2');
+        return $a101->postApiAccruals($request, 'overhaul');
     })
-    ->middleware('log.api:incoming-api-etk2');
+    ->middleware('log.api:incoming-api-overhauls');
 
 Route::middleware('throttle:60,1')
     ->get('/a101/payments', [A101::class, 'getApiPayments'])

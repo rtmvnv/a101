@@ -24,9 +24,9 @@ return [
             'email' => env('FROM_A101_EMAIL'),
             'name' => env('FROM_A101_NAME'),
         ],
-        'etk2' => [
-            'email' => env('FROM_ETK2_EMAIL'),
-            'name' => env('FROM_ETK2_NAME'),
+        'overhaul' => [
+            'email' => env('FROM_OVERHAUL_EMAIL'),
+            'name' => env('FROM_OVERHAUL_NAME'),
         ],
     ],
 

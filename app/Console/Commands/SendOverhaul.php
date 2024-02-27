@@ -7,14 +7,14 @@ use Faker\Generator as Faker;
 use Carbon\Carbon;
 use App\A101;
 
-class SendAccrual extends Command
+class SendOverhaul extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'accrual
+    protected $signature = 'overhaul
         {email?}
         {sum?}
         {period?}
@@ -28,7 +28,7 @@ class SendAccrual extends Command
      *
      * @var string
      */
-    protected $description = 'Send new accrual. Emulates a request from 1C.';
+    protected $description = 'Send new overhaul. Emulates a request from 1C.';
 
     /**
      * Create a new command instance.
@@ -119,14 +119,13 @@ class SendAccrual extends Command
         );
         $request->setMethod('POST');
 
-        $response = $a101->postApiAccruals($request, 'a101');
+        $response = $a101->postApiAccruals($request, 'overhaul');
 
         $this->info('RESPONSE');
         $jsonResponse = json_decode($response->content(), true, 512, JSON_OBJECT_AS_ARRAY);
         if (json_last_error() === JSON_ERROR_NONE) {
             // В ответе пришел JSON
             $this->info(json_encode($jsonResponse, JSON_PRETTY_PRINT));
-            $this->line(route('accrual', $jsonResponse['data']['accrual_id']));
         } else {
             // Ответ неструктурирован
             $this->info($response->content());

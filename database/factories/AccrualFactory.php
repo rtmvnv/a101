@@ -22,7 +22,7 @@ class AccrualFactory extends Factory
      */
     public function definition()
     {
-        $payees = ['a101', 'etk2'];
+        $payees = ['a101', 'overhaul'];
 
         // https://github.com/fzaninotto/Faker
         $accrual = [

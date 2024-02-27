@@ -19,7 +19,7 @@ class Accrual extends Model
     protected $appends = [
         'period_text',
         'valid_till',
-        'valid_till_etk2',
+        'valid_till_overhaul',
         'base_url',
         'link_confirm',
         'link_pay',
@@ -56,7 +56,7 @@ class Accrual extends Model
     /**
      * Срок оплаты до 20-го числа следующего месяца
      */
-    public function getValidTillEtk2Attribute()
+    public function getValidTillOverhaulAttribute()
     {
         return Carbon::createFromFormat('Ym', $this->period)
             ->addMonth()

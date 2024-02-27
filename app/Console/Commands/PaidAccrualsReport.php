@@ -18,7 +18,7 @@ class PaidAccrualsReport extends Command
      *
      * @var string
      */
-    protected $signature = 'a101:report {date=yesterday}';
+    protected $signature = 'report:paid {date=yesterday} {--send}';
 
     /**
      * The console command description.
@@ -56,6 +56,19 @@ class PaidAccrualsReport extends Command
         $count = Accrual::where('paid_at', '>=', $from)
             ->where('paid_at', '<=', $to)
             ->count();
+
+        if (!$this->option('send')) {
+            $columns = ['id', 'account', 'sum', 'period', 'paid_at', 'name', 'email', 'transaction_id', 'uuid'];
+            $data = Accrual::where('paid_at', '>=', $from)
+                ->where('paid_at', '<=', $to)
+                ->get()
+                ->toArray();
+            $cleaned_data = array_map(function ($item) use ($columns) {
+                return array_intersect_key($item, array_flip($columns));
+            }, $data);
+            $this->line(json_encode($cleaned_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+            return 0;
+        }
 
         $plain = view(
             'paid_accruals_report',

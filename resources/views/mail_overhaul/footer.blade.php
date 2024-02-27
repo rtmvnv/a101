@@ -11,14 +11,11 @@
                                             <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 25px; padding-left: 25px; padding-top: 5px; padding-bottom: 5px; font-family: Arial, sans-serif"><![endif]-->
                                             <div style="color:#555555;font-family:'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;line-height:1.2;padding-top:5px;padding-right:25px;padding-bottom:5px;padding-left:25px;">
                                                 <div class="txtTinyMce-wrapper" style="line-height: 1.2; font-size: 12px; font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #555555; mso-line-height-alt: 14px;">
-                                                <p style="margin: 0; font-size: 22px; line-height: 1.2; word-break: break-word; text-align: center; mso-line-height-alt: 26px; margin-top: 0; margin-bottom: 0;">
-                                                        <span style="font-size: 22px;">&nbsp;</span>
-                                                    </p>
                                                     <p style="margin: 0; font-size: 22px; line-height: 1.2; word-break: break-word; text-align: center; mso-line-height-alt: 26px; margin-top: 0; margin-bottom: 0;">
                                                         <span style="font-size: 22px;">С наилучшими пожеланиями,</span>
                                                     </p>
                                                     <p style="margin: 0; font-size: 22px; line-height: 1.2; word-break: break-word; text-align: center; mso-line-height-alt: 26px; margin-top: 0; margin-bottom: 0;">
-                                                        <span style="font-size: 22px;">ООО "ЭТК № 2"</span>
+                                                        <span style="font-size: 22px;">ООО «А101-КОМФОРТ»</span>
                                                     </p>
                                                 </div>
                                             </div>
@@ -62,7 +59,7 @@
                                             <div style="color:#555555;font-family:'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;line-height:1.2;padding-top:5px;padding-right:25px;padding-bottom:5px;padding-left:25px;">
                                                 <div class="txtTinyMce-wrapper" style="line-height: 1.2; font-size: 12px; font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #555555; mso-line-height-alt: 14px;">
                                                     <p style="margin: 0; line-height: 1.2; word-break: break-word; mso-line-height-alt: 14px; margin-top: 0; margin-bottom: 0;">
-                                                        Это письмо создано автоматической службой рассылки электронных счетов. Пожалуйста, не отвечайте на него.</p>
+                                                        Это письмо создано автоматической службой рассылки электронных счетов, так как вы оформили получение счета по электронной почте. Пожалуйста, не отвечайте на него.</p>
                                                 </div>
                                             </div>
                                             <!--[if mso]></td></tr></table><![endif]-->
