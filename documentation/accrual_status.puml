@@ -1,0 +1,19 @@
+@startuml Статус счетаs
+
+[*] --> created
+created --> sent
+sent --> opened : Клиент переходит по ссылке
+opened --> confirmed : Клиент переходит на страницу банка
+confirmed --> paid : Банк присылает уведомление об оплате
+paid --> [*]
+
+created --> archived
+sent --> archived
+opened --> archived
+confirmed --> archived
+
+archived --> [*]
+
+note bottom of archived : Получен новый счет для этого ЛС
+
+@enduml

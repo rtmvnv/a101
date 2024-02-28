@@ -1,0 +1,44 @@
+@startuml Общая структура системы
+left to right direction
+
+' Компоненты
+component UniSender {
+    port UniOne
+}
+
+component Сервис {
+    port accruals
+    port payments
+    port callbacks
+}
+
+component Эквайринг {
+    port money
+}
+
+[1C]
+
+' Связи
+Сервис ..> UniOne
+Сервис ..> money
+Эквайринг ..> callbacks
+1C ..> accruals
+1C ..> payments
+
+' Примечания
+note as callbacks_url
+    /api/mailru
+end note
+callbacks .. callbacks_url
+
+note as accruals_url
+    POST /api/a101/accruals
+end note
+accruals .. accruals_url
+
+note as payments_url
+    GET /api/a101/payments
+end note
+payments .. payments_url
+
+@enduml
