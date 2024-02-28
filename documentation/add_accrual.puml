@@ -1,0 +1,11 @@
+@startuml Создать начисление
+!pragma layout smetana
+
+actor 1C
+
+1C -> Сервис : Добавить начисление
+Сервис -> UniSender : Отправить email
+UniSender --> Сервис : Результат отправки
+Сервис --> 1C : Результат добавления
+
+@enduml

@@ -1,0 +1,16 @@
+@startuml Модель предметной области
+!pragma layout smetana
+
+class accrual as "Начисление" {
+    +Сумма оплаты
+    +ФИО
+    +email
+    +Лицевой счет
+    +Период
+}
+
+accrual "0..*" --> "1" "Период"
+accrual "0..*" --> "1" "Лицевой счет"
+accrual o-- "1" "Квитанция PDF"
+
+@enduml
