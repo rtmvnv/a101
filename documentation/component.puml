@@ -1,4 +1,6 @@
 @startuml Общая структура системы
+!pragma layout smetana
+
 left to right direction
 
 ' Компоненты

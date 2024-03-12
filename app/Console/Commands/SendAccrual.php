@@ -126,7 +126,6 @@ class SendAccrual extends Command
         if (json_last_error() === JSON_ERROR_NONE) {
             // В ответе пришел JSON
             $this->info(json_encode($jsonResponse, JSON_PRETTY_PRINT));
-            $this->line(route('accrual', $jsonResponse['data']['accrual_id']));
         } else {
             // Ответ неструктурирован
             $this->info($response->content());
