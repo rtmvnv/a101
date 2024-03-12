@@ -452,6 +452,9 @@ class A101
             $plain = view('mail_a101/plain', $accrual->toArray())->render();
             $html = view('mail_a101/html', $accrual->toArray())->render();
 
+            $subject = "Квитанция по лицевому счету {$accrual->account} за {$accrual->period_text}";
+            $attachment_filename = "Квитанция по ЛС {$accrual->account} за {$accrual->period_text}.pdf";
+
             $message->addInlineAttachment(
                 'image.png',
                 'a101-comfort.png',
@@ -469,6 +472,9 @@ class A101
             $plain = view('mail_overhaul/plain', $accrual->toArray())->render();
             $html = view('mail_overhaul/html', $accrual->toArray())->render();
 
+            $subject = "Взнос по лицевому счету {$accrual->account} за {$accrual->period_text}";
+            $attachment_filename = "Взнос по ЛС {$accrual->account} за {$accrual->period_text}.pdf";
+
             $message->addInlineAttachment(
                 'image.png',
                 'a101-comfort.png',
@@ -481,12 +487,12 @@ class A101
         }
 
         $message->to($accrual->email, $accrual->name)
-            ->subject("Квитанция по лицевому счету {$accrual->account} за {$accrual->period_text}")
+            ->subject($subject)
             ->plain($plain)
             ->html($html)
             ->addAttachment(
                 'application/pdf',
-                "Квитанция по ЛС {$accrual->account} за {$accrual->period_text}.pdf",
+                $attachment_filename,
                 $attachment
             )
             ->addInlineAttachment(

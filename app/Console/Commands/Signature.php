@@ -12,7 +12,7 @@ class Signature extends Command
      *
      * @var string
      */
-    protected $signature = 'signature';
+    protected $signature = 'signature {action : accrual | payments}';
 
     /**
      * The console command description.
@@ -39,13 +39,23 @@ class Signature extends Command
     public function handle()
     {
         $a101 = new A101();
-        echo $a101->postApiAccrualsSignature([
-            'sum' => 100,
-            'period' => '202202',
-            'email' => 'null@vic-insurance.ru',
-            'account' => 'ИК123456',
-            'name' => 'Имя User-Name',
-        ]) . PHP_EOL;
+
+        if ($this->argument('action') == 'accrual') {
+            echo $a101->postApiAccrualsSignature([
+                'sum' => 100,
+                'period' => '202202',
+                'email' => 'null@vic-insurance.ru',
+                'account' => 'ИК123456',
+                'name' => 'Имя User-Name',
+            ]) . PHP_EOL;
+        } elseif ($this->argument('action') == 'payment') {
+            echo $a101->getApiPaymentsSignature([
+                'from' => '01.02.2024',
+                // 'to' => 'now',            
+            ]) . PHP_EOL;
+        } else {
+            echo 'Unknown action. Use accrual or payments.' . PHP_EOL;
+        }
 
         return Command::SUCCESS;
     }
