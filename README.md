@@ -51,3 +51,11 @@ ERR > Warning: failed to read path from javaldx
 
 Решение:
 Поставить через ACL расширенные пермишены, чтобы в директорию storage могли писать вебсервер и superuser и перезаписывать файлы друг друга.
+
+### MethodNotAllowedHttpException
+При POST запросе на /api/a101/accruals возвращается ошибка
+```Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException: The GET method is not supported for this route. Supported methods: POST. in file /home/superuser/projects/a101/vendor/laravel/framework/src/Illuminate/Routing/AbstractRouteCollection.php on line 117```
+Происходит на сервере. Локально все работает.
+
+Решение:
+Делать на сервер запросы по HTTPS.
