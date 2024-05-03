@@ -36,8 +36,7 @@
                                             <div style="color:#555555;font-family:'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;line-height:1.2;padding-top:5px;padding-right:25px;padding-bottom:0px;padding-left:25px;">
                                                 <div class="txtTinyMce-wrapper" style="line-height: 1.2; font-size: 12px; font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #555555; mso-line-height-alt: 14px;">
                                                     <p style="margin: 0; font-size: 15px; line-height: 1.2; word-break: break-word; text-align: center; mso-line-height-alt: 18px; margin-top: 0; margin-bottom: 0;">
-                                                        <span style="font-size: 15px;">Счёт за коммунальные
-                                                            услуги оплачен.</span>
+                                                        <span style="font-size: 15px;">Счёт за взнос на капитальный ремонт оплачен.</span>
                                                     </p>
                                                 </div>
                                             </div>
