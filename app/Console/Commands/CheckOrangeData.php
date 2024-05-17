@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\A101;
 use orangedata\orangedata_client;
 
 
@@ -45,7 +44,6 @@ class CheckOrangeData extends Command
             'expiration' => false,
             'api' => false,
         ];
-        $a101 = new A101();
 
         // Проверка сертификата
         $client_crt = file_get_contents(storage_path('app/orangedata/client.crt'));
@@ -68,7 +66,7 @@ class CheckOrangeData extends Command
         $orangeData = app(orangedata_client::class);
         $orangeData->is_debug();
         $order = [
-            'id' => '23423423434',
+            'id' => '23423423436',
             'type' => 1,
             'customerContact' => 'example@example.com',
             'taxationSystem' => 1,
@@ -78,6 +76,7 @@ class CheckOrangeData extends Command
         try {
             $orangeData->create_order($order);
             $response = $orangeData->send_order();
+            print_r($response);
         } catch (\Throwable $th) {
             echo $th->getMessage();
         }
