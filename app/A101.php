@@ -457,8 +457,38 @@ class A101
 
             $message->addInlineAttachment(
                 'image.png',
-                'a101-comfort.png',
-                base64_encode(file_get_contents(public_path('images/a101-comfort.png')))
+                'a101.png',
+                base64_encode(file_get_contents(public_path('email/a101/a101.png')))
+            );
+            $message->addInlineAttachment(
+                'image.png',
+                'afisha.png',
+                base64_encode(file_get_contents(public_path('email/a101/afisha.png')))
+            );
+            $message->addInlineAttachment(
+                'image.png',
+                'banks.png',
+                base64_encode(file_get_contents(public_path('email/a101/banks.png')))
+            );
+            $message->addInlineAttachment(
+                'image.png',
+                'cleaning.png',
+                base64_encode(file_get_contents(public_path('email/a101/cleaning.png')))
+            );
+            $message->addInlineAttachment(
+                'image.png',
+                'events.png',
+                base64_encode(file_get_contents(public_path('email/a101/events.png')))
+            );
+            $message->addInlineAttachment(
+                'image.png',
+                'keys.png',
+                base64_encode(file_get_contents(public_path('email/a101/keys.png')))
+            );
+            $message->addInlineAttachment(
+                'image.png',
+                'water.png',
+                base64_encode(file_get_contents(public_path('email/a101/water.png')))
             );
 
             $message->from(config('services.from.a101.email'), config('services.from.a101.name'));
@@ -523,8 +553,8 @@ class A101
         $message = new Message();
 
         if ($accrual->payee == 'a101') {
-            $plain = view('mail_a101/plain_confirmation', $accrual->toArray())->render();
-            $html = view('mail_a101/html_confirmation', $accrual->toArray())->render();
+            $plain = view('mail_a101_confirmation/plain_confirmation', $accrual->toArray())->render();
+            $html = view('mail_a101_confirmation/html_confirmation', $accrual->toArray())->render();
 
             $message->addInlineAttachment(
                 'image/png',
