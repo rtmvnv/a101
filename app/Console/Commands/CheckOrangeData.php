@@ -65,33 +65,24 @@ class CheckOrangeData extends Command
         // Проверка запросом к API
         $orangeData = app(orangedata_client::class);
         $orangeData->is_debug();
-        $order = [
-            'id' => '23423423436',
-            'type' => 1,
-            'customerContact' => 'example@example.com',
-            'taxationSystem' => 1,
-            'key' => '1234567',
-            'ffdVersion' => 4
-        ];
         try {
-            $orangeData->create_order($order);
-            $response = $orangeData->send_order();
-            print_r($response);
+            $response = $orangeData->check('Main', config('services.orangedata.inn'));
+            if ($response !== true) {
+                echo $response . PHP_EOL;
+            } else {
+                $result['api'] = true;
+            }
         } catch (\Throwable $th) {
             echo $th->getMessage();
-        }
-        if (strpos($response, "Элемент 'Positions' пуст") !== false) {
-            $result['api'] = true;
-        } else {
-            echo $response . PHP_EOL;
+            return Command::FAILURE;
         }
 
         if (in_array(false, $result, true)) {
             echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
-        } else {
-            echo 'Все ок';
+            return Command::FAILURE;
         }
-        
+
+        echo 'ok';
         return Command::SUCCESS;
     }
 }

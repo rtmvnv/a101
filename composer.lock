@@ -3358,15 +3358,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/rtmvnv/PHP-OrangeData-official.git",
-                "reference": "d5ea8a578f957d13572dcee106f5b0905368cff1"
+                "reference": "91b92be7e85b324cd05d0393f564e7f5ce191b78"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rtmvnv/PHP-OrangeData-official/zipball/d5ea8a578f957d13572dcee106f5b0905368cff1",
-                "reference": "d5ea8a578f957d13572dcee106f5b0905368cff1",
+                "url": "https://api.github.com/repos/rtmvnv/PHP-OrangeData-official/zipball/91b92be7e85b324cd05d0393f564e7f5ce191b78",
+                "reference": "91b92be7e85b324cd05d0393f564e7f5ce191b78",
                 "shasum": ""
             },
             "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "ext-openssl": "*",
                 "php": ">=5.6.0"
             },
             "type": "library",
@@ -3384,7 +3388,7 @@
             "support": {
                 "source": "https://github.com/rtmvnv/PHP-OrangeData-official/tree/rtmvnv"
             },
-            "time": "2022-05-30T14:44:37+00:00"
+            "time": "2024-05-22T15:52:00+00:00"
         },
         {
             "name": "php-imap/php-imap",
@@ -9097,5 +9101,5 @@
         "php": "^8.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.0.0"
 }
