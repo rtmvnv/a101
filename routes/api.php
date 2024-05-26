@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\A101;
+use App\Http\Controllers\HealthCheckController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +15,8 @@ use App\A101;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+Route::get('/health', [HealthCheckController::class, 'check']);
 
 Route::middleware('throttle:600,1')
     ->post('/a101/accruals', function (Request $request) {
