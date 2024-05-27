@@ -228,4 +228,20 @@ class UniOne
 
         return $status;
     }
+
+    /**
+     * Проверка валидности email.
+     * Возращает true или строку с причиной ошибки.
+     * 
+     * @param  string  $email
+     * 
+     * @return bool|string
+     */
+    public function validateEmail($email) {
+        $response = $this->request('email-validation/single.json', ['email' => $email]);
+        if ($response['result'] !== 'invalid') {
+            return true;
+        }
+        return "result:{$response['result']}; cause:{$response['cause']}";
+    }
 }

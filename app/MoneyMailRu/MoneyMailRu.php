@@ -287,4 +287,24 @@ class MoneyMailRu
 
         return $response;
     }
+
+    /**
+     * Checks that can connect to MoneyMailRu
+     */
+    public function health() {
+        $response = $this->request('merchant/info');
+
+        if ($response['result_code'] !== 0) {
+            return "status:error; result_code:{$response['result_code']}; result_message:{$response['result_message']}";
+        }
+
+        if ($response['header']['status'] !== 'OK') {
+            return "status:{$response['header']['status']}; "
+                . 'code:' . (isset($response['header']['error']['code']) ? $response['header']['error']['code'] : 'unknown') . '; '
+                . 'message:' . (isset($response['header']['error']['message']) ? $response['header']['error']['message'] : 'unknown') . '; '
+                . 'error_id:' . (isset($response['header']['error']['error_id']) ? $response['header']['error']['error_id'] : 'unknown');
+        }
+
+        return true;
+    }
 }
