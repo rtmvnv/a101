@@ -44,8 +44,6 @@ class UnioneValidation extends Command
         $email = $this->argument('email');
         $unione = app(UniOne::class);
 
-        print_r($unione->validateEmail($email));
-
         $this->line(json_encode(
             $unione->request('email-validation/single.json', ["email" => $email]),
             JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES

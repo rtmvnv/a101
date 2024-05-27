@@ -60,6 +60,17 @@
         </div>
     </div>
 </div>
+<div class="container px-3 pb-3 mb-3">
+    <div class="card">
+        <div class="card-body">
+            <strong class="card-title">Валидность</strong>
+            <p class="card-text">
+                {{ $validation['result_description'] ?? 'Неизвестно' }}<br />
+                {{ $validation['cause_description'] ?? '' }}<br />
+            </p>
+        </div>
+    </div>
+</div>
 @endif
 
 <div class="container">

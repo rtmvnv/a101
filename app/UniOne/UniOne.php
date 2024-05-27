@@ -231,17 +231,50 @@ class UniOne
 
     /**
      * Проверка валидности email.
-     * Возращает true или строку с причиной ошибки.
+     * result=valid - точно валидна
+     * result=invalid - точно не валидна
      * 
      * @param  string  $email
      * 
      * @return bool|string
      */
     public function validateEmail($email) {
+        $result_description = [
+            'valid' => 'Почта валидна',
+            'invalid' => 'Почта невалидна',
+            'suspicious' => 'Почта подозрительна',
+            'unknown' => 'Неизвестная ошибка, почтовый сервер не отвечает',
+        ];
+        $cause_description = [
+            '' => '',
+            'no_mx_record' => 'no MX record found for the target domain',
+            'syntax_error' => 'the address syntax is invalid',
+            'possible_typo' => 'the address is likely to have a typo',
+            'mailbox_not_found' => 'the address does not exist',
+            'global_suppression' => 'the address has been marked as unreachable due to multiple previous delivery errors',
+            'disposable' => 'this is a disposable one-time email address which is usually valid for a few minutes only',
+            'role' => 'the address is not likely to belong to an actual person, but rather to a certain business staff role',
+            'abuse' => 'the address is known to be a source of a large number of complaints, sometimes issued automatically',
+            'spamtrap' => 'this email is a spam trap, it is published openly but never used for actual emails. Sending messages to such addresses has a huge negative impact on reputation score',
+            'smtp_connection_failed' => 'the domain’s SMTP server does not respond; the address may contain a typo.',
+        
+        ];
         $response = $this->request('email-validation/single.json', ['email' => $email]);
-        if ($response['result'] !== 'invalid') {
-            return true;
+        if ($response['status'] !== 'success') {
+            return [
+                'success' => false,
+                'result' => $response['status'],
+                'result_description' => '',
+                'cause' => $response['code'] . ': ' . $response['message'],
+                'cause_description' => '',
+            ];
         }
-        return "result:{$response['result']}; cause:{$response['cause']}";
+        return [
+            'success' => true,
+            'result' => $response['status'],
+            'result_description' => $result_description[$response['result']],
+            'cause' => $response['cause'],
+            'cause_description' => $cause_description[$response['cause']],
+        ];
     }
 }
