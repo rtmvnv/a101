@@ -3,8 +3,10 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use App\UniOne\Message;
 use App\Reports\FailedEmails;
+use App\UniOne\UniOne;
 
 class ReportFailedEmails extends Command
 {
@@ -58,7 +60,6 @@ class ReportFailedEmails extends Command
         $message->to(env('REPORTS_FAILED_EMAILS'))
             ->subject('Отчет об ошибках доставки писем за неделю')
             ->plain($plain);
-
 
         if ($this->option('send')) {
             $unione = app(UniOne::class);

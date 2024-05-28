@@ -2,7 +2,6 @@
 
 namespace App;
 
-use Illuminate\Support\Facades\App;
 use App\Models\Accrual;
 use App\Rules\ValidDate;
 use Illuminate\Support\Str;
