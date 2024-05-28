@@ -66,7 +66,6 @@
             <strong class="card-title">Валидность</strong>
             <p class="card-text">
                 {{ $validation['result_description'] ?? 'Неизвестно' }}<br />
-                {{ $validation['cause'] ?? '' }}<br/>
                 {{ $validation['cause_description'] ?? '' }}<br />
             </p>
         </div>

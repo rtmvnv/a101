@@ -240,23 +240,23 @@ class UniOne
      */
     public function validateEmail($email) {
         $result_description = [
-            'valid' => 'Почта валидна',
-            'invalid' => 'Почта невалидна',
-            'suspicious' => 'Почта подозрительна',
-            'unknown' => 'Неизвестная ошибка, почтовый сервер не отвечает',
+            'valid' => 'E-mail адрес действительный',
+            'invalid' => 'E-mail адрес недействительный',
+            'suspicious' => 'E-mail адрес подозрительный',
+            'unknown' => 'Адрес не удалось проверить. Принимающий сервер не ответил',
         ];
         $cause_description = [
             '' => '',
-            'no_mx_record' => 'no MX record found for the target domain',
-            'syntax_error' => 'the address syntax is invalid',
-            'possible_typo' => 'the address is likely to have a typo',
-            'mailbox_not_found' => 'the address does not exist',
-            'global_suppression' => 'the address has been marked as unreachable due to multiple previous delivery errors',
-            'disposable' => 'this is a disposable one-time email address which is usually valid for a few minutes only',
-            'role' => 'the address is not likely to belong to an actual person, but rather to a certain business staff role',
-            'abuse' => 'the address is known to be a source of a large number of complaints, sometimes issued automatically',
-            'spamtrap' => 'this email is a spam trap, it is published openly but never used for actual emails. Sending messages to such addresses has a huge negative impact on reputation score',
-            'smtp_connection_failed' => 'the domain’s SMTP server does not respond; the address may contain a typo.',
+            'no_mx_record' => 'у домена отсутствуют MX записи',
+            'syntax_error' => 'адрес не соответствует стандартам email',
+            'possible_typo' => 'возможно, адрес введен с ошибкой',
+            'mailbox_not_found' => 'адрес не существует',
+            'global_suppression' => 'адрес перманентно недоступен в сервисе из-за многократных недоставок',
+            'disposable' => 'одноразовый email, обычно такие адреса принимают почту только несколько минут',
+            'role' => 'общий адрес электронной почты, чаще всего используются группой людей и не принадлежит конкретному человеку',
+            'abuse' => 'адреса с которых поступает большое количество жалоб и нажатий на “спам”, иногда даже в автоматическом режиме',
+            'spamtrap' => 'адреса спам-ловушки, обычно размещаются почтовыми провайдерами в открытом доступе, но никогда не используются для подписки. Отправка писем на такие адреса сильно вредит репутации отправителя',
+            'smtp_connection_failed' => 'SMTP-сервер недоступен - возможно, адрес введен с ошибкой',
         
         ];
         $response = $this->request('email-validation/single.json', ['email' => $email]);
