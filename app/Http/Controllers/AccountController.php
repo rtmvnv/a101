@@ -23,6 +23,7 @@ class AccountController extends Controller
             ->select('account', 'period', 'sum', 'email', 'name', 'payee')
             ->where('account', $account)
             ->groupBy('account', 'period', 'sum', 'email', 'name', 'payee')
+            ->orderBy('period', 'desc')
             ->get();
 
         $accruals = [];
