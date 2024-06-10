@@ -24,7 +24,7 @@
 </div>
 @endif
 
-
+@if ( !empty($email) )
 @if ( !empty($suppression['message']) )
 <div class="container px-3 pb-3 mb-3">
     <div class="card">
@@ -47,19 +47,7 @@
 </div>
 @endif
 
-@if ( !empty($email) )
-<div class="container px-3 pb-3 mb-3">
-    <div class="card">
-        <div class="card-body">
-            <strong class="card-title">Лицевые счета</strong>
-            <p class="card-text">
-                @foreach ($accounts as $account)
-                <a href="{{ $account['link'] }}">{{ $account['value'] }}</a>
-                @endforeach
-            </p>
-        </div>
-    </div>
-</div>
+@if ( $validation['result'] != 'valid' )
 <div class="container px-3 pb-3 mb-3">
     <div class="card">
         <div class="card-body">
@@ -72,6 +60,19 @@
     </div>
 </div>
 @endif
+
+<div class="container px-3 pb-3 mb-3">
+    <div class="card">
+        <div class="card-body">
+            <strong class="card-title">Лицевые счета</strong>
+            <p class="card-text">
+                @foreach ($accounts as $account)
+                <a href="{{ $account['link'] }}">{{ $account['value'] }}</a>
+                @endforeach
+            </p>
+        </div>
+    </div>
+</div>
 
 <div class="container">
     <table class="table table-hover">
@@ -93,5 +94,6 @@
         </tbody>
     </table>
 </div>
+@endif
 
 @include('internal/footer')
