@@ -1,4 +1,5 @@
 /storage/*.key
+/storage/logs
 /vendor/
 docker-compose.override.yml
 .DS_Store
