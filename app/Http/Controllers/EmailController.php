@@ -142,10 +142,9 @@ class EmailController extends Controller
         $data['events'] = (new EmailEvents())($data['email']);
 
         /**
-         * Валидация
+         * Валидность
          */
         $response = $unione->validateEmail($data['email']);
-        $data['validation1'] = json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         $data['validation'] = $response;
 
         return view('internal/email', $data);

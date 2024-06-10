@@ -152,6 +152,10 @@ class UniOne
      */
     public static function explainError($status, $deliveryStatus, $destinationResponce)
     {
+        if ($status == 'sent') {
+            return 'Письмо отправлено, но пока не доставлено';
+        }
+
         if ($status == 'delivered') {
             return 'Письмо доставлено получателю';
         }
@@ -164,16 +168,20 @@ class UniOne
             return 'Письмо доставлено. Получатель перешел по ссылке из письма';
         }
 
+        if ($status == 'unsubscribed') {
+            return 'Письмо доставлено, получатель отписался от рассылки';
+        }
+
+        if ($status == 'subscribed') {
+            return 'Письмо доставлено, получатель отписался от рассылки, а потом снова подписался';
+        }
+
         if ($status == 'soft_bounced') {
             return 'Продолжаются попытки доставки письма';
         }
 
         if ($status == 'spam') {
-            return 'Письмо отмечено как spam на сервере получателя';
-        }
-
-        if ($status == 'unsubscribed') {
-            return 'Письмо доставлено, получатель отписался от рассылки';
+            return 'Письмо отмечено получателем как spam';
         }
 
         if ($status == 'complained') {
@@ -191,28 +199,48 @@ class UniOne
                 return $response . 'Несуществующий адрес.';
             }
 
+            if ($deliveryStatus == 'err_user_inactive') {
+                return $response . 'Адрес не используется.';
+            }
+
+            if ($deliveryStatus == 'err_will_retry') {
+                return $response . 'Письмо было временно отклонено и позднее будет осуществлена повторная попытка доставки.';
+            }
+
+            if ($deliveryStatus == 'err_mailbox_discarded') {
+                return $response . 'Адрес удален (раньше существовал).';
+            }
+
             if ($deliveryStatus == 'err_mailbox_full') {
                 return $response . 'Ящик получателя переполнен.';
             }
 
-            if ($deliveryStatus == 'err_domain_inactive') {
-                return $response . 'Несуществующий адрес, неизвестное доменное имя.';
-            }
-
-            if ($deliveryStatus == 'err_user_inactive') {
-                return $response . 'Ящик пользователя выключен.';
-            }
-
-            if ($deliveryStatus == 'err_user_inactive') {
-                return $response . 'Ящик пользователя выключен.';
+            if ($deliveryStatus == 'err_spam_rejected') {
+                return $response . 'Отклонено spam-фильтром.';
             }
 
             if ($deliveryStatus == 'err_blacklisted') {
                 return $response . 'Отклонено из-за черного списка.';
             }
 
-            if ($deliveryStatus == 'err_spam_rejected') {
-                return $response . 'Отклонено spam-фильтром.';
+            if ($deliveryStatus == 'err_too_large') {
+                return $response . 'Письмо превышает допустимый размер.';
+            }
+
+            if ($deliveryStatus == 'err_unsubscribed') {
+                return $response . 'Адресат ранее отписался от рассылки.';
+            }
+
+            if ($deliveryStatus == 'err_unreachable') {
+                return $response . ' Адрес помечен как постоянно недоступный по причине многократных ошибок доставки на этот адрес.';
+            }
+
+            if ($deliveryStatus == 'err_skip_letter') {
+                return $response . 'Отправка отменена, так как email адрес временно недоступен.';
+            }
+
+            if ($deliveryStatus == 'err_domain_inactive') {
+                return $response . 'Несуществующий адрес, неизвестное доменное имя.';
             }
 
             if ($deliveryStatus == 'err_destination_misconfigured') {
@@ -220,7 +248,19 @@ class UniOne
             }
 
             if ($deliveryStatus == 'err_delivery_failed') {
+                return $response . 'Доставка не удалась по иным причинам.';
+            }
+
+            if ($deliveryStatus == 'err_delivery_failed') {
                 return 'Письмо не удалось доставить';
+            }
+
+            if ($deliveryStatus == 'err_spam_skipped') {
+                return $response . 'Отправка отменена из-за блокировки рассылки как спама.';
+            }
+
+            if ($deliveryStatus == 'err_lost') {
+                return $response . 'Письмо не было отправлено из-за несогласованности его частей, или было утеряно из-за сбоя на стороне UniSender.';
             }
 
             return 'Письмо не удалось доставить';
@@ -263,7 +303,7 @@ class UniOne
         if ($response['status'] !== 'success') {
             return [
                 'success' => false,
-                'result' => $response['status'],
+                'result' => $response['result'],
                 'result_description' => '',
                 'cause' => $response['code'] . ': ' . $response['message'],
                 'cause_description' => '',
@@ -271,7 +311,7 @@ class UniOne
         }
         return [
             'success' => true,
-            'result' => $response['status'],
+            'result' => $response['result'],
             'result_description' => $result_description[$response['result']],
             'cause' => $response['cause'],
             'cause_description' => $cause_description[$response['cause']],
