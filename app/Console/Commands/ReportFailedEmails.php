@@ -41,15 +41,16 @@ class ReportFailedEmails extends Command
      */
     public function handle()
     {
-        $records = (new FailedEmails())();
+        $records = (new FailedEmails('-1 week'))();
 
         $plain = '';
         foreach ($records as $record) {
-            $plain .= $record['email'] . ' ' . $record['account']
+            $plain .= 'email: ' . $record['email']
+                . PHP_EOL . 'account: ' . $record['account']
                 . PHP_EOL . $record['explanation']
-                . PHP_EOL . $record['status']
-                . ' ' . $record['delivery_status']
-                . ' ' . $record['destination_response']
+                . PHP_EOL . 'status: ' . $record['status']
+                . PHP_EOL . 'delivery_status: ' . $record['delivery_status']
+                . PHP_EOL . 'destination_response: ' . $record['destination_response']
                 . PHP_EOL . PHP_EOL;
         }
         if (empty($plain)) {
