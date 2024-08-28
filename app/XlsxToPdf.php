@@ -16,8 +16,8 @@ class XlsxToPdf
     public function __construct($temp_directory = false)
     {
         if (!$temp_directory) {
-            $temp_directory = storage_path('app/xlsx_to_pdf');
-        }
+            $username = posix_getpwuid(posix_geteuid())['name'];
+            $temp_directory = storage_path('app/xlsx_to_pdf/' . $username);        }
         /*
          * Create temporary directory if it doesn't exist
          */
