@@ -1,0 +1,9 @@
+#!/bin/bash
+
+SCRIPT_PATH="${BASH_SOURCE[0]:-$0}";
+
+if [ ${USER} == "apache" ]; then
+  ${SCRIPT_PATH}/artisan "$@"
+else
+  sudo -u apache ${SCRIPT_PATH}/artisan "$@"
+fi

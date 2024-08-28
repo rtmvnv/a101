@@ -225,14 +225,8 @@
                                                 <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 25px; padding-left: 25px; padding-top: 5px; padding-bottom: 0px; font-family: Arial, sans-serif"><![endif]-->
                                                 <div style="color:#555555;font-family:'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;line-height:1.2;padding-top:5px;padding-right:25px;padding-bottom:0px;padding-left:25px;">
                                                     <div class="txtTinyMce-wrapper" style="line-height: 1.2; font-size: 13px; font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #555555; mso-line-height-alt: 14px;">
-                                                        <p>&nbsp;</p>
                                                         <p style="margin: 0; font-size: 13px; line-height: 1.2; word-break: break-word; text-align: center; mso-line-height-alt: 18px; margin-top: 0; margin-bottom: 0;">
-                                                            В соответствии с решением общего собрания собственников (Протокол №1 от 12.04.2023 г.)
-                                                            с 01.01.2024 г. всем собственникам объектов недвижимости в многоквартирном доме по адресу:
-                                                            г. Москва, Прокшинский проспект, дом 9 будут производиться начисления по капитальному ремонту.
-                                                            Данные начисления будут отражаться в отдельном платежном документе.
-                                                            Накопление денежных средств, поступающих в виде взносов собственников помещений, 
-                                                            будут размещены на Счете фонда капремонта многоквартирного дома.
+                                                            &nbsp;
                                                         </p>
                                                     </div>
                                                 </div>
